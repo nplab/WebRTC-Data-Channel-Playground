@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" class="a">
+	<head>
+		<meta charset="utf-8">
+		<!-- Testharness Timeout to long -> 60 Seconds-->
+		<meta name="timeout" content="long">
+		<title>WebRTC - Send Test</title>
+		<script src="../resources/testharness.js"></script>
+		<script src="../resources/testharnessreport.js"></script><link href="../resources/testharness.css" type="text/css" rel="stylesheet"/>
+		<!-- Including the Firebase.js to send the ICE Candidate to the other peer-->
+		<script type="text/javascript" src='https://cdn.firebase.com/v0/firebase.js'></script>
+	</head>
+	<body class="a">
+		<div>
+			<div id="signallingInfo"></div>
+			
+				
+			
+		</div>
+		<hr />
+
+		<!-- Testharness log -->
+		<div id="log"></div>
+		<script src="../datachannel2peers.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			setup({
+				explicit_timeout : true
+			});
+           var label = "test";
+            var dataChannel = null;
+            var expected = "s", size = 14, repeats = 512, receives = 0;
+            for (var i = 0; i < size; i++) {
+                expected += expected;
+            }         
+            var test = async_test("Set up a DataChannel - send "+ repeats + " messages of size " + (expected.length / 1024) + " KB (total of " + (expected.length * repeats / 1024 / 1024) + " MB)", {timeout: 480000});
+            if (offerer) {
+            	var receives = 0;
+                test.step(function() {
+                    dataChannel = peerConnection.createDataChannel(label);
+                    dataChannel.onopen = test.step_func(function() {
+                        var i = 0;
+                        try{
+                        	for ( i = 0; i < repeats; i++) {
+                    			dataChannel.send(expected);
+                    		}
+                    	}catch(e){
+                    		assert_unreached("After "+i+ "  sends " + e.name + ": " + e.message );
+                    	}             
+                    	var iV = setInterval(function(){
+                    		if(dataChannel.bufferedAmount == 0){
+                    			clearInterval(iV);
+                    			test.done();
+                    		}
+                    	}, 500);   
+                    });
+                    
+                    
+                });
+            } else {
+                peerConnection.ondatachannel = test.step_func(function(e) {
+                    dataChannel = e.channel;
+                     dataChannel.onmessage = test.step_func(function(e) {
+                    	receives++;
+                    	if (receives % 32 == 0)
+                    		console.log("Received " + receives + " Times");
+		                if (receives == repeats) {
+		                    test.done();
+		                }
+                    });
+                });
+            }
+		</script>
+	</body>
+</html>
+

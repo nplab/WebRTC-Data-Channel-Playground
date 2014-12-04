@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" class="a">
+	<head>
+		<meta charset="utf-8">
+		<!-- Testharness Timeout to long -> 60 Seconds-->
+		<meta name="timeout" content="long">
+		<title>WebRTC - DataChannelDict Test</title>
+		<script src="../resources/testharness.js"></script>
+		<script src="../resources/testharnessreport.js"></script><link href="../resources/testharness.css" type="text/css" rel="stylesheet"/>
+		<!-- Including the Firebase.js to send the ICE Candidate to the other peer-->
+		<script type="text/javascript" src='https://cdn.firebase.com/v0/firebase.js'></script>
+	</head>
+	<body class="a">
+		<div>
+			<div id="signallingInfo"></div>
+			
+				
+			
+		</div>
+		<hr />
+
+		<!-- Testharness log -->
+		<div id="log"></div>
+		<script src="../datachannel2peers.js" type="text/javascript"></script>
+		<script type="text/javascript">
+            var label1 = "Peer A";
+            var label2 = "Peer B";
+            var expected = "a";
+            var dataChannelOptions1 = {
+	            negotiated : true,
+	            id: 44
+	        };
+	        var dataChannelOptions2 = {
+	            negotiated : false,
+	            id: 44
+	        };
+            var test = async_test("Try to set up a DataChannel by creating two corresponding DataChannels with same id and different negotiated values (true/false) - try to establish a connection - should fail");
+            if (offerer) {
+                test.step(function() {
+                    dataChannel = peerConnection.createDataChannel(label1, dataChannelOptions1);
+                    dataChannel.onopen = test.step_func(function() {
+                       	assert_equals(dataChannel.readyState, "open", "Wrong readyState");
+                        try {
+                            dataChannel.send(expected);
+                        } catch(e) {
+                            assert_unreached(e.name + ": " + e.message);
+                        }
+                    });
+                    dataChannel.onmessage = test.step_func(function(e) {
+                        assert_unreached("Can establish a connection and send data betwenn two created DataChannels with different negotiated value ");
+                    });
+                });
+            } else {
+                 test.step(function() {   	
+                    dataChannel = peerConnection.createDataChannel(label2, dataChannelOptions2);
+                    dataChannel.onopen = test.step_func(function() {
+                        assert_equals(dataChannel.readyState, "open", "Wrong readyState");
+                        try {
+                            dataChannel.send(expected);
+                        } catch(e) {
+                            assert_unreached(e.name + ": " + e.message);
+                        }
+                    });
+                    dataChannel.onmessage = test.step_func(function(e) {
+                        assert_unreached("Can establish a connection and send data betwenn two created DataChannels with different negotiated value ");
+                    });
+                });
+            }
+            setTimeout(test.step_func(function() {test.done();}),50000);
+		</script>
+	</body>
+</html>
