@@ -74,15 +74,15 @@
 			<hr />
 
 			<div id="testWrapper">
-				<table id="testlist" class="table table-condensed table-striped"></table>
 
-				<div align="center">
+				<div align="center" class="testControls">
 					<button type="button"class="btn btn-success" id="btnTestStartAll">
 						<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
 						Start all
+						<span class="badge" id="badgeTestcount">tests</span>
 					</button>
 					<div class="btn-group" role="group" aria-label="...">
-						<button type="button"class="btn btn-success" id="btnTestStart">
+						<button type="button"class="btn btn-success" id="btnTestStartSelected">
 							<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
 							Start selected
 						</button>
@@ -108,14 +108,17 @@
 						</button>
 					</div>
 				</div>
+				<table id="testlist" class="table table-condensed table-striped"></table>
 
 			</div>
 			<div id="logWrapper">
 				<div id="logShort"></div>
 
-				<form >
-					<progress id="progressBar" value="0" style="width: 100%"></progress>
-				</form>
+				<div class="progress">
+					<div class="progress-bar" id="progressbar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+						0%
+					</div>
+				</div>
 				<div id="testInformation"></div>
 				<!-- Testharness logging -->
 				<div id="log"></div>
@@ -146,6 +149,7 @@
 		<script src="resources/testharness.js" type="text/javascript"></script>
 		<script src="resources/testharnessreport.js" type="text/javascript"></script>
 		<!-- Information and Connection -->
+		<script src="lib/js/jquery.cookie.js" type="text/javascript"></script>
 		<script src="lib/js/checkclient.js" type="text/javascript"></script>
 		<script src="lib/js/datachannel_test/logging.js" type="text/javascript"></script>
 		<script src="lib/js/datachannel_test/helpfunctions.js" type="text/javascript"></script>
@@ -173,8 +177,5 @@
 			getMethods(window);
 			fillTestList();
 		</script>
-
-		<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-		<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
 	</body>
 </html>

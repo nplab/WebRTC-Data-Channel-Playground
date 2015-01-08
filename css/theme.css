@@ -10,3 +10,16 @@ body {
 .footer {
 	margin-top: 20px;
 }
+
+.testControls {
+	margin-bottom: 20px;
+}
+
+#testlist label {
+	font-weight:500;
+}
+
+progress {
+	height:20px;
+	border-radius:9px;
+}
