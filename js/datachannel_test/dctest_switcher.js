@@ -64,7 +64,7 @@ function fillTestList() {
     var testlistHTML = "<tr>";
     
     $.each(availableTestList,function(key,val) {
-        testlistHTML += "<td><label><input type='checkbox' name='test' value='" + val + "'> " + val + "</label></td>";
+        testlistHTML += '<td><span class="glyphicon glyphicon-search inspectFunction" aria-hidden="true" data-function="'+val+'"></span> <label><input type="checkbox" name="test" value="' + val + '"> '+ val + '</label></td>';
         // new row every 5 cols
         if (key % 5 == 4) {
             testlistHTML += "</tr><tr>";

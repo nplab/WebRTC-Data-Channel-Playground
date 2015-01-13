@@ -80,7 +80,7 @@ function testDC_id002() {
 // Origin: W3C - 5.2.1 Attributes
 function testDC_id003() {
     var dataChannelOptions = {
-        id : 1023
+        //id : 1023
     };
     test(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
@@ -89,6 +89,7 @@ function testDC_id003() {
         } catch(e) {
             assert_unreached("An error was thrown " + e.name + ": " + e.message);
         }
+        alert(localChannel.id);
         assert_equals(localChannel.id, dataChannelOptions.id, "Wrong id ");
     }, "Call .createDataChannel() with the specific id = " + dataChannelOptions.id, {timeout: 5000});
 }
