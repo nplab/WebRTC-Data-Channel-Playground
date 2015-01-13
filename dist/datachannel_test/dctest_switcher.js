@@ -114,7 +114,6 @@ function loadCookie(name) {
 
 function startSelectedTests() {
     $('.progressbar').css('width', '0%').attr('aria-valuenow', 0).html('0/'+selectedTestList.length); 
-    testInformation.innerHTML += "Run " + availableTestList.length + " tests!";
     testSwitcher(0);
     $('#logWrapper').show();
     $('#testWrapper').hide();

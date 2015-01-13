@@ -50,6 +50,5 @@ $('#btnShowLog').click(function(){
 $('#btnShowResults').click(function(){
     // show the results in a table for logging or something else..
     var res = window.open('Test results','Test results','width=800, height=600');
-    //res.document.open().write(testCompleteResults).close();
     res.document.open().write(testCompleteResults);
 });

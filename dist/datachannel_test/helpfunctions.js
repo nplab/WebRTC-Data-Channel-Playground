@@ -95,6 +95,15 @@ function checkForReadyStates(str){
     return returnValue;
 }
 
+function getBrowserInformation() {
+	if(window.mozRTCPeerConnection || window.webkitRTCPeerConnection || window.RTCPeerConnection){
+		$('#browserInformation').addClass('alert-success');
+	} else {
+		$('#browserInformation').addClass('alert-danger');
+	}
+		$('#browserInformation').append(navigator.userAgent);        
+}
+
 
 
 

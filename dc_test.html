@@ -4,16 +4,15 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-		<meta name="description" content="">
+		<meta name="description" content="WebRTC-DataChannel Testsuite">
 		<meta name="author" content="Felix Weinrank">
-		<link rel="icon" href="../../favicon.ico">
 
 		<title>WebRTC-DataChannel Testsuite</title>
 
 		<!-- CSS Section -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
-		<link rel="stylesheet" href="css/custom.css">
+		<link rel="stylesheet" href="dist/custom.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
 		
 		<!-- JAVSCRIPT Section -->
@@ -42,11 +41,8 @@
 
 		<div class="container">
 			
-			<button type="button" class="btn btn-lg btn-danger" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">Click to toggle popover</button>
-
-			<div id="browserInformation"></div>
+			<div id="browserInformation" class="alert text-center"></div>
 			<div id="mozMode"></div>
-			<hr />
 
 			<div id="testWrapper">
 
@@ -124,35 +120,32 @@
 				</table>
 
 				<div id="log"></div>
-
-				<div id="testInformation"></div>
 				<!-- Testharness logging -->
 			</div>
 
-			<div class="footer">
+			<div class="footer text-center">
 				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung
 			</div>
 		</div>
 		<!-- /container -->
 
 		<!-- Testharness-->
-		<script src="js/testharness.js" type="text/javascript"></script>
-		<script src="js/testharnessreport.js" type="text/javascript"></script>
+		<script src="dist/testharness/testharness.js" type="text/javascript"></script>
+		<script src="dist/testharness/testharnessreport.js" type="text/javascript"></script>
 		<!-- Information and Connection -->
-		<script src="js/jquery.cookie.js" type="text/javascript"></script>
-		<script src="js/checkclient.js" type="text/javascript"></script>
-		<script src="js/datachannel_test/logging.js" type="text/javascript"></script>
-		<script src="js/datachannel_test/helpfunctions.js" type="text/javascript"></script>
-		<script src="js/datachannel_test/dctest_switcher.js" type="text/javascript"></script>
-		<script src="js/datachannel_test/dctest_connection.js" type="text/javascript"></script>
+		<script src="dist/jquery.cookie.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/logging.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/helpfunctions.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/dctest_switcher.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/dctest_connection.js" type="text/javascript"></script>
 		<!-- Load Tests -->
-		<script src="js/datachannel_test/dctest_init.js" type="text/javascript"></script>
-		<script src="js/datachannel_test/dctest_label.js" type="text/javascript"></script>
-		<script src="js/datachannel_test/dctest_datachanneldict.js" type="text/javascript"></script>
-		<script src="js/datachannel_test/dctest_create.js" type="text/javascript"></script>
-		<script src="js/datachannel_test/dctest_id.js" type="text/javascript"></script>
-		<script src="js/datachannel_test/dctest_event.js" type="text/javascript"></script>
-		<script src="js/datachannel_test/dctest_send.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/dctest_init.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/dctest_label.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/dctest_datachanneldict.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/dctest_create.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/dctest_id.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/dctest_event.js" type="text/javascript"></script>
+		<script src="dist/datachannel_test/dctest_send.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			// Firefox crashes by sone Tests (>Nightly Version 36.0a doesn't crash)
 			var mozSafeMode = (!!window.mozRTCPeerConnection);
@@ -163,9 +156,12 @@
 					console.log("mozSafeMode " + mozSafeMode);
 				});
 			}
+			
+			getBrowserInformation();
 			console.log("mozSafeMode " + mozSafeMode);
 			getMethods(window);
 			fillTestList();
+			
 			
 			$('.inspectFunction').popover({
 				html: true,
