@@ -16,10 +16,10 @@
 		<br>
 		NetPerfMeter
 		<br>
-		<input id="npmParamSleep" value="100">
+		<input id="npmParamSleep" value="1000">
 		sleeptime
 		<br>
-		<input id="npmParamPktCount" value="100">
+		<input id="npmParamPktCount" value="10">
 		number of messages
 		<br>
 		<input id="npmParamPktSize" value="10">
@@ -47,6 +47,7 @@
 			var npmSizetemp;
 			var npmSizePerX;
 			var npmPaket;
+			var sentPktCounter = 0;
 
 			var stat = {
 				"t_start" : 0,
@@ -235,40 +236,46 @@
 				console.log('Channel ' + label +' - closing');
 				channels[label].close();
 			}
+			function NpmSend() {
+				console.log("Senden - sleep" + stat.npmParameterSleep);
+				try {
+						
+					channels[1].send(npmPaket);
+					sentPktCounter++;
+					if (sentPktCounter < stat.npmPackagecount){
+						setTimeout(NpmSend, stat.npmParameterSleep);
+					}
+				} catch(e) {
+					alert("Test Aborted!");
+					console.log(e);
+					return;
+				}
+			};
+
+
 
 			//
 			function NetPerfMeter() {
 				stat.npmSize = $('#npmParamPktSize').val();
 				stat.npmPackagecount = $('#npmParamPktCount').val();
-				stat.npmParameterSleep = $('npmParamSleep').val();
+				stat.npmParameterSleep = parseInt($('#npmParamSleep').val());
 				
 				var DataArray = new Array(1, stat.npmParameterSleep, stat.npmSize, stat.npmPackagecount);
 				var DataString = DataArray.join(";");
 
 				channels[1].send(DataString);
-				var counter = 0;
+				sentPktCounter = 0;
 				console.log(stat.npmParameterSleep);
 
 				setTimeout(funct, stat.npmParameterSleep);
 				var funct = function() {
 				};
-				var func = function() {
-					npmPaket = "a";
-					for (var j = 0; j < stat.npmSize; j++) {
-						npmPaket += "a";
-					}
-					try {
-						channels[1].send(npmPaket);
-					} catch(e) {
-						alert("Test Aborted!");
-						return;
-					}
-					counter++;
-					if (counter < stat.npmPackagecount)
-						setTimeout(func, stat.npmParameterSleep);
+				npmPaket = "a";
+				for (var j = 0; j < stat.npmSize; j++) {
+					npmPaket += "a";
+				}
 
-				};
-				func();
+				NpmSend();
 			}
 
 			// bind the channel events
@@ -293,7 +300,7 @@
 					console.log(rxData);
 					var rxnpmPaketTemp = rxData.split(";");
 					if (rxnpmPaketTemp[0] == 1) {
-						alert("start test");
+						//alert("start test");
 						messageencoder = 1;
 					} else
 						messageencoder = 2;
@@ -304,6 +311,7 @@
 							var rxDataString = rxData;
 							var rxDataArray = rxDataString.split(";");
 							stat.npmParameterSleep 	= 	parseInt(rxDataArray[1]);
+							console.log(stat.npmParameterSleep);
 							stat.npmSize 			= 	parseInt(rxDataArray[2]); npmSizetemp = stat.npmSize;
 							stat.npmPackagecount 	= 	rxDataArray[3];
 
@@ -355,7 +363,7 @@
 				//calculazion of the current Byte/s
 				npmSizePerX = (Math.round(((npmSizetemp * (1 / ((stat.t_end - t_startNewPackage) / 1000))) / 1024) * 1000)) / 1000;
 
-				$('div#log').html("<div>current<br>" + npmSizePerX + " kByte/s<br>average<br>" + npmSizePerX2 + " kByte/s<br>" + npmSizePerX3 + " MByte/s</div>");
+				$('div#log').html("<div>current<br>" + npmSizePerX + " " + (stat.t_counter+1) + " kByte/s<br>average<br>" + npmSizePerX2 + " kByte/s<br>" + npmSizePerX3 + " MByte/s</div>");
 
 				console.log("GesGr.=" + stat.npmSize + " Byte/s=" + npmSizePerX + " kByte/s=" + npmSizePerX2 + " MByte/s=" + npmSizePerX3 + " Start=" + stat.t_start + " Ende=" + stat.t_end + " GesT=" + t_duration);
 
