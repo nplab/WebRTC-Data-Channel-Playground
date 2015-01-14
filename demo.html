@@ -16,49 +16,31 @@
 		<br>
 		NetPerfMeter
 		<br>
-		<input id="npmParameterSleepTXT">
+		<input id="npmParamSleep" value="100">
 		sleeptime
 		<br>
-		<input id="npmPackagecountTXT">
+		<input id="npmParamPktCount" value="100">
 		number of messages
 		<br>
-		<input id="packagesize">
+		<input id="npmParamPktSize" value="10">
 		size of one package (byte)
 		<br>
-		<button onclick="NetPerfMeter()">
-			Start
-		</button>
-		<button id="closeChannel">
-			close
+		<button id="startNPM" onclick="NetPerfMeter()">
+			Start NPM
 		</button>
 		<button id="createDataChannel">
-			create Data-Channel
+			Create DC
 		</button>
-		<h1>Chatlog - <span id="status"><span style="color:red">offline</span></span></h1>
-		<div id="chatlog"></div>
 		
 		<div id="channelStatus"></div>
+		<div id="log"></div>
 
 		<script>
 			/*
 			 BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
 			 */
 
-			dcCounter = 0;
-			$('#createDataChannel').click(function(){
-				createDataChannel(++dcCounter);
-			});
-			
-			$(".closeDataChannel").click(function(){				
-				console.log("Drückmich" + this.data('channelLabel'));
-				
-				closeDataChannel(this.data('channelLabel'));				
-			});
-						
-			$('#npmParameterSleepTXT').val(500);
-			$('#npmPackagecountTXT').val(10);
-			$('#packagesize').val(200);
-
+			var dcCounter = 0;
 			var t_duration = 0,
 			    t_startNewPackage = 0;
 			var messageencoder = 1;
@@ -84,7 +66,12 @@
 			var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
 			var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 			
-
+			// #### Click functions
+			$('#createDataChannel').click(function(){
+				createDataChannel(++dcCounter);
+			});
+			
+			// #### Functions
 			// generate a unique-ish string for storage in firebase
 			function id() {
 				return (Math.random() * 10000 + 10000 | 0).toString();
@@ -141,7 +128,7 @@
 			var packagesize = document.getElementById("packagesize");
 
 			// options for the PeerConnection
-			var server = {
+			var iceServer = {
 				iceServers : [{
 					url : "stun:23.21.150.121"
 				}, {
@@ -153,17 +140,9 @@
 				}]
 			};
 
-			var options = {
-				optional : [{
-					DtlsSrtpKeyAgreement : true
-				}, {
-					RtpDataChannels : true
-				} //required for Firefox
-				]
-			};
 
 			// create the PeerConnection
-			var pc = new PeerConnection(server, options);
+			var pc = new PeerConnection(iceServer);
 
 			pc.onicecandidate = function(e) {
 				// take the first candidate that isn't null
@@ -196,7 +175,7 @@
 				if (type === "offerer") {
 					$('#createDataChannel').prop("disabled", false);// Button "createDataChannel" anabled for offerer
 
-					createDataChannel(++dcCounter);
+					createDataChannel('init');
 					// create the offer SDP
 					pc.createOffer(function(offer) {
 						pc.setLocalDescription(offer);
@@ -221,7 +200,7 @@
 						bindEvents(channel);
 						channels[channel.label] = channel;
 						console.log('incoming datachannel');
-						$('#channelStatus').append('<div id="'+channel.label+'">'+channel.label+' <span class="status">connecting</span></div>');
+						$('#channelStatus').append('<div id="dc_'+channel.label+'">'+channel.label+' <span class="status">connecting</span></div>');
 					};
 
 					// answerer needs to wait for an offer before
@@ -244,22 +223,25 @@
 			//Create Datachannels
 			function createDataChannel(label) {
 				// offerer creates the data channel
-				var tempChannel = pc.createDataChannel(label, {});
+				
+				var tempChannel = pc.createDataChannel(label);
 				bindEvents(tempChannel);
-				channels[label] = tempChannel;
-				console.log("creating datachannel");
-				$('#channelStatus').append('<div id="'+label+'">'+label+' <span class="status">connecting</span></div>');
+				channels[tempChannel.label] = tempChannel;
+				console.log("creating datachannel - id: " + tempChannel.id + ', label:' + tempChannel.label);
+				$('#channelStatus').append('<div id="dc_'+tempChannel.label+'">'+tempChannel.label+' <span class="status">connecting</span></div>');
 			}
 			
 			function closeDataChannel(label) {
+				console.log('Channel ' + label +' - closing');
 				channels[label].close();
 			}
 
 			//
 			function NetPerfMeter() {
-				stat.npmSize = $('#packagesize').val();
-				stat.npmPackagecount = $('#npmPackagecountTXT').val();
-				stat.npmParameterSleep = npmParameterSleepTXT.value;
+				stat.npmSize = $('#npmParamPktSize').val();
+				stat.npmPackagecount = $('#npmParamPktCount').val();
+				stat.npmParameterSleep = $('npmParamSleep').val();
+				
 				var DataArray = new Array(1, stat.npmParameterSleep, stat.npmSize, stat.npmPackagecount);
 				var DataString = DataArray.join(";");
 
@@ -292,12 +274,12 @@
 			// bind the channel events
 			function bindEvents(channel) {
 				channel.onopen = function() {
-					$('#'+channel.label+' span.status').html('open <button onclick="closeDataChannel(\''+channel.label+'\');">close</button>');
-					console.log("Channel Open - Label:" + channel.label);
+					$('#dc_'+channel.label+' span.status').html('open <button onclick="closeDataChannel(\''+channel.label+'\');">close</button>');
+					console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
 				};
 
 				channel.onclose = function(e) {
-					$('#'+channel.label+' span.status').html(channel.readyState);
+					$('#dc_'+channel.label+' span.status').html(channel.readyState);
 					console.log("Channel Close");
 				};
 
@@ -326,10 +308,10 @@
 							stat.npmPackagecount 	= 	rxDataArray[3];
 
 							stat.t_start = new Date().getTime();
-							alert(stat.t_start);
+							//alert(stat.t_start);
 							break;
 						case 2:
-							alert(stat.t_start);
+							//alert(stat.t_start);
 							stat.t_end = new Date().getTime();
 
 							var returnArray = calculation(stat.npmSize, npmSizetemp, stat.t_start, stat.t_end, t_startNewPackage);
@@ -338,7 +320,7 @@
 							
 							stat.npmSize = stat.npmSize + npmSizetemp;
 							t_startNewPackage = new Date().getTime();
-							stat.t_counter++
+							stat.t_counter++;
 							if (stat.t_counter == stat.npmPackagecount) {
 								alert("test completes successfully");
 							}
@@ -347,24 +329,7 @@
 				};
 			}
 			
-			
 
-
-			// send a message the textbox throught
-			// the data channel for a chat program
-			function sendMessage() {
-				var msg = packagesize.value;
-				channel.send(msg);
-				$('div#chatlog').append("<div>Me: " + msg + "</div>");
-				packagesize.value = "";
-			}
-
-
-			$('#closeChannel').click(function() {
-				alert('zr');
-				channel.close();
-				channel2.close();
-			});
 
 			function calculation(size, sizetemp, start, end, startNewPackage){
 				stat.npmSize 		= parseInt(size);
@@ -390,7 +355,7 @@
 				//calculazion of the current Byte/s
 				npmSizePerX = (Math.round(((npmSizetemp * (1 / ((stat.t_end - t_startNewPackage) / 1000))) / 1024) * 1000)) / 1000;
 
-				$('div#chatlog').html("<div>current<br>" + npmSizePerX + " kByte/s<br>average<br>" + npmSizePerX2 + " kByte/s<br>" + npmSizePerX3 + " MByte/s</div>");
+				$('div#log').html("<div>current<br>" + npmSizePerX + " kByte/s<br>average<br>" + npmSizePerX2 + " kByte/s<br>" + npmSizePerX3 + " MByte/s</div>");
 
 				console.log("GesGr.=" + stat.npmSize + " Byte/s=" + npmSizePerX + " kByte/s=" + npmSizePerX2 + " MByte/s=" + npmSizePerX3 + " Start=" + stat.t_start + " Ende=" + stat.t_end + " GesT=" + t_duration);
 
