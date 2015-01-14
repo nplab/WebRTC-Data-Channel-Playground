@@ -108,17 +108,17 @@ function completion_callback(allRes, status) {
 function testDCPC() {
     test(function() {
         assert_true(!!testRTCPeerConnection, "RTCPeerConnection not available, musst use prefix");
-    }, "Check if RTCPeerConnection is available");
+    }, "testDCPC: Check if RTCPeerConnection is available");
 }
 
 function testDCPCMoz() {
     test(function() {
         assert_true(!!window.mozRTCPeerConnection, "You don't use Firefox or a too old version");
-    }, "Check if mozRTCPeerConnection (Firefox) is available");
+    }, "testDCPCMoz: Check if mozRTCPeerConnection (Firefox) is available");
 }
 
 function testDCPCWebkit() {
     test(function() {
         assert_true(!!window.webkitRTCPeerConnection, "You don't use Google/Opera or a too old version");
-    }, "Check if webkitRTCPeerConnection (Google/Opera) is available");
+    }, "testDCPCWebkit: Check if webkitRTCPeerConnection (Google/Opera) is available");
 }
