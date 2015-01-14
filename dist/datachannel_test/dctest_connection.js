@@ -45,7 +45,6 @@ var RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSession
 var iceServers = null;
 
 // Otherwise audio will be enabled (Deprecated)
-
  var constraints = {
  mandatory : {
  OfferToReceiveAudio : false,
