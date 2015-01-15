@@ -1,3 +1,5 @@
+var npmControlChannelCounter = 1;
+
 
 $('#npmControl button[name="toggleActive"]').click(function(){
 	//alert("click");
@@ -26,4 +28,21 @@ $('#npmControl ul.reliabilitySelect a').click(function(){
 		relInput.prop('disabled',false);
 	}
 	console.log('Methode gewählt:' + $(this).data('method'));
+});
+
+
+function addNpmControlRow() {
+	npmControlChannelCounter++;
+	var cloneRow = $('#npmControl tr.tr_clone').clone();
+	cloneRow.removeClass('tr_clone');
+	cloneRow.prop('id','npmControlC'+npmControlChannelCounter);
+	cloneRow.find('[name=toggleActive]').html(npmControlChannelCounter);
+	$('#npmControl tr').last().after(cloneRow);
+	
+}
+
+
+$('#npmControlAddChannel').click(function(){
+	console.log('adding row');
+	addNpmControlRow();
 });

@@ -85,7 +85,7 @@
 					<table class="table" id="npmControl">
 						<thead>
 							<tr>
-								<th class="col-md-1">#</th>
+								<th class="col-md-1"><span id="npmControlAddChannel" class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green;"></span></th>
 
 								<th class="col-md-2">sleep (ms)</th>
 								<th class="col-md-2">#-packets</th>
@@ -95,45 +95,10 @@
 						</thead>
 						<tbody>
 
-							<tr id="npmControlC1">
+							<tr id="npmControlC1" class="tr_clone">
 								<td>
 								<button type="button" name="toggleActive" class="btn btn-default">
 									1
-								</button></td>
-								<td>
-								<input class="form-control" name="paramSleep" value="0" size="4">
-								</td>
-								<td>
-								<input class="form-control" name="paramPktCount" value="100" size="4">
-								</td>
-								<td>
-								<input class="form-control" name="paramPktSize" value="200" size="4">
-								</td>
-								<td>
-								<div class="input-group">
-									<div class="input-group-btn">
-										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-											reliable <span class="caret"></span>
-										</button>
-										<ul class="dropdown-menu reliabilitySelect" role="menu">
-											<li>
-												<a href="#" data-method="default">reliable</a>
-											</li>
-											<li>
-												<a href="#" data-method="maxRetransmit">maxRetransmit</a>
-											</li>
-											<li>
-												<a href="#" data-method="maxTimeout">maxTimeout</a>
-											</li>
-										</ul>
-									</div><!-- /btn-group -->
-									<input type="text" class="form-control" name="paramReliable" size="4" aria-label="..." value="1" disabled="disabled">
-								</div><!-- /input-group --></td>
-							</tr>
-							<tr id="npmControlC2">
-								<td>
-								<button type="button" name="toggleActive" class="btn btn-default">
-									2
 								</button></td>
 								<td>
 								<input class="form-control" name="paramSleep" value="0" size="4">
@@ -202,7 +167,9 @@
 
 		<script type="text/javascript">
 			jQuery(document).ready(function($) {
-
+				for(i=1;i<5;i++) {
+					addNpmControlRow();
+				}
 			});
 
 		</script>
