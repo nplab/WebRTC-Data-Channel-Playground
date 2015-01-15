@@ -82,7 +82,7 @@
 			<div class="row">
 				<div class="col-md-6">
 					<h3>Netperfmeter Control</h3>
-					<table class="table">
+					<table class="table" id="npmControl">
 						<thead>
 							<tr>
 								<th class="col-md-1">#</th>
@@ -95,7 +95,7 @@
 						</thead>
 						<tbody>
 
-							<tr>
+							<tr id="npmControlC1">
 								<td><button type="button" class="btn btn-default">1</button></td>
 								<td>
 								<input class="form-control" name="paramSleep" value="0" size="4">
@@ -124,7 +124,7 @@
 											</li>
 										</ul>
 									</div><!-- /btn-group -->
-									<input type="text" class="form-control" size="4" aria-label="...">
+									<input type="text" class="form-control" name="paramReliable" size="4" aria-label="...">
 								</div><!-- /input-group --></td>
 							</tr>
 						</tbody>
@@ -159,7 +159,16 @@
 		<!-- /container -->
 		<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
 		<script type='text/javascript' src='http://code.jquery.com/jquery-2.1.3.min.js'></script>
+		<script src="dist/npmc.js"></script>
 		<script src="dist/npm.js"></script>
+		
+		<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			alert('test');
+		});
+
+		</script>
+		
 
 	</body>
 </html>
