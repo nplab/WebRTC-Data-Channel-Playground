@@ -86,7 +86,7 @@
 						<thead>
 							<tr>
 								<th class="col-md-1">#</th>
-								
+
 								<th class="col-md-2">sleep (ms)</th>
 								<th class="col-md-2">#-packets</th>
 								<th class="col-md-2">packetsize</th>
@@ -96,7 +96,10 @@
 						<tbody>
 
 							<tr id="npmControlC1">
-								<td><button type="button" class="btn btn-default">1</button></td>
+								<td>
+								<button type="button" name="toggleActive" class="btn btn-default">
+									1
+								</button></td>
 								<td>
 								<input class="form-control" name="paramSleep" value="0" size="4">
 								</td>
@@ -112,19 +115,54 @@
 										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 											reliable <span class="caret"></span>
 										</button>
-										<ul class="dropdown-menu" role="menu">
+										<ul class="dropdown-menu reliabilitySelect" role="menu">
 											<li>
-												<a href="#">reliable</a>
+												<a href="#" data-method="default">reliable</a>
 											</li>
 											<li>
-												<a href="#">maxRetransmits</a>
+												<a href="#" data-method="maxRetransmit">maxRetransmit</a>
 											</li>
 											<li>
-												<a href="#">maxTimeout</a>
+												<a href="#" data-method="maxTimeout">maxTimeout</a>
 											</li>
 										</ul>
 									</div><!-- /btn-group -->
-									<input type="text" class="form-control" name="paramReliable" size="4" aria-label="...">
+									<input type="text" class="form-control" name="paramReliable" size="4" aria-label="..." value="1" disabled="disabled">
+								</div><!-- /input-group --></td>
+							</tr>
+							<tr id="npmControlC2">
+								<td>
+								<button type="button" name="toggleActive" class="btn btn-default">
+									2
+								</button></td>
+								<td>
+								<input class="form-control" name="paramSleep" value="0" size="4">
+								</td>
+								<td>
+								<input class="form-control" name="paramPktCount" value="100" size="4">
+								</td>
+								<td>
+								<input class="form-control" name="paramPktSize" value="200" size="4">
+								</td>
+								<td>
+								<div class="input-group">
+									<div class="input-group-btn">
+										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+											reliable <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu reliabilitySelect" role="menu">
+											<li>
+												<a href="#" data-method="default">reliable</a>
+											</li>
+											<li>
+												<a href="#" data-method="maxRetransmit">maxRetransmit</a>
+											</li>
+											<li>
+												<a href="#" data-method="maxTimeout">maxTimeout</a>
+											</li>
+										</ul>
+									</div><!-- /btn-group -->
+									<input type="text" class="form-control" name="paramReliable" size="4" aria-label="..." value="1" disabled="disabled">
 								</div><!-- /input-group --></td>
 							</tr>
 						</tbody>
@@ -161,14 +199,13 @@
 		<script type='text/javascript' src='http://code.jquery.com/jquery-2.1.3.min.js'></script>
 		<script src="dist/npmc.js"></script>
 		<script src="dist/npm.js"></script>
-		
+
 		<script type="text/javascript">
-		jQuery(document).ready(function($) {
-			alert('test');
-		});
+			jQuery(document).ready(function($) {
+
+			});
 
 		</script>
-		
 
 	</body>
 </html>
