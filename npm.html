@@ -80,29 +80,69 @@
 			</button>
 
 			<div class="row">
-				<div class="col-md-1">
+				<div class="col-md-6">
 					<h3>Netperfmeter Control</h3>
 					<table class="table">
-						<tr>
-							<th>#</th>
-							<th>sleep (ms)</th>
-							<th>#-packets</th>
-							<th>packetsiez</th>
-						</tr>
+						<thead>
+							<tr>
+								<th class="col-md-1">#</th>
+								
+								<th class="col-md-2">sleep (ms)</th>
+								<th class="col-md-2">#-packets</th>
+								<th class="col-md-2">packetsize</th>
+								<th class="col-md-4">reliable</th>
+							</tr>
+						</thead>
+						<tbody>
+
+							<tr>
+								<td><button type="button" class="btn btn-default">1</button></td>
+								<td>
+								<input class="form-control" name="paramSleep" value="0" size="4">
+								</td>
+								<td>
+								<input class="form-control" name="paramPktCount" value="100" size="4">
+								</td>
+								<td>
+								<input class="form-control" name="paramPktSize" value="200" size="4">
+								</td>
+								<td>
+								<div class="input-group">
+									<div class="input-group-btn">
+										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+											reliable <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu" role="menu">
+											<li>
+												<a href="#">reliable</a>
+											</li>
+											<li>
+												<a href="#">maxRetransmits</a>
+											</li>
+											<li>
+												<a href="#">maxTimeout</a>
+											</li>
+										</ul>
+									</div><!-- /btn-group -->
+									<input type="text" class="form-control" size="4" aria-label="...">
+								</div><!-- /input-group --></td>
+							</tr>
+						</tbody>
 					</table>
+
 				</div>
-				<div class="col-md-1">
+				<div class="col-md-6">
 					<h3>Data-Channel Control</h3>
 					<table class="table" id="dcControl">
 						<thead>
-						<tr>
-							<th>id</th>
-							<th>status</th>
-							<th>label</th>
-							<th>pkts-rx</th>
-							<th>pkts-tx</th>
-							<th>action</th>
-						</tr>
+							<tr>
+								<th>id</th>
+								<th>status</th>
+								<th>label</th>
+								<th>pkts-rx</th>
+								<th>pkts-tx</th>
+								<th>action</th>
+							</tr>
 						</thead>
 					</table>
 				</div>

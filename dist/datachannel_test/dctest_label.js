@@ -149,8 +149,9 @@ function testDC_label004() {
 function testDC_label005() {
     var label = generateData(16);
     label = label.substring(0, (label.length - 1));
-    var test = async_test("testDC_label005: Set up a DataChannel with a label of length" +  (label.length + 1) / 1024 + " KB minus 1 Byte - check the label on both peers (should be maximum length)", {timeout: 5000});
+    var test = async_test("testDC_label005: Set up a DataChannel with a label of length 65535 Byte - check the label on both peers (should be maximum length)", {timeout: 5000});
     test.step(function() {
+    	assert_equals(label.length, 65535, "Wrong label length ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         try {
@@ -184,28 +185,15 @@ function testDC_label005() {
 // FIXME @W3C what shoul the user agent do, throw an error...
 function testDC_label006() {
     var label = generateData(16);
-    var test = async_test("testDC_label006: Set up a DataChannel with a label of length " +  label.length / 1024 + " KB label length - check the label on both peers", {timeout: 5000});
+    var test = async_test("testDC_label006: Create a DataChannel with a label of length 65536 Byte label length - check if an error is thrown", {timeout: 5000});
     test.step(function() {
+    	assert_equals(label.length, 65536, "Wrong label length ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel(label);
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-            test.done();
-        }
-        createIceCandidatesAndOffer();
-        remotePeerConnection.ondatachannel = test.step_func(function(e) {
-            remoteChannel = e.channel;
-            remoteChannel.onopen = test.step_func(function() {
-                // in all cases the label of the created channel is set correct
-                assert_equals(localChannel.label, label, "Wrong label ");
-                //assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
-                assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label, with wrong length ");
-                test.done();
-            });
-        });
-
+        
+        assert_throws(null, function(){
+        	localChannel = localPeerConnection.createDataChannel(label);
+        }, "no error was thrown ");
     });
 }
 
