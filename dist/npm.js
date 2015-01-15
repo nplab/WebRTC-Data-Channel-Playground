@@ -23,9 +23,8 @@ var npmSizetemp;
 var npmPaket;
 var sentPktCounter = 0;
 var stats = new Array();
-
-
-
+var parameters = new Array();
+var labelButtonToggle = false;
 
 // get a reference to our FireBase database and child element: rooms
 var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
@@ -256,9 +255,35 @@ function funct() {
 };
 
 //
+function parseParameters(){
+	var tempCounter = 0;
+
+	$('#npmControl > tbody > tr').each(function(){
+		parameters[tempCounter] = {
+
+			active: 		$(this).find('button[name="toggleActive"]').hasClass("btn-primary"),
+			pktSize: 		$(this).find('input[name="paramPktSize"]').val(),
+			pktCount: 		$(this).find('input[name="paramPktCount"]').val(),
+			sleep: 			$(this).find('input[name="paramSleep"]').val(),
+			reliableMethode:$(this).find('button.dropdown-toggle').data('method'),
+			reliableParam:  $(this).find('input[name="paramReliable"]').val()
+		};
+		console.log(parameters[tempCounter]);
+		tempCounter++;
+		
+	});
+}
+
+//
 function NetPerfMeter() {	
 	//console.log("Channel test. Channel: " + channels["init"].label + ". Status: " + channels["init"].readyState + ".");
 	var channelNo = -1;
+
+	parseParameters();
+
+	stat.npmSize 			= parameters[2].pktSize;
+	stat.npmPackagecount 	= parameters[2].pktCount;
+	stat.npmParameterSleep 	= parameters[2].sleep;
 
 	// for (var i = 1; i < channels.length; i++) {		
 	// 	console.log("Channel test. Channel: " + channels[i].label + ". Status: " + channels[i].readyState + ".");
@@ -273,10 +298,6 @@ function NetPerfMeter() {
 		}
 	}
 	if(channelNo == -1){alert("No channel found"); return;}
-
-	stat.npmSize = $('#npmParamPktSize').val();
-	stat.npmPackagecount = $('#npmParamPktCount').val();
-	stat.npmParameterSleep = parseInt($('#npmParamSleep').val());
 
 	var DataArray = new Array(1, stat.npmParameterSleep, stat.npmSize, stat.npmPackagecount);
 	var DataString = DataArray.join(";");

@@ -26,7 +26,7 @@ $('#npmControl ul.reliabilitySelect a').click(function(event){
 		relInput.prop('disabled',false);
 	}
 	console.log('Methode gewählt:' + $(this).data('method'));
-	
+	console.log(toggleButton.data('method'));
 	event.preventDefault();
 });
 
