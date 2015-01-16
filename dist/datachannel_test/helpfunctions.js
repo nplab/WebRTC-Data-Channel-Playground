@@ -68,6 +68,15 @@ function generateLinearData(size) {
     return s;
 }
 
+function generateLinearDataChar(character, length) {
+	var string = "";
+	for(var i=0; i < length; i++) {
+		string += character;
+	}
+	
+	return string;
+}
+
 /**
  * Returns the Byte count from a string 
  * @param {Object} str

@@ -139,6 +139,14 @@ $('button#btnTestStartSelected').click(function() {
     }
 });
 
+// Dropdown - select Testgroup
+$('ul#testGroupSelect li a').click(function(event){
+	console.log('selecting: '+ $(this).data("testgroup"));
+	$("#testlist INPUT[type='checkbox']").prop('checked',false);
+	$("#testlist INPUT[type='checkbox'][value^='"+$(this).data('testgroup')+"']").prop('checked',true);
+	event.preventDefault();
+});
+
 // Button - invert selection
 $('button#btnTestSelectOpposite').click(function(){	
 	$("#testlist INPUT[type='checkbox']").each( function() {
