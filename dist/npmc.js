@@ -36,6 +36,7 @@ function addNpmControlRow() {
 	var cloneRow = $('#npmControl tr.tr_clone').clone(true);
 	cloneRow.removeClass('tr_clone');
 	cloneRow.prop('id','npmControlC'+npmControlChannelCounter);
+	cloneRow.find('[name=toggleActive]').val('o'+npmControlChannelCounter);
 	cloneRow.find('[name=toggleActive]').html(npmControlChannelCounter);
 	$('#npmControl tr').last().after(cloneRow);
 	

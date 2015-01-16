@@ -22,6 +22,7 @@ var messageencoder = 1;
 var npmSizetemp;
 var npmPaket;
 var sentPktCounter = 0;
+var activeChannelCount = new Array();
 var stats = new Array();
 var parameters = new Array();
 var labelButtonToggle = false;
@@ -146,7 +147,6 @@ function connect() {
 	if (type === "offerer") {
 		$('#createDataChannel').prop("disabled", false);
 		// Button "createDataChannel" anabled for offerer
-
 		createDataChannel('init');
 		// create the offer SDP
 		pc.createOffer(function(offer) {
@@ -171,9 +171,14 @@ function connect() {
 		pc.ondatachannel = function(e) {
 			var channel = e.channel;
 			bindEvents(channel);
-			channels[channel.label] = channel;
+
 			console.log('incoming datachannel');
-			stats[channel.label] = {
+
+
+			channels[channel.label] = new Array();
+			channels[channel.label]['channel'] = channel;
+			
+			channels[channel.label]['stats'] = {
 				t_start 			: 0,
 				t_end 				: 0,
 				npmPktRx 			: 0,
@@ -208,6 +213,11 @@ function connect() {
 //Create Datachannels
 function createDataChannel(label) {
 	// 	
+
+	if(channels[label] === undefined) {
+		channels[label] = new Array();
+	}
+
 	var dataChannelOptions;
 	if(parameters[label] !== undefined){
 		switch(parameters[label].reliableMethode){
@@ -232,9 +242,10 @@ function createDataChannel(label) {
 	// offerer creates the data channel
 	var tempChannel = pc.createDataChannel(label, dataChannelOptions);
 	bindEvents(tempChannel);
-	channels[tempChannel.label] = tempChannel;
+	
+	channels[tempChannel.label]['channel'] = tempChannel;
 
-	stats[tempChannel.label] = {
+	channels[tempChannel.label]['stats'] = {
 		t_start 			: 0,
 		t_end 				: 0,
 		npmPktRx 			: 0,
@@ -259,7 +270,7 @@ function NpmSend(x, y) {
 	console.log("Senden - sleep" + stat.npmParameterSleep);
 	try {
 
-		channels[x].send(y);
+		channels[x][channel].send(y);
 		sentPktCounter++;
 		if (sentPktCounter < stat.npmPackagecount) {
 			setTimeout(function(){
@@ -278,68 +289,69 @@ function funct() {
 
 //
 function parseParameters(){
-	var tempCounter = 0;
+	
 
-	$('#npmControl > tbody > tr').each(function(){
-		parameters[tempCounter] = {
+	$('#npmControl > tbody > tr').each(function(){	
+		parameters[$(this).find('button[name="toggleActive"]').val()] = {
 
 			active: 		$(this).find('button[name="toggleActive"]').hasClass("btn-primary"),
+			label:  		$(this).find('button[name="toggleActive"]').val(),
 			pktSize: 		$(this).find('input[name="paramPktSize"]').val(),
 			pktCount: 		$(this).find('input[name="paramPktCount"]').val(),
 			sleep: 			$(this).find('input[name="paramSleep"]').val(),
 			reliableMethode:$(this).find('button.dropdown-toggle').data('method'),
 			reliableParam:  $(this).find('input[name="paramReliable"]').val()
-		};
-		console.log(parameters[tempCounter]);
-		tempCounter++;
 		
+		};
+		console.log(parameters[$(this).find('button[name="toggleActive"]').val()]);
 	});
 }
 
 //
 function NetPerfMeter() {	
 	//console.log("Channel test. Channel: " + channels["init"].label + ". Status: " + channels["init"].readyState + ".");
-	var channelNo = -1;
+	//var channelNo = -1;
+	var accc = 0;
 
 	parseParameters();
 
 	for(var key in parameters){
 		if(parameters[key].active == true){
 			createDataChannel(key);
+			activeChannelCount[accc] = key;
+			accc++;
 		}
 	}
+	
+	for(var i = 0; i < activeChannelCount.length; i++){
+		stat.npmSize 			= parameters[activeChannelCount[i]].pktSize;
+		stat.npmPackagecount 	= parameters[activeChannelCount[i]].pktCount;
+		stat.npmParameterSleep 	= parameters[activeChannelCount[i]].sleep;
 
-	stat.npmSize 			= parameters[2].pktSize;
-	stat.npmPackagecount 	= parameters[2].pktCount;
-	stat.npmParameterSleep 	= parameters[2].sleep;
-
-	// for (var i = 1; i < channels.length; i++) {		
-	// 	console.log("Channel test. Channel: " + channels[i].label + ". Status: " + channels[i].readyState + ".");
-	// 	if(channels[i].readyState == "open"){channelNo = i; break;}
-	// };
-
-	for(var key in channels) {
-		console.log("Channel test. Channel: " + channels[key].label + ". Status: " + channels[key].readyState + ".");
-		if(channels[key].readyState == "open") {
-			channelNo = key;
-			break;
+		/*for(var key in channels) {
+			console.log("Channel test. Channel: " + channels[key].label + ". Status: " + channels[key].readyState + ".");
+			if(channels[key].readyState == "open") {
+				channelNo = key;
+				break;
+			}
 		}
+		if(channelNo == -1){alert("No channel found"); return;}*/
+
+		var DataArray = new Array(1, stat.npmParameterSleep, stat.npmSize, stat.npmPackagecount);
+		var DataString = DataArray.join(";");
+
+		channels[activeChannelCount[i]]["channel"].send(DataString);
+		sentPktCounter = 0;
+
+		setTimeout(funct, stat.npmParameterSleep);
+
+		npmPaket = "a";
+		for (var j = 0; j < stat.npmSize; j++) {
+			npmPaket += "a";
+		}
+		NpmSend(activeChannelCount[i], npmPaket);		
 	}
-	if(channelNo == -1){alert("No channel found"); return;}
 
-	var DataArray = new Array(1, stat.npmParameterSleep, stat.npmSize, stat.npmPackagecount);
-	var DataString = DataArray.join(";");
-
-	channels[channelNo].send(DataString);
-	sentPktCounter = 0;
-
-	setTimeout(funct, stat.npmParameterSleep);
-
-	npmPaket = "a";
-	for (var j = 0; j < stat.npmSize; j++) {
-		npmPaket += "a";
-	}
-	NpmSend(channelNo, npmPaket);
 }
 
 // bind the channel events
@@ -400,7 +412,7 @@ function bindEvents(channel) {
 				t_startNewPackage = new Date().getTime();
 				stats[tempChannelLabel].npmPktRx++;
 				if (stats[tempChannelLabel].npmPktRx == stats[tempChannelLabel].npmPackagecount) {
-					alert("test completes successfully");
+					alert("test completes successfully. Channel: " + e.currentTarget.label);
 				}
 				break;
 		}
