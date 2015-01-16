@@ -6,7 +6,7 @@
 var stat = {
 	t_start 			: 0,
 	t_end 				: 0,
-	t_counter 			: 0,
+	npmPktRx 			: 0,
 	npmSize 			: 0,
 	npmParameterSleep 	: 500,
 	npmPackagecount 	: 10,
@@ -85,6 +85,7 @@ if (!ROOM) {
 
 if (type === "answerer") {
 	$('#link').append(" (answerer)");
+	$('.controlContainer').hide();
 };
 
 $('#link').append(" - <a href='#" + ROOM + "'>" + ROOM + "</a>");
@@ -127,6 +128,10 @@ pc.onicecandidate = function(e) {
 	// send our ICE candidate
 	send(ROOM, "candidate:" + type, JSON.stringify(e.candidate));
 };
+
+pc.onsignalingstatechange  = function(event) {
+	updatePeerConnectionState(event);
+}
 
 // constraints on the offer SDP.
 var constraints = {};
@@ -171,7 +176,7 @@ function connect() {
 			stats[channel.label] = {
 				t_start 			: 0,
 				t_end 				: 0,
-				t_counter 			: 0,
+				npmPktRx 			: 0,
 				npmSize 			: 0,
 				npmParameterSleep 	: 500,
 				npmPackagecount 	: 10,
@@ -179,6 +184,7 @@ function connect() {
 				npm1SizePerX2		: 0,
 				npm1SizePerX3		: 0,
 			};
+			updateChannelState();
 			$('#channelStatus').append('<div id="dc_' + channel.label + '">' + channel.label + ' <span class="status">connecting</span></div>');
 		};
 
@@ -201,21 +207,37 @@ function connect() {
 
 //Create Datachannels
 function createDataChannel(label) {
-	// 
-	// var dataChannelOptions = {
-	// 	maxRetransmitTime	: ,
-	// 	maxRetransmits		: ,
-	// }
+	// 	
+	var dataChannelOptions;
+	if(parameters[label] !== undefined){
+		switch(parameters[label].reliableMethode){
+			case "reliable":
+				dataChannelOptions = {
+				}
+				break;
+			case "maxRetransmit":
+				dataChannelOptions = {
+					maxRetransmits		: parameters[label].reliableParam,
+				}
+				break;
+			case "maxTimeout":
+				dataChannelOptions = {
+					maxRetransmitTime	: parameters[label].reliableParam,
+				}
+				break;
+		}
+	}
+		
 
 	// offerer creates the data channel
-	var tempChannel = pc.createDataChannel(label);
+	var tempChannel = pc.createDataChannel(label, dataChannelOptions);
 	bindEvents(tempChannel);
 	channels[tempChannel.label] = tempChannel;
 
 	stats[tempChannel.label] = {
 		t_start 			: 0,
 		t_end 				: 0,
-		t_counter 			: 0,
+		npmPktRx 			: 0,
 		npmSize 			: 0,
 		npmParameterSleep 	: 500,
 		npmPackagecount 	: 10,
@@ -223,7 +245,7 @@ function createDataChannel(label) {
 		npm1SizePerX2		: 0,
 		npm1SizePerX3		: 0,
 	};
-
+	updateChannelState();
 	console.log("creating datachannel - id: " + tempChannel.id + ', label:' + tempChannel.label);
 	$('#channelStatus').append('<div id="dc_' + tempChannel.label + '">' + tempChannel.label + ' <span class="status">connecting</span></div>');
 }
@@ -281,6 +303,12 @@ function NetPerfMeter() {
 
 	parseParameters();
 
+	for(var key in parameters){
+		if(parameters[key].active == true){
+			createDataChannel(key);
+		}
+	}
+
 	stat.npmSize 			= parameters[2].pktSize;
 	stat.npmPackagecount 	= parameters[2].pktCount;
 	stat.npmParameterSleep 	= parameters[2].sleep;
@@ -319,11 +347,13 @@ function bindEvents(channel) {
 	channel.onopen = function() {
 		$('#dc_' + channel.label + ' span.status').html('open <button onclick="closeDataChannel(\'' + channel.label + '\');">close</button>');
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
+		updateChannelState();
 	};
 
 	channel.onclose = function(e) {
 		$('#dc_' + channel.label + ' span.status').html(channel.readyState);
 		console.log("Channel Close");
+		updateChannelState();
 	};
 
 	window.onbeforeunload = function() {
@@ -345,7 +375,7 @@ function bindEvents(channel) {
 		switch(messageencoder) {
 			case 1:
 				stats[tempChannelLabel].npmSizePerX = 0;
-				stats[tempChannelLabel].t_counter = 0;
+				stats[tempChannelLabel].npmPktRx = 0;
 				stats[tempChannelLabel].npmPackagecount = 0;
 				var rxDataString = rxData;
 				var rxDataArray = rxDataString.split(";");
@@ -368,12 +398,13 @@ function bindEvents(channel) {
 
 				stats[tempChannelLabel].npmSize = stats[tempChannelLabel].npmSize + npmSizetemp;
 				t_startNewPackage = new Date().getTime();
-				stats[tempChannelLabel].t_counter++;
-				if (stats[tempChannelLabel].t_counter == stats[tempChannelLabel].npmPackagecount) {
+				stats[tempChannelLabel].npmPktRx++;
+				if (stats[tempChannelLabel].npmPktRx == stats[tempChannelLabel].npmPackagecount) {
 					alert("test completes successfully");
 				}
 				break;
 		}
+		updateChannelState();
 	};
 }
 
@@ -401,7 +432,7 @@ function calculation(size, sizetemp, start, end, startNewPackage, channelLabel) 
 	//calculazion of the current Byte/s
 	stats[channelLabel].npmSizePerX = (Math.round(((npmSizetemp * (1 / ((stats[channelLabel].t_end - t_startNewPackage) / 1000))) / 1024) * 1000)) / 1000;
 
-	$('div#log').html("<div>current<br>" + stats[channelLabel].npmSizePerX + " " + (stats[channelLabel].t_counter + 1) + " kByte/s<br>average<br>" + stats[channelLabel].npmSizePerX2 + " kByte/s<br>" + stats[channelLabel].npmSizePerX3 + " MByte/s</div>");
+	$('div#log').html("<div>current<br>" + stats[channelLabel].npmSizePerX + " " + (stats[channelLabel].npmPktRx + 1) + " kByte/s<br>average<br>" + stats[channelLabel].npmSizePerX2 + " kByte/s<br>" + stats[channelLabel].npmSizePerX3 + " MByte/s</div>");
 
 	console.log("GesGr.=" + stats[channelLabel].npmSize + " Byte/s=" + stats[channelLabel].npmSizePerX + " kByte/s=" + stats[channelLabel].npmSizePerX2 + " MByte/s=" + stats[channelLabel].npmSizePerX3 + " Start=" + stats[channelLabel].t_start + " Ende=" + stats[channelLabel].t_end + " GesT=" + t_duration);
 

@@ -47,3 +47,19 @@ $('#npmControlAddChannel').click(function(event){
 	addNpmControlRow();
 	event.preventDefault();
 });
+
+
+function updatePeerConnectionState(event) {
+	console.log('updatePeerConnectionState');
+	return true;
+}
+
+function updateChannelState(event) {
+	console.log('updateChannelState');
+	return true;
+}
+
+function updateChannelStatistics(event) {
+	console.log('updateChannelStatistics');
+	return true;
+}
