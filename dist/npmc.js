@@ -66,7 +66,7 @@ function updateChannelState(event) {
 			if(value.channel.readyState === 'open') {
 				var actionHTML = '<button class="btn-default btn" onclick="closeDataChannel(\'' + value.channel.label + '\');">close</button>';
 			}
-			$('table#dcStatus tbody').append('<tr><td>'+ value.channel.id + '</td><td>' + value.channel.readyState + '</td><td>' + value.channel.label + '</td><td></td><td></td><td>'+actionHTML + '</td></tr>');
+			$('table#dcStatus tbody').append('<tr><td>'+ value.channel.id + '</td><td>' + value.channel.readyState + '</td><td>' + value.channel.label + '</td><td>' + value.statistics.npmPktRx + '</td><td>' + value.statistics.npmPktTx + '</td><td>'+actionHTML + '</td></tr>');
 	});
 	
 	

@@ -6,6 +6,9 @@ var dcCounter = 0;
 var activeChannelCount = new Array();
 var parameters = {};
 var labelButtonToggle = false;
+var t_startNewPackage = 0;
+var offerer = false;
+var npmSizetemp = 0;
 
 // get a reference to our FireBase database and child element: rooms
 var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
@@ -61,7 +64,8 @@ if (!ROOM) {
 
 if (type === "answerer") {
 	$('#link').append(" (answerer) - " + ROOM);
-	$('.controlContainer').hide();
+	$('div.npmControl').hide();
+	$('div.npmStatus').removeClass('col-md-6').addClass('col-md-12');
 };
 
 // options for the PeerConnection
@@ -117,6 +121,7 @@ connect();
 // start start peer connection
 function connect() {
 	if (type === "offerer") {
+		offerer = true;
 		$('#createDataChannel').prop("disabled", false);
 		// Button "createDataChannel" anabled for offerer
 		createDataChannel('init');
@@ -136,6 +141,7 @@ function connect() {
 		console.log("creating offer");
 
 	} else {
+		offerer = false;
 		$('#createDataChannel').prop("disabled", true);
 		// Button "createDataChannel" disabled for answerer
 
@@ -153,6 +159,9 @@ function connect() {
 					t_start 			: 0,
 					t_end 				: 0,
 					npmPktRx 			: 0,
+					npmPktTx			: 0,
+					npmBytesRx 			: 0,
+					npmBytesTx			: 0,
 					npmSize 			: 0,
 					npmParameterSleep 	: 500,
 					npmPackagecount 	: 10,
@@ -162,7 +171,6 @@ function connect() {
 				}
 			};
 			updateChannelState();
-			$('#channelStatus').append('<div id="dc_' + channel.label + '">' + channel.label + ' <span class="status">connecting</span></div>');
 		};
 
 		// answerer needs to wait for an offer before
@@ -217,6 +225,9 @@ function createDataChannel(label) {
 			t_start 			: 0,
 			t_end 				: 0,
 			npmPktRx 			: 0,
+			npmPktTx			: 0,
+			npmBytesRx 			: 0,
+			npmBytesTx			: 0,
 			npmSize 			: 0,
 			npmParameterSleep 	: 500,
 			npmPackagecount 	: 10,
@@ -234,22 +245,26 @@ function closeDataChannel(label) {
 	channels[label].channel.close();
 }
 
-function NpmSend(x, y) {
-	console.log("Senden - sleep" + stat.npmParameterSleep);
+function NpmSend(label, message) {
+	console.log("datachannel send - label:" + label + ' - sleep:' + parameters[label].sleep);
 	try {
-
-		channels[x][channel].send(y);
-		sentPktCounter++;
-		if (sentPktCounter < stat.npmPackagecount) {
+		channels[label].channel.send(message);
+		//channels[activeChannelCount[i]].statistics.npmBytesTx += message.length;
+		if (channels[label].statistics.npmPktTx <= parameters[label].pktCount) {
+			channels[label].statistics.npmPktTx++;
 			setTimeout(function(){
-				NpmSend(x,y);
-			}, stat.npmParameterSleep);
+				NpmSend(label,message);
+			}, parameters[label].sleep);
+		} else {
+			alert(channels[activeChannelCount[i]].statistics.npmBytesTx);
+			channels[label].channel.close();
 		}
 	} catch(e) {
 		alert("Test Aborted!");
 		console.log(e);
 		return;
 	}
+	updateChannelState();
 };
 
 function funct() {
@@ -271,55 +286,47 @@ function parseParameters(){
 			reliableParam:  $(this).find('input[name="paramReliable"]').val()
 		
 		};
-		console.log(parameters[$(this).find('button[name="toggleActive"]').val()]);
 	});
 }
 
 //
 function NetPerfMeter() {	
-	//console.log("Channel test. Channel: " + channels["init"].label + ". Status: " + channels["init"].readyState + ".");
-	//var channelNo = -1;
+	var channelNo = -1;
 	var accc = 0;
 
 	parseParameters();
 
 	for(var key in parameters){
-		if(parameters[key].active == true){
-			createDataChannel(key);
-			activeChannelCount[accc] = key;
-			accc++;
+		if (parameters.hasOwnProperty(key)) {
+			if(parameters[key].active == true){
+				createDataChannel(key);
+				activeChannelCount[accc] = key;
+				accc++;
+			}
 		}
 	}
 	
-	// for(var i = 0; i < activeChannelCount.length; i++){
-		// stat.npmSize 			= parameters[activeChannelCount[i]].pktSize;
-		// stat.npmPackagecount 	= parameters[activeChannelCount[i]].pktCount;
-		// stat.npmParameterSleep 	= parameters[activeChannelCount[i]].sleep;
-// 
-		// /*for(var key in channels) {
-			// console.log("Channel test. Channel: " + channels[key].label + ". Status: " + channels[key].readyState + ".");
-			// if(channels[key].readyState == "open") {
-				// channelNo = key;
-				// break;
-			// }
-		// }
-		// if(channelNo == -1){alert("No channel found"); return;}*/
-// 
-		// var DataArray = new Array(1, stat.npmParameterSleep, stat.npmSize, stat.npmPackagecount);
-		// var DataString = DataArray.join(";");
-// 
-		// channels[activeChannelCount[i]]["channel"].send(DataString);
-		// sentPktCounter = 0;
-// 
-		// setTimeout(funct, stat.npmParameterSleep);
-// 
-		// npmPaket = "a";
-		// for (var j = 0; j < stat.npmSize; j++) {
-			// npmPaket += "a";
-		// }
-		// NpmSend(activeChannelCount[i], npmPaket);		
-	// }
+	
+}
+//
+function netPerfMeterRunByTrigger(label){
 
+
+	for(var i = 0; i < activeChannelCount.length; i++){			
+		if(activeChannelCount[i] == label) {
+			var DataArray = new Array(1, parameters[activeChannelCount[i]].sleep, parameters[activeChannelCount[i]].pktSize, parameters[activeChannelCount[i]].pktCount);
+			var DataString = DataArray.join(";");
+			channels[activeChannelCount[i]].channel.send(DataString);
+			channels[activeChannelCount[i]].statistics.npmBytesTx = (1 + parameters[activeChannelCount[i]].sleep.length + parameters[activeChannelCount[i]].pktSize.length + parameters[activeChannelCount[i]].pktCount.length);
+			
+			npmPaket = "";
+			for (var j = 0; j < parameters[activeChannelCount[i]].pktSize; j++) {
+				npmPaket += "a";
+			}
+			NpmSend(activeChannelCount[i], npmPaket);
+		}
+
+	}
 }
 
 // bind the channel events
@@ -327,6 +334,9 @@ function bindEvents(channel) {
 	channel.onopen = function() {
 		console.log("datachannel opened - label:" + channel.label + ', ID:' + channel.id);
 		updateChannelState();
+		if(offerer == true){
+			netPerfMeterRunByTrigger(channel.label);
+		}
 	};
 
 	channel.onclose = function(e) {
@@ -339,80 +349,89 @@ function bindEvents(channel) {
 	};
 
 	channel.onmessage = function(e) {
-		rxData = e.data.toString();
-		console.log("Message for "+e.currentTarget.label+" - content:"+rxData);
-		var tempChannelLabel = e.currentTarget.label;
-		var rxnpmPaketTemp = rxData.split(";");
-
-		if (rxnpmPaketTemp[0] == 1) {
-			//alert("start test");
-			messageencoder = 1;
-		} else
-			messageencoder = 2;
-
-		switch(messageencoder) {
-			case 1:
-				stats[tempChannelLabel].npmSizePerX = 0;
-				stats[tempChannelLabel].npmPktRx = 0;
-				stats[tempChannelLabel].npmPackagecount = 0;
-				var rxDataString = rxData;
-				var rxDataArray = rxDataString.split(";");
-				stats[tempChannelLabel].npmParameterSleep = parseInt(rxDataArray[1]);
-				console.log(stats[tempChannelLabel].npmParameterSleep);
-				stats[tempChannelLabel].npmSize = parseInt(rxDataArray[2]);
-				npmSizetemp = stats[tempChannelLabel].npmSize;
-				stats[tempChannelLabel].npmPackagecount = rxDataArray[3];
-
-				stats[tempChannelLabel].t_start = new Date().getTime();
-				//alert(stats[tempChannelLabel].t_start);
-				break;
-			case 2:
-				//alert(stats[tempChannelLabel].t_start);
-				stats[tempChannelLabel].t_end = new Date().getTime();
-
-				var returnArray = calculation(stats[tempChannelLabel].npmSize, npmSizetemp, stats[tempChannelLabel].t_start, stats[tempChannelLabel].t_end, t_startNewPackage, tempChannelLabel);
-				stats[tempChannelLabel].npmSize = returnArray[0];
-				npmSizetemp = returnArray[1];
-
-				stats[tempChannelLabel].npmSize = stats[tempChannelLabel].npmSize + npmSizetemp;
-				t_startNewPackage = new Date().getTime();
-				stats[tempChannelLabel].npmPktRx++;
-				if (stats[tempChannelLabel].npmPktRx == stats[tempChannelLabel].npmPackagecount) {
-					alert("test completes successfully. Channel: " + e.currentTarget.label);
-				}
-				break;
+		if(offerer == false){
+			answererOnMessage(e);
 		}
 		updateChannelState();
 	};
 }
 
+
+function answererOnMessage(e){		
+	rxData = e.data.toString();
+	console.log("Message for "+e.currentTarget.label + " - content:" + rxData.length);
+	var tempChannelLabel = e.currentTarget.label;
+	var rxnpmPaketTemp = rxData.split(";");
+
+	if (rxnpmPaketTemp[0] == 1) {
+		messageencoder = 1;
+	} else
+		messageencoder = 2;
+
+	switch(messageencoder) {
+		case 1:
+			channels[tempChannelLabel].statistics.npmSizePerX 		= 0; 
+			channels[tempChannelLabel].statistics.npmPktRx 			= 0; 
+			channels[tempChannelLabel].statistics.npmPackagecount 	= 0;
+			
+			var rxDataString = rxData;
+			var rxDataArray = rxDataString.split(";");
+			
+			channels[tempChannelLabel].statistics.npmParameterSleep 	= parseInt(rxDataArray[1]);
+			channels[tempChannelLabel].statistics.npmSize 				= parseInt(rxDataArray[2]);
+			npmSizetemp = channels[tempChannelLabel].statistics.npmSize;
+			channels[tempChannelLabel].statistics.npmPackagecount 		= rxDataArray[3];
+
+			channels[tempChannelLabel].statistics.t_start = new Date().getTime();
+			break;
+		case 2:
+			channels[tempChannelLabel].statistics.t_end = new Date().getTime();
+
+			var returnArray	= 	calculation(
+									channels[tempChannelLabel].statistics.npmSize, 
+									npmSizetemp, 
+									channels[tempChannelLabel].statistics.t_start, 
+									channels[tempChannelLabel].statistics.t_end, 
+									t_startNewPackage, 
+									tempChannelLabel
+								);
+			channels[tempChannelLabel].statistics.npmSize = returnArray[0];
+			npmSizetemp = returnArray[1];
+
+			channels[tempChannelLabel].statistics.npmSize = channels[tempChannelLabel].statistics.npmSize + npmSizetemp;
+			t_startNewPackage = new Date().getTime();
+			channels[tempChannelLabel].statistics.npmPktRx++;
+			break;
+	}
+}
+
 function calculation(size, sizetemp, start, end, startNewPackage, channelLabel) {
-	stats[channelLabel].npmSize = parseInt(size);
+	channels[channelLabel].statistics.npmSize = parseInt(size);
 	npmSizetemp = parseInt(sizetemp);
-	stats[channelLabel].t_start = parseInt(start);
-	stats[channelLabel].t_end = parseInt(end);
+	channels[channelLabel].statistics.t_start = parseInt(start);
+	channels[channelLabel].statistics.t_end = parseInt(end);
 	t_startNewPackage = parseInt(startNewPackage);
 
 	//t_duration musst > 0
-	t_duration = stats[channelLabel].t_end - stats[channelLabel].t_start;
+	t_duration = channels[channelLabel].statistics.t_end - channels[channelLabel].statistics.t_start;
 	if (t_duration < 1)
 		t_duration = 1;
 
 	//calculate the average of Byte/s
-	stats[channelLabel].npmSizePerX = parseFloat((stats[channelLabel].npmSize * (1 / (t_duration / 1000))) / 1024);
-	stats[channelLabel].npmSizePerX = parseFloat(stats[channelLabel].npmSizePerX * 1000);
-	stats[channelLabel].npmSizePerX2 = Math.round(stats[channelLabel].npmSizePerX);
-	stats[channelLabel].npmSizePerX2 = stats[channelLabel].npmSizePerX2 / 1000;
-	stats[channelLabel].npmSizePerX3 = (stats[channelLabel].npmSizePerX2 / 1024) * 1000000;
-	stats[channelLabel].npmSizePerX3 = Math.round(stats[channelLabel].npmSizePerX3);
-	stats[channelLabel].npmSizePerX3 = stats[channelLabel].npmSizePerX3 / 1000000;
+	channels[channelLabel].statistics.npmSizePerX 	= parseFloat((channels[channelLabel].statistics.npmSize * (1 / (t_duration / 1000))) / 1024);
+	channels[channelLabel].statistics.npmSizePerX 	= parseFloat(channels[channelLabel].statistics.npmSizePerX * 1000);
+	channels[channelLabel].statistics.npmSizePerX2 	= Math.round(channels[channelLabel].statistics.npmSizePerX);
+	channels[channelLabel].statistics.npmSizePerX2 	= channels[channelLabel].statistics.npmSizePerX2 / 1000;
+	channels[channelLabel].statistics.npmSizePerX3 	= (channels[channelLabel].statistics.npmSizePerX2 / 1024) * 1000000;
+	channels[channelLabel].statistics.npmSizePerX3 	= Math.round(channels[channelLabel].statistics.npmSizePerX3);
+	channels[channelLabel].statistics.npmSizePerX3 	= channels[channelLabel].statistics.npmSizePerX3 / 1000000;
 
 	//calculazion of the current Byte/s
-	stats[channelLabel].npmSizePerX = (Math.round(((npmSizetemp * (1 / ((stats[channelLabel].t_end - t_startNewPackage) / 1000))) / 1024) * 1000)) / 1000;
+	channels[channelLabel].statistics.npmSizePerX = (Math.round(((npmSizetemp * (1 / ((channels[channelLabel].statistics.t_end - t_startNewPackage) / 1000))) / 1024) * 1000)) / 1000;
 
-	$('div#log').html("<div>current<br>" + stats[channelLabel].npmSizePerX + " " + (stats[channelLabel].npmPktRx + 1) + " kByte/s<br>average<br>" + stats[channelLabel].npmSizePerX2 + " kByte/s<br>" + stats[channelLabel].npmSizePerX3 + " MByte/s</div>");
+	$('div#log').html("<div>current<br>" + channels[channelLabel].statistics.npmSizePerX + " " + (channels[channelLabel].statistics.npmPktRx + 1) + " kByte/s<br>average<br>" + channels[channelLabel].statistics.npmSizePerX2 + " kByte/s<br>" + channels[channelLabel].statistics.npmSizePerX3 + " MByte/s</div>");
 
-	console.log("GesGr.=" + stats[channelLabel].npmSize + " Byte/s=" + stats[channelLabel].npmSizePerX + " kByte/s=" + stats[channelLabel].npmSizePerX2 + " MByte/s=" + stats[channelLabel].npmSizePerX3 + " Start=" + stats[channelLabel].t_start + " Ende=" + stats[channelLabel].t_end + " GesT=" + t_duration);
+	console.log("GesGr.=" + channels[channelLabel].statistics.npmSize + " Byte/s=" + channels[channelLabel].statistics.npmSizePerX + " kByte/s=" + channels[channelLabel].statistics.npmSizePerX2 + " MByte/s=" + channels[channelLabel].statistics.npmSizePerX3 + " Start=" + channels[channelLabel].statistics.t_start + " Ende=" + channels[channelLabel].statistics.t_end + " GesT=" + t_duration);
 
-	return [stats[channelLabel].npmSize, npmSizetemp];
+	return [channels[channelLabel].statistics.npmSize, npmSizetemp];
 }
