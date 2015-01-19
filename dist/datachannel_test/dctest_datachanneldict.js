@@ -31,7 +31,7 @@
  */
 // Origin: W3C - 5.2.1 RTCDataChannel Attributes
 function testDC_dict001() {
-    var test = async_test("Set up a DataChannel and check the attribute maxPacketLifeTime - initialized to null by default", {
+    var test = async_test("testDC_dict001: Set up a DataChannel and check the attribute maxPacketLifeTime - initialized to null by default", {
         timeout : 10000
     });
     test.step(function() {
@@ -65,7 +65,7 @@ function testDC_dict001() {
 // FIXME W3C: maxRetransmits/maxPAcketLifeTime initialisized to null should be in the WebIDL overview.
 function testDC_dict002() {
     var dataChannelOptions = {
-        maxPacketLifeTime : 1000
+        maxPacketLifeTime : 1000,
     };
     test(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
@@ -74,9 +74,9 @@ function testDC_dict002() {
         } catch(e) {
             assert_unreached("An error was thrown " + e.name + ": " + e.message);
         }
-        assert_equals(localChannel.maxPacketLifeTime, 1000, "Can't set maxPacketLifeTime: ");
+        assert_equals(localChannel.maxPacketLifeTime, 1000, "maxPacketLifeTime is incorrect: ");
 
-    }, "Call .createDataChannel() with the attribute maxPacketLifeTime = " + dataChannelOptions.maxPacketLifeTime + " - after creation check maxPacketLifeTime", {
+    }, "testDC_dict002: Call .createDataChannel() with the attribute maxPacketLifeTime = " + dataChannelOptions.maxPacketLifeTime + " - after creation check maxPacketLifeTime", {
         timeout : 5000
     });
 }
@@ -87,7 +87,7 @@ function testDC_dict002() {
 
  */
 // Origin: W3C - 5.1.2 Methods: 6, W3C: 5.2 maxPacketLifeTime (unsigned short) = 65535
-// FIXME: Some Information about the user Agent maximum Value should be nice
+// FIXME: Some Information about the user Agent maximum Value would be nice
 function testDC_dict003() {
     var dataChannelOptions = {
         maxPacketLifeTime : 100000
@@ -107,7 +107,7 @@ function testDC_dict003() {
             assert_equals(localChannel.maxPacketLifeTime, max, "maxPacketLifeTime not set to the maximum value");
         }
 
-    }, "Call .createDataChannel() with the attribute maxPacketLifeTime = " + dataChannelOptions.maxPacketLifeTime + " exceeds user Agent max. supported value - value must set to the user agents max. value", {
+    }, "testDC_dict003: Call .createDataChannel() with the attribute maxPacketLifeTime = " + dataChannelOptions.maxPacketLifeTime + " exceeds user Agent max. supported value - value must set to the user agents max. value", {
         timeout : 5000
     });
 }
@@ -120,7 +120,7 @@ function testDC_dict003() {
  */
 // Origin: W3C - 5.2.1 RTCDataChannel Attributes
 function testDC_dict004() {
-    var test = async_test("Set up a DataChannel and check the attribute - maxRetransmits - initialized null by default", {
+    var test = async_test("testDC_dict004: Create a DataChannel and check the attribute - maxRetransmits - initialized null by default", {
         timeout : 10000
     });
     test.step(function() {
@@ -150,22 +150,48 @@ function testDC_dict004() {
 
  */
 // Origin: W3C - 5.2.1 RTCDataChannel Attributes
-function testDC_dict005() {
-    // Set mode to Unreliable
+// function testDC_dict005() {
+    // // Set mode to Unreliable
+    // var dataChannelOptions = {
+        // maxRetransmits : 1000
+    // };
+    // test(function() {
+        // localPeerConnection = new RTCPeerConnection(iceServers);
+        // try {
+            // localChannel = localPeerConnection.createDataChannel("testDC_dict005", dataChannelOptions);
+        // } catch(e) {
+            // assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        // }
+        // assert_equals(localChannel.maxRetransmits, dataChannelOptions.maxRetransmits, "maxRetransmits value is not set correct ");
+// 
+    // }, "testDC_dict005: Call .createDataChannel() with the attribute maxRetransmits = " + dataChannelOptions.maxRetransmits + " - after creation check maxRetransmits", {
+        // timeout : 5000
+    // });
+// }
+
+function testDC_dict005a() {
+    var test = async_test("testDC_dict005a: Create a DataChannel and check the attribute - maxRetransmits - initialized to 10000", {
+        timeout : 10000
+    });
     var dataChannelOptions = {
         maxRetransmits : 1000
     };
-    test(function() {
+    test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+
         try {
-            localChannel = localPeerConnection.createDataChannel("testDC_dict005", dataChannelOptions);
+            localChannel = localPeerConnection.createDataChannel("testDC_dict005a",dataChannelOptions);
         } catch(e) {
             assert_unreached("An error was thrown " + e.name + ": " + e.message);
         }
-        assert_equals(localChannel.maxRetransmits, dataChannelOptions.maxRetransmits, "maxRetransmits value is not set correct ");
-
-    }, "Call .createDataChannel() with the attribute maxRetransmits = " + dataChannelOptions.maxRetransmits + " - after creation check maxRetransmits", {
-        timeout : 5000
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            assert_equals(localChannel.maxRetransmits, dataChannelOptions.maxRetransmits, "maxRetransmits not set on localChannel: ");
+            assert_equals(localChannel.maxRetransmits, remoteChannel.maxRetransmits, "maxRetransmits not set on remoteChannel: ");
+            test.done();
+        });
     });
 }
 
@@ -195,7 +221,7 @@ function testDC_dict006() {
             assert_equals(localChannel.maxRetransmits, max, "maxRetransmits not set to the maximum value");
         }
 
-    }, "Call .createDataChannel() with the attribute maxRetransmits = " + dataChannelOptions.maxRetransmits + " exceeds user Agent max. supported value - value must set to the user agents max. value", {
+    }, "testDC_dict006: Call .createDataChannel() with the attribute maxRetransmits = " + dataChannelOptions.maxRetransmits + " exceeds user Agent max. supported value - value must set to the user agents max. value", {
         timeout : 5000
     });
 }
@@ -221,7 +247,7 @@ function testDC_dict007() {
         }
         assert_unreached("No error was thrown and values are set to maxPacketLifeTime: " + localChannel.maxPacketLifeTime + " and maxRetransmits: " + localChannel.maxRetransmits + " : ");
 
-    }, "Call .createDataChannel() and set maxPacketLifeTime and maxRetransmits (not null) - must throw a SyntaxError exception", {
+    }, "testDC_dict007: Call .createDataChannel() and set maxPacketLifeTime and maxRetransmits (both not null) - must throw a SyntaxError exception", {
         timeout : 5000
     });
 }
@@ -246,7 +272,7 @@ function testDC_dict008() {
             assert_equals(e.name, "SyntaxError", "Wrong error was thrown ");
         }
         assert_unreached("No error was thrown ");
-    }, "Call .createDataChannel() and set maxRetransmitTime and maxRetransmits (not null) - must throw a SyntaxError exception - (Old API - maxRetransmitTime)", {
+    }, "testDC_dict008: Call .createDataChannel() and set maxRetransmitTime and maxRetransmits (not null) - must throw a SyntaxError exception - (Old API - maxRetransmitTime)", {
         timeout : 5000
     });
 }
@@ -273,7 +299,7 @@ function testDC_dict009() {
         assert_true(localChannel.maxPacketLifeTime === 0 || localChannel.maxPacketLifeTime === null, "maxPacketLifeTime is not set to null by default got " + localChannel.maxPacketLifeTime + " - ");
         assert_true(localChannel.maxRetransmits === 0 || localChannel.maxRetransmits === null, "maxRetransmits is not set to null by default got " + localChannel.maxRetransmits + " - ");
 
-    }, "Call .createDataChannel() with the attribute maxRetransmits = " + dataChannelOptions.maxRetransmits + " and maxPacketLifeTime = " + dataChannelOptions.maxPacketLifeTime, {
+    }, "testDC_dict009: Call .createDataChannel() with the attribute maxRetransmits = " + dataChannelOptions.maxRetransmits + " and maxPacketLifeTime = " + dataChannelOptions.maxPacketLifeTime, {
         timeout : 5000
     });
 }

@@ -26,7 +26,7 @@
 
 /**
  * Description:
- * The two PeerConnections are modeled on one peer (Browser)!
+ * The two PeerConnections are modeled on one host (browser)!
  * Peer A = localPeerConnection, localChannel
  * Peer B = remotePeerConnection, remoteChannel 
  * 
@@ -35,6 +35,9 @@
 
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 // FIXME: W3C API: No information about which error should throw (API says parameter label is not optional)
+/**
+ - Peer A: creates a DataChannel without label parameter 
+ */
 function testDC_label001() {
     test(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
@@ -52,7 +55,7 @@ function testDC_label001() {
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 function testDC_label002() {
     var label = "test-label";
-    var test = async_test("testDC_label002: Set up a DataChannel with label \"" + label + "\" - check label on both peers", {timeout: 5000});
+    var test = async_test("testDC_label002: Create a DataChannel with label \"" + label + "\" - check label on both peers", {timeout: 5000});
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
@@ -74,7 +77,7 @@ function testDC_label002() {
 }
 
 /**
-- Peer A: creates a DataChannel with special character label = “test-label漢字“
+- Peer A: creates a DataChannel with special characters (UTF-8) in the label = “test-label漢字“
 - Peer B: waits for the DataChannel 
 - Peer A/B: checks the label
  */
@@ -82,7 +85,7 @@ function testDC_label002() {
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 function testDC_label003() {
     var label = "test-label漢字";
-    var test = async_test("testDC_label003: Set up a DataChannel with label \"" + label + "\" - check the label on both peers", {timeout: 5000});
+    var test = async_test("testDC_label003: Create a DataChannel with label \"" + label + "\" - check the label on both peers", {timeout: 5000});
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
@@ -105,7 +108,7 @@ function testDC_label003() {
 
 
 /**
-- Peer A: creates a DataChannel with 32 KB label length
+- Peer A: creates a DataChannel with a label of 32 KB length
 - Peer B: waits for the DataChannel 
 - Peer A/B: checks the label
 
@@ -139,7 +142,7 @@ function testDC_label004() {
 
 
 /**
-- Peer A: creates a DataChannel with 64 KB less one Byte label  length
+- Peer A: creates a DataChannel with a 65535 Byte (64 KB - 1 Byte) label length
 - Peer B: waits for the DataChannel 
 - Peer A/B: checks the label
 
@@ -149,7 +152,7 @@ function testDC_label004() {
 function testDC_label005() {
     var label = generateData(16);
     label = label.substring(0, (label.length - 1));
-    var test = async_test("testDC_label005: Set up a DataChannel with a label of length 65535 Byte - check the label on both peers (should be maximum length)", {timeout: 5000});
+    var test = async_test("testDC_label005: Set up a DataChannel with a label of length 65535 Byte - check the label on both peers (should be the maximum length)", {timeout: 5000});
     test.step(function() {
     	assert_equals(label.length, 65535, "Wrong label length ");
         localPeerConnection = new RTCPeerConnection(iceServers);
@@ -177,7 +180,7 @@ function testDC_label005() {
 
 
 /**
-- Peer A: creates a DataChannel with label 64 KB length
+- Peer A: creates a DataChannel with label of 64 KB length
 - Peer B: waits for the DataChannel 
 - Peer A/B: checks the label
 
@@ -191,17 +194,16 @@ function testDC_label006() {
     test.step(function() {
     	assert_equals(label.length, 65536, "Wrong label length ");
         localPeerConnection = new RTCPeerConnection(iceServers);
-        remotePeerConnection = new RTCPeerConnection(iceServers);
-        
+     	
         assert_throws(null, function(){
         	localChannel = localPeerConnection.createDataChannel(label);
-        }, "no error was thrown ");
+        }, " Exception for exceeding label length");
     });
 }
 
 
 /**
-- Peer A: creates a DataChannel with empty label string “”
+- Peer A: creates a DataChannel with an empty label string “”
 - Peer B: waits for the DataChannel 
 - Peer A/B: checks the label
 
@@ -246,7 +248,7 @@ function testDC_label008() {
     var label = "same label";
     var localChannel = new Array(), remoteChannel = new Array();
     var errorMessage = "", isError = false;
-    var test = async_test("testDC_label008: Set up multiple DataChannels with the same label -  try " + maxChannelCount + " DataChannels with the same label", {timeout: 10000});
+    var test = async_test("testDC_label008: Create multiple DataChannels with the same label -  try " + maxChannelCount + " DataChannels with the same label", {timeout: 10000});
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
@@ -301,21 +303,19 @@ function testDC_label008() {
 - Peer A: creates a DataChannel with specific label
 - Peer B: waits for the DataChannel 
 - Peer A/B: checks the label
-- The procedure runs 9 times with the same label
+- The procedure runs 16 times with the same label
 
  */
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
-// FIXME Firefox Crashed if more than 8 Channels are created
+// FIXME Firefox Crashed if more than 16 Channels are created
 function testDC_label009() {
     var maxChannelCount = 16;
     var channelCount = 0;
     var label = "same label";
     var localChannel = new Array(), remoteChannel = new Array();
     var errorMessage = "", isError = false;
-    var test = async_test("testDC_label009: Set up multiple DataChannels with the same label -  try " + maxChannelCount + " DataChannels with the same label", {timeout: 20000});
+    var test = async_test("testDC_label009: Create multiple DataChannels with the same label -  try " + maxChannelCount + " DataChannels with the same label", {timeout: 20000});
     test.step(function() {
-        //if(mozSafeMode)
-            //assert_unreached("Mozilla Firefox Safe Mode is activated - This test usually leads to crash ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         function tryCreateChannel() {
@@ -372,7 +372,7 @@ function testDC_label009() {
 // Origin: W3C -  5.1 RTCPeerConnection Interface Extensions - [TreatNullAs=EmptyString] DOMString label, 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 function testDC_label010() {
     var label = null;
-    var test = async_test("testDC_label010: Set up a DataChannel with label NULL (Object) - check the label on both peers - should be the empty string", {timeout: 5000});
+    var test = async_test("testDC_label010: Create a DataChannel with label = NULL (Object) - check the label on both peers - should be the empty string", {timeout: 5000});
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
@@ -394,7 +394,7 @@ function testDC_label010() {
 }
 
 /**
-- Peer A: creates a DataChannel with 64 KB less one Byte label  length
+- Peer A: creates a DataChannel with 65535 Byte label length
 - Peer B: waits for the DataChannel 
 - Peer A/B: checks the label
 
@@ -404,9 +404,9 @@ function testDC_label010() {
 function testDC_label011() {
 	var charCount = 21845;
     var label = generateLinearDataChar("€",charCount);
-    var test = async_test("testDC_label011: Set up a DataChannel with a label of length 65535 (3x21845) Byte - check the label on both peers (should be maximum length)", {timeout: 5000});
+    var test = async_test("testDC_label011: Create a DataChannel with a label of length 65535 (3x21845) Byte due special characters - check the label on both peers (should be maximum length)", {timeout: 5000});
     test.step(function() {
-    	//assert_equals(label.length, charCount, "Wrong label length ");
+    	assert_equals(label.length, charCount, "Wrong label length ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         try {
@@ -418,6 +418,7 @@ function testDC_label011() {
         remotePeerConnection.ondatachannel = test.step_func(function(e) {
             remoteChannel = e.channel;
             remoteChannel.onopen = test.step_func(function() {
+            	
                 assert_equals(localChannel.label, label, "Wrong label ");
                 assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
                 assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label ");
@@ -425,6 +426,28 @@ function testDC_label011() {
             });
         });
 
+    });
+}
+
+/**
+- Peer A: creates a DataChannel with 65538 Byte label length
+- Peer B: waits for the DataChannel 
+- Peer A/B: checks the label
+
+ */
+// Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
+// Origin: http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-07#section-5.1  -   DC Open Message: Label Length 2^16
+function testDC_label012() {
+	var charCount = 21846;
+    var label = generateLinearDataChar("€",charCount);
+    var test = async_test("testDC_label012: Create a DataChannel with a label of length 65538 (3x21846) Byte due special characters - check the label on both peers (should be maximum length)", {timeout: 5000});
+    test.step(function() {
+    	assert_equals(label.length, charCount, "Wrong label length ");
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        assert_throws(null, function(){
+        	localChannel = localPeerConnection.createDataChannel(label);
+        }, " Exception for exceeding label length");
+		test.done();
     });
 }
 

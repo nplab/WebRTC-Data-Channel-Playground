@@ -147,8 +147,10 @@ connect();
 // start start peer connection
 function connect() {
 	if (type === "offerer") {
-		
-		datachannel = pc.createDataChannel('gyrochannel');
+		    var dataChannelOptions = {
+        maxPacketLifeTime : 1000
+    };
+		datachannel = pc.createDataChannel('gyrochannel',dataChannelOptions);
 		bindEvents(datachannel);
 		// create the offer SDP
 		pc.createOffer(function(offer) {
