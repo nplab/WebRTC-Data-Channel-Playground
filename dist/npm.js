@@ -2,29 +2,9 @@
  BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
  */
 
- //stats
-var stat = {
-	t_start 			: 0,
-	t_end 				: 0,
-	npmPktRx 			: 0,
-	npmSize 			: 0,
-	npmParameterSleep 	: 500,
-	npmPackagecount 	: 10,
-	npm1SizePerX 		: 0,
-	npm1SizePerX2		: 0,
-	npm1SizePerX3		: 0,
-};
-
 var dcCounter = 0;
-var t_duration = 0,
-    t_startNewPackage = 0;
-var messageencoder = 1;
-var npmSizetemp;
-var npmPaket;
-var sentPktCounter = 0;
 var activeChannelCount = new Array();
-var stats = new Array();
-var parameters = new Array();
+var parameters = {};
 var labelButtonToggle = false;
 
 // get a reference to our FireBase database and child element: rooms
@@ -36,10 +16,6 @@ var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || 
 var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
 var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 
-// #### Click functions
-$('#createDataChannel').click(function() {
-	createDataChannel(++dcCounter);
-});
 
 // #### Functions
 // generate a unique-ish string for storage in firebase
@@ -80,23 +56,13 @@ if (!ROOM) {
 	ROOM = id();
 	type = "offerer";
 	otherType = "answerer";
-
-	$('#link').append(" (offerer)");
+	$('#link').append(" (offerer) - <a href='#" + ROOM + "'>" + ROOM + "</a>");
 }
 
 if (type === "answerer") {
-	$('#link').append(" (answerer)");
+	$('#link').append(" (answerer) - " + ROOM);
 	$('.controlContainer').hide();
 };
-
-$('#link').append(" - <a href='#" + ROOM + "'>" + ROOM + "</a>");
-
-// generate a unique-ish room number
-var ME = id();
-
-// get references to the document tags
-var chatlog = document.getElementById("chatlog");
-var packagesize = document.getElementById("packagesize");
 
 // options for the PeerConnection
 var iceServer = {
@@ -128,17 +94,23 @@ pc.onicecandidate = function(e) {
 
 	// send our ICE candidate
 	send(ROOM, "candidate:" + type, JSON.stringify(e.candidate));
+	
+	updatePeerConnectionState(event);
 };
 
 pc.onsignalingstatechange  = function(event) {
 	updatePeerConnectionState(event);
-}
+};
+
+pc.oniceconnectionstatechange = function(event) {
+	updatePeerConnectionState(event);
+};
 
 // constraints on the offer SDP.
 var constraints = {};
 
 // define the channel var
-var channels = Array();
+var channels = new Object();
 
 connect();
 
@@ -175,19 +147,19 @@ function connect() {
 			console.log('incoming datachannel');
 
 
-			channels[channel.label] = new Array();
-			channels[channel.label]['channel'] = channel;
-			
-			channels[channel.label]['stats'] = {
-				t_start 			: 0,
-				t_end 				: 0,
-				npmPktRx 			: 0,
-				npmSize 			: 0,
-				npmParameterSleep 	: 500,
-				npmPackagecount 	: 10,
-				npm1SizePerX 		: 0,
-				npm1SizePerX2		: 0,
-				npm1SizePerX3		: 0,
+			channels[channel.label] = {
+				channel: channel,
+				statistics : {
+					t_start 			: 0,
+					t_end 				: 0,
+					npmPktRx 			: 0,
+					npmSize 			: 0,
+					npmParameterSleep 	: 500,
+					npmPackagecount 	: 10,
+					npm1SizePerX 		: 0,
+					npm1SizePerX2		: 0,
+					npm1SizePerX3		: 0,
+				}
 			};
 			updateChannelState();
 			$('#channelStatus').append('<div id="dc_' + channel.label + '">' + channel.label + ' <span class="status">connecting</span></div>');
@@ -214,26 +186,22 @@ function connect() {
 function createDataChannel(label) {
 	// 	
 
-	if(channels[label] === undefined) {
-		channels[label] = new Array();
-	}
-
 	var dataChannelOptions;
-	if(parameters[label] !== undefined){
+	if(typeof parameters[label] != 'undefined'){
 		switch(parameters[label].reliableMethode){
 			case "reliable":
 				dataChannelOptions = {
-				}
+				};
 				break;
 			case "maxRetransmit":
 				dataChannelOptions = {
 					maxRetransmits		: parameters[label].reliableParam,
-				}
+				};
 				break;
 			case "maxTimeout":
 				dataChannelOptions = {
 					maxRetransmitTime	: parameters[label].reliableParam,
-				}
+				};
 				break;
 		}
 	}
@@ -243,27 +211,27 @@ function createDataChannel(label) {
 	var tempChannel = pc.createDataChannel(label, dataChannelOptions);
 	bindEvents(tempChannel);
 	
-	channels[tempChannel.label]['channel'] = tempChannel;
-
-	channels[tempChannel.label]['stats'] = {
-		t_start 			: 0,
-		t_end 				: 0,
-		npmPktRx 			: 0,
-		npmSize 			: 0,
-		npmParameterSleep 	: 500,
-		npmPackagecount 	: 10,
-		npm1SizePerX 		: 0,
-		npm1SizePerX2		: 0,
-		npm1SizePerX3		: 0,
+	channels[tempChannel.label] = {
+		channel : tempChannel,
+		statistics: {
+			t_start 			: 0,
+			t_end 				: 0,
+			npmPktRx 			: 0,
+			npmSize 			: 0,
+			npmParameterSleep 	: 500,
+			npmPackagecount 	: 10,
+			npm1SizePerX 		: 0,
+			npm1SizePerX2		: 0,
+			npm1SizePerX3		: 0,
+		}
+		
 	};
 	updateChannelState();
-	console.log("creating datachannel - id: " + tempChannel.id + ', label:' + tempChannel.label);
-	$('#channelStatus').append('<div id="dc_' + tempChannel.label + '">' + tempChannel.label + ' <span class="status">connecting</span></div>');
+	console.log("datachannel created - label:" + tempChannel.id + ', id:' + tempChannel.label);
 }
 
 function closeDataChannel(label) {
-	console.log('Channel ' + label + ' - closing');
-	channels[label].close();
+	channels[label].channel.close();
 }
 
 function NpmSend(x, y) {
@@ -274,7 +242,7 @@ function NpmSend(x, y) {
 		sentPktCounter++;
 		if (sentPktCounter < stat.npmPackagecount) {
 			setTimeout(function(){
-				NpmSend(x,y)
+				NpmSend(x,y);
 			}, stat.npmParameterSleep);
 		}
 	} catch(e) {
@@ -323,48 +291,46 @@ function NetPerfMeter() {
 		}
 	}
 	
-	for(var i = 0; i < activeChannelCount.length; i++){
-		stat.npmSize 			= parameters[activeChannelCount[i]].pktSize;
-		stat.npmPackagecount 	= parameters[activeChannelCount[i]].pktCount;
-		stat.npmParameterSleep 	= parameters[activeChannelCount[i]].sleep;
-
-		/*for(var key in channels) {
-			console.log("Channel test. Channel: " + channels[key].label + ". Status: " + channels[key].readyState + ".");
-			if(channels[key].readyState == "open") {
-				channelNo = key;
-				break;
-			}
-		}
-		if(channelNo == -1){alert("No channel found"); return;}*/
-
-		var DataArray = new Array(1, stat.npmParameterSleep, stat.npmSize, stat.npmPackagecount);
-		var DataString = DataArray.join(";");
-
-		channels[activeChannelCount[i]]["channel"].send(DataString);
-		sentPktCounter = 0;
-
-		setTimeout(funct, stat.npmParameterSleep);
-
-		npmPaket = "a";
-		for (var j = 0; j < stat.npmSize; j++) {
-			npmPaket += "a";
-		}
-		NpmSend(activeChannelCount[i], npmPaket);		
-	}
+	// for(var i = 0; i < activeChannelCount.length; i++){
+		// stat.npmSize 			= parameters[activeChannelCount[i]].pktSize;
+		// stat.npmPackagecount 	= parameters[activeChannelCount[i]].pktCount;
+		// stat.npmParameterSleep 	= parameters[activeChannelCount[i]].sleep;
+// 
+		// /*for(var key in channels) {
+			// console.log("Channel test. Channel: " + channels[key].label + ". Status: " + channels[key].readyState + ".");
+			// if(channels[key].readyState == "open") {
+				// channelNo = key;
+				// break;
+			// }
+		// }
+		// if(channelNo == -1){alert("No channel found"); return;}*/
+// 
+		// var DataArray = new Array(1, stat.npmParameterSleep, stat.npmSize, stat.npmPackagecount);
+		// var DataString = DataArray.join(";");
+// 
+		// channels[activeChannelCount[i]]["channel"].send(DataString);
+		// sentPktCounter = 0;
+// 
+		// setTimeout(funct, stat.npmParameterSleep);
+// 
+		// npmPaket = "a";
+		// for (var j = 0; j < stat.npmSize; j++) {
+			// npmPaket += "a";
+		// }
+		// NpmSend(activeChannelCount[i], npmPaket);		
+	// }
 
 }
 
 // bind the channel events
 function bindEvents(channel) {
 	channel.onopen = function() {
-		$('#dc_' + channel.label + ' span.status').html('open <button onclick="closeDataChannel(\'' + channel.label + '\');">close</button>');
-		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
+		console.log("datachannel opened - label:" + channel.label + ', ID:' + channel.id);
 		updateChannelState();
 	};
 
 	channel.onclose = function(e) {
-		$('#dc_' + channel.label + ' span.status').html(channel.readyState);
-		console.log("Channel Close");
+		console.log("datachannel closed - label:" + channel.label + ', ID:' + channel.id);
 		updateChannelState();
 	};
 

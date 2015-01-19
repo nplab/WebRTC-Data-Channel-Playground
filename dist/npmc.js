@@ -51,12 +51,26 @@ $('#npmControlAddChannel').click(function(event){
 
 
 function updatePeerConnectionState(event) {
-	console.log('updatePeerConnectionState');
+	$('#signalingState').html(pc.signalingState);
+	$('#iceConnectionState').html(pc.iceConnectionState);
+	$('#iceGatheringState').html(pc.iceGatheringState);
+	console.log('PeerConnection - Change signaling state:' + pc.signalingState);
 	return true;
 }
 
 function updateChannelState(event) {
-	console.log('updateChannelState');
+	//alert('channeländerun!');
+	$('table#dcStatus tbody').empty();
+	$.each(channels, function(key, value) {
+			var actionHTML = '';
+			if(value.channel.readyState === 'open') {
+				var actionHTML = '<button class="btn-default btn" onclick="closeDataChannel(\'' + value.channel.label + '\');">close</button>';
+			}
+			$('table#dcStatus tbody').append('<tr><td>'+ value.channel.id + '</td><td>' + value.channel.readyState + '</td><td>' + value.channel.label + '</td><td></td><td></td><td>'+actionHTML + '</td></tr>');
+	});
+	
+	
+	console.log(channels);
 	return true;
 }
 
