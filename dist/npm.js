@@ -270,7 +270,6 @@ function NpmSend(label, message) {
 			scheduler.postMessage(schedulerObject);
 			
 		} else {
-			alert(channels[label].statistics.npmBytesTx);
 			channels[label].channel.close();
 		}
 	} catch(e) {
@@ -355,6 +354,9 @@ function bindEvents(channel) {
 
 	channel.onclose = function(e) {
 		console.log("datachannel closed - label:" + channel.label + ', ID:' + channel.id);
+		if(offerer == false){
+			sendStatistics(e);
+		}
 		updateChannelState();
 	};
 
@@ -363,9 +365,12 @@ function bindEvents(channel) {
 	};
 
 	channel.onmessage = function(e) {
-		if(offerer == false){
+
+		if(e.currentTarget.label == 'init') {
+			handleJsonMessage(e.data);
+		} else if(offerer == false){
 			answererOnMessage(e);
-		}
+		} 
 	};
 }
 
@@ -377,6 +382,18 @@ scheduler.onmessage = function(e) {
 	}
 };
 
+function sendStatistics(e){
+	var tempChannelLabel = e.currentTarget.label;
+	rateAllTemp = getRateAll();
+	alert("stats");
+	var jsonObjStats = {
+		type 		: 'stats',
+		bytesRX 	: channels[tempChannelLabel].statistics.npmBytesRx,
+		rateAll		: rateAllTemp,
+	};
+
+	channels.init.channel.send(JSON.stringify(jsonObjStats));
+}
 
 function answererOnMessage(e){		
 	rxData = e.data.toString();
@@ -409,6 +426,19 @@ function answererOnMessage(e){
 			channels[tempChannelLabel].statistics.t_end = new Date().getTime();
 			channels[tempChannelLabel].statistics.npmBytesRx += rxData.length;
 			channels[tempChannelLabel].statistics.npmPktRx++;
+			break;
+	}
+}
+
+function handleJsonMessage(message) {
+	var messageObject = JSON.parse(message)
+
+	switch(messageObject.type) {
+		case 'stats':
+			console.log(messageObject);
+			break;
+		default:
+			alert('Unknown messagetype!!');
 			break;
 	}
 }

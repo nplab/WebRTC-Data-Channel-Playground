@@ -2,6 +2,5 @@
   console.log('Message received from main script');
   setTimeout(function(){
   	postMessage(e.data);
-  },e.data.sleep);
-  
+  },e.data.sleep);  
 };
