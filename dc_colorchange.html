@@ -53,6 +53,9 @@
 			<h1 id="link">Colorchange by Gyroscope</h1>
 			<div class="alert alert-danger text-center" id="gyrostatus" role="alert">Sorry, your device provides no gyro data! :(</div>
 		</div>
+		
+		<div class="log">
+		</div>
 
 		<div class="footer text-center">
 			&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung
@@ -65,7 +68,22 @@
 
 		<script type="text/javascript">
 			jQuery(document).ready(function($) {
-				gyroInit();
+				//gyroInit();
+				
+				d_send = new Date().getTime();
+				
+				var myWorker = new Worker("dist/worker.scheduler.js");
+				
+				myWorker.onmessage = function(e) {
+					d_received = new Date().getTime();
+  					
+  					console.log(d_received - e.data);
+  					d_send = new Date().getTime();
+  					myWorker.postMessage([d_send,100]);
+				};
+				
+				myWorker.postMessage([d_send,100]);
+
 			});
 
 		</script>

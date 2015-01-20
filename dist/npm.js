@@ -9,6 +9,7 @@ var labelButtonToggle = false;
 var t_startNewPackage = 0;
 var offerer = false;
 var npmSizetemp = 0;
+var scheduler = new Worker("dist/worker.scheduler.js");
 
 // get a reference to our FireBase database and child element: rooms
 var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
@@ -257,11 +258,19 @@ function NpmSend(label, message) {
 		//channels[activeChannelCount[i]].statistics.npmBytesTx += message.length;
 		if (channels[label].statistics.npmPktTx <= parameters[label].pktCount) {
 			channels[label].statistics.npmPktTx++;
-			setTimeout(function(){
-				NpmSend(label,message);
-			}, parameters[label].sleep);
+			// setTimeout(function(){
+				// NpmSend(label,message);
+			// }, parameters[label].sleep);
+			
+			var schedulerObject = {
+				sleep 	: parameters[label].sleep,
+				label 	: label,
+				data	: message,
+			};
+			scheduler.postMessage(schedulerObject);
+			
 		} else {
-			alert(channels[activeChannelCount[i]].statistics.npmBytesTx);
+			alert(channels[label].statistics.npmBytesTx);
 			channels[label].channel.close();
 		}
 	} catch(e) {
@@ -359,6 +368,14 @@ function bindEvents(channel) {
 		}
 	};
 }
+
+scheduler.onmessage = function(e) {
+	var message = e.data;
+	
+	if(message.label != undefined && message.sleep != undefined && message.data != undefined) {
+		NpmSend(message.label, message.data);
+	}
+};
 
 
 function answererOnMessage(e){		
