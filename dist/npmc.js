@@ -18,7 +18,7 @@ npmcSettings = {
  */
 
 var npmcDcCounter = 1;
-var npmcStatisticsTimer = false;
+var npmcStatisticsTimerActive = false;
 
 // button toggle used to activate and deactivate channels
 $('#npmChannelParameters button[name="toggleActive"]').click(function(event){

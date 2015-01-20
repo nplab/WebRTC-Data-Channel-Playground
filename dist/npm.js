@@ -101,15 +101,15 @@ pc.onicecandidate = function(e) {
 	// send our ICE candidate
 	send(ROOM, "candidate:" + type, JSON.stringify(e.candidate));
 	
-	updatePeerConnectionState(e);
+	updatePeerConnectionStatus(e);
 };
 
 pc.onsignalingstatechange  = function(event) {
-	updatePeerConnectionState(event);
+	updatePeerConnectionStatus(event);
 };
 
 pc.oniceconnectionstatechange = function(event) {
-	updatePeerConnectionState(event);
+	updatePeerConnectionStatus(event);
 };
 
 // constraints on the offer SDP.
@@ -174,7 +174,7 @@ function connect() {
 					npm1SizePerX3		: 0,
 				}
 			};
-			updateChannelState();
+			updateChannelStatus();
 		};
 
 		// answerer needs to wait for an offer before
@@ -243,7 +243,7 @@ function createDataChannel(label) {
 		}
 		
 	};
-	updateChannelState();
+	updateChannelStatus();
 	console.log("datachannel created - label:" + tempChannel.id + ', id:' + tempChannel.label);
 }
 
@@ -346,10 +346,11 @@ function netPerfMeterRunByTrigger(label){
 function bindEvents(channel) {
 	channel.onopen = function() {
 		console.log("datachannel opened - label:" + channel.label + ', ID:' + channel.id);
-		updateChannelState();
+		
 		if(offerer == true){
 			netPerfMeterRunByTrigger(channel.label);
 		}
+		updateChannelStatus();
 	};
 
 	channel.onclose = function(e) {
@@ -357,7 +358,7 @@ function bindEvents(channel) {
 		if(offerer == false){
 			sendStatistics(e);
 		}
-		updateChannelState();
+		updateChannelStatus();
 	};
 
 	window.onbeforeunload = function() {
