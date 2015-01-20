@@ -60,7 +60,7 @@ function updatePeerConnectionState(event) {
 	return true;
 }
 
-function updateChannelState() {
+function updateChannelState(event) {
 	
 	$('table#dcStatusOfferer tbody').empty();
 	$('table#dcStatusAnswerer tbody').empty();
