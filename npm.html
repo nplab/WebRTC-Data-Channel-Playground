@@ -38,10 +38,13 @@
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
 						<li class="active">
-							<a href="#">Netperfmeter<span class="sr-only">(current)</span></a>
+							<a href="#">Netperfmeter</a>
 						</li>
 						<li>
-							<a href="dc_test.html">Browser-Tests</a>
+							<a href="dc_test.html">Browser-Test</a>
+						</li>
+						<li>
+							<a href="dc_colorchange.html">Gyrocolor</a>
 						</li>
 					</ul>
 				</div>
@@ -50,27 +53,58 @@
 		</nav>
 
 		<div class="container">
-
 			<h1 id="link">Netperfmeter</h1>
-			<div>Status of peer Connection:<span id="pcStatus"></span></div>
-			<table class="table">
-				<tr>
-					<th>iceConnectionState</th>
-					<th>iceGatheringState</th>
-					<th>signalingState</th>
-				</tr>
-				<tr>
-					<td id="iceConnectionState"></td>
-					<td id="iceGatheringState"></td>
-					<td id="signalingState"></td>
-				</tr>
-			</table>
 			
-			<button class="btn btn-default" id="startNPM" onclick="NetPerfMeter()">
-				Start NPM
-			</button>
+			<div class="row">
+				
+				<div class="col-md-6">
+					<h3>Controlpanel</h3>
+					<div class="form-group">
+						<button class="btn btn-success btn-block" id="npmcRun" disabled="disabled" onclick="NetPerfMeter()">
+							<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start NPM
+						</button>
+					</div>
+					<div class="form-group">
+						<button class="btn btn-primary btn-block" disabled="disabled" id="npmcPing">
+							<span class="glyphicon glyphicon-time" aria-hidden="true"></span> Ping Peer
+						</button>
+					</div>
+						
+				</div>
+				
+				<div class="col-md-6">
+					
+					<h3>Peer- and Ice-Status</h3>
+					<div>Status of peer Connection: <span id="pcStatus"></span></div>
+					
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>name</th>
+								<th>status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>iceConnectionState</td>
+								<td id="iceConnectionState">none</td>
+							</tr>
+							<tr>
+								<td>iceGatheringState</td>
+								<td id="iceGatheringState">none</td>
+							</tr>
+							<tr>
+								<td>signalingState</td>
+								<td id="signalingState">none</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
+				
+			</div>
 			
-			<table class="table" id="dcStatusAnswerer">
+			<table class="table table-condensed" id="dcStatusAnswerer">
 				<thead>
 					<tr>
 						<th>id</th>
@@ -86,23 +120,23 @@
 				<tbody></tbody>
 			</table>
 
-			<div class="row npmControlContainer">
+			<div class="row npmControlOfferer">
 				<div class="col-md-6 npmControl">
 					<h3>Netperfmeter Control</h3>
-					<table class="table" id="npmControl">
+					<table class="table" id="npmChannelParameters">
 						<thead>
 							<tr>
-								<th class="col-md-1"><span id="npmControlAddChannel" class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green;"></span></th>
+								<th class="col-md-1"><span id="npmChannelParametersClone" class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green;"></span></th>
 
-								<th class="col-md-2">sleep (ms)</th>
-								<th class="col-md-2">#-packets</th>
-								<th class="col-md-2">packetsize</th>
+								<th class="col-md-1">sleep (ms)</th>
+								<th class="col-md-1">#-packets</th>
+								<th class="col-md-1">packetsize</th>
 								<th class="col-md-4">reliable</th>
 							</tr>
 						</thead>
 						<tbody>
 
-							<tr id="npmControlC1" class="tr_clone">
+							<tr id="npmChannelParametersC1" class="tr_clone">
 								<td>
 								<button type="button" name="toggleActive" class="btn btn-default toggleActive" value="o1">
 									1
@@ -141,9 +175,9 @@
 					</table>
 
 				</div>
-				<div class="col-md-6 npmStatus">
+				<div class="col-md-6">
 					<h3>Data-Channel Status</h3>
-					<table class="table" id="dcStatusOfferer">
+					<table class="table table-condensed" id="dcStatusOfferer">
 						<thead>
 							<tr>
 								<th>id</th>
@@ -160,9 +194,6 @@
 					</table>
 				</div>
 			</div>
-
-			<div id="channelStatus"></div>
-			<div id="log"></div>
 		</div>
 
 		<div class="footer text-center">
