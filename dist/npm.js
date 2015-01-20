@@ -100,7 +100,7 @@ pc.onicecandidate = function(e) {
 	// send our ICE candidate
 	send(ROOM, "candidate:" + type, JSON.stringify(e.candidate));
 	
-	updatePeerConnectionState(event);
+	updatePeerConnectionState(e);
 };
 
 pc.onsignalingstatechange  = function(event) {
@@ -227,10 +227,12 @@ function createDataChannel(label) {
 		statistics: {
 			t_start 			: 0,
 			t_end 				: 0,
+			t_last				: 0,
 			npmPktRx 			: 0,
 			npmPktTx			: 0,
 			npmBytesRx 			: 0,
 			npmBytesTx			: 0,
+			npmBytesRxLast		: 0,
 			npmSize 			: 0,
 			npmParameterSleep 	: 500,
 			npmPackagecount 	: 10,
@@ -390,47 +392,6 @@ function answererOnMessage(e){
 			channels[tempChannelLabel].statistics.t_end = new Date().getTime();
 			channels[tempChannelLabel].statistics.npmBytesRx += rxData.length;
 			channels[tempChannelLabel].statistics.npmPktRx++;
-
-			// var returnArray	= 	calculation(
-									// channels[tempChannelLabel].statistics.npmSize, 
-									// npmSizetemp, 
-									// channels[tempChannelLabel].statistics.t_start, 
-									// channels[tempChannelLabel].statistics.t_end, 
-									// t_startNewPackage, 
-									// tempChannelLabel
-								// );
-			// channels[tempChannelLabel].statistics.npmSize = returnArray[0];
-			// npmSizetemp = returnArray[1];
-// 
-			// channels[tempChannelLabel].statistics.npmSize = channels[tempChannelLabel].statistics.npmSize + npmSizetemp;
-			// t_startNewPackage = new Date().getTime();
-			
 			break;
 	}
-}
-
-function calculation(size, sizetemp, start, end, startNewPackage, channelLabel) {
-	channels[channelLabel].statistics.npmSize = parseInt(size);
-	npmSizetemp = parseInt(sizetemp);
-	channels[channelLabel].statistics.t_start = parseInt(start);
-	channels[channelLabel].statistics.t_end = parseInt(end);
-	t_startNewPackage = parseInt(startNewPackage);
-
-	//t_duration musst > 0
-	t_duration = channels[channelLabel].statistics.t_end - channels[channelLabel].statistics.t_start;
-	if (t_duration < 1)
-		t_duration = 1;
-
-	//calculate the average of Byte/s
-	channels[channelLabel].statistics.npmSizePerX 	= parseFloat((channels[channelLabel].statistics.npmSize * (1 / (t_duration / 1000))) / 1024);
-	channels[channelLabel].statistics.npmSizePerX 	= parseFloat(channels[channelLabel].statistics.npmSizePerX * 1000);
-	channels[channelLabel].statistics.npmSizePerX2 	= Math.round(channels[channelLabel].statistics.npmSizePerX);
-	channels[channelLabel].statistics.npmSizePerX2 	= channels[channelLabel].statistics.npmSizePerX2 / 1000;
-	channels[channelLabel].statistics.npmSizePerX3 	= (channels[channelLabel].statistics.npmSizePerX2 / 1024) * 1000000;
-	channels[channelLabel].statistics.npmSizePerX3 	= Math.round(channels[channelLabel].statistics.npmSizePerX3);
-	channels[channelLabel].statistics.npmSizePerX3 	= channels[channelLabel].statistics.npmSizePerX3 / 1000000;
-
-	//calculazion of the current Byte/s
-	channels[channelLabel].statistics.npmSizePerX = (Math.round(((npmSizetemp * (1 / ((channels[channelLabel].statistics.t_end - t_startNewPackage) / 1000))) / 1024) * 1000)) / 1000;
-	return [channels[channelLabel].statistics.npmSize, npmSizetemp];
 }
