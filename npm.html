@@ -69,8 +69,24 @@
 			<button class="btn btn-default" id="startNPM" onclick="NetPerfMeter()">
 				Start NPM
 			</button>
+			
+			<table class="table" id="dcStatusAnswerer">
+				<thead>
+					<tr>
+						<th>id</th>
+						<th>label</th>
+						<th>state</th>
+						<th>rx-pkts</th>
+						<th>rx-bytes</th>
+						<th>rate-curr</th>
+						<th>rate-all</th>
+						<th>action</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
 
-			<div class="row controlContainer">
+			<div class="row npmControlContainer">
 				<div class="col-md-6 npmControl">
 					<h3>Netperfmeter Control</h3>
 					<table class="table" id="npmControl">
@@ -92,7 +108,7 @@
 									1
 								</button></td>
 								<td>
-								<input class="form-control" name="paramSleep" value="0" size="4">
+								<input class="form-control" name="paramSleep" value="100" size="4">
 								</td>
 								<td>
 								<input class="form-control" name="paramPktCount" value="100" size="4">
@@ -127,14 +143,14 @@
 				</div>
 				<div class="col-md-6 npmStatus">
 					<h3>Data-Channel Status</h3>
-					<table class="table" id="dcStatus">
+					<table class="table" id="dcStatusOfferer">
 						<thead>
 							<tr>
 								<th>id</th>
 								<th>status</th>
 								<th>label</th>
-								<th>pkts-rx</th>
-								<th>pkts-tx</th>
+								<th>tx-pkts</th>
+								<th>tx-bytes</th>
 								<th>action</th>
 							</tr>
 						</thead>

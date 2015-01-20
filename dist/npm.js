@@ -60,12 +60,13 @@ if (!ROOM) {
 	type = "offerer";
 	otherType = "answerer";
 	$('#link').append(" (offerer) - <a href='#" + ROOM + "'>" + ROOM + "</a>");
+	$('#dcStatusAnswerer').hide();
 }
 
 if (type === "answerer") {
 	$('#link').append(" (answerer) - " + ROOM);
-	$('div.npmControl').hide();
-	$('div.npmStatus').removeClass('col-md-6').addClass('col-md-12');
+	$('div.npmControlContainer').hide();
+	
 };
 
 // options for the PeerConnection
@@ -158,10 +159,12 @@ function connect() {
 				statistics : {
 					t_start 			: 0,
 					t_end 				: 0,
+					t_last				: 0,
 					npmPktRx 			: 0,
 					npmPktTx			: 0,
 					npmBytesRx 			: 0,
 					npmBytesTx			: 0,
+					npmBytesRxLast		: 0,
 					npmSize 			: 0,
 					npmParameterSleep 	: 500,
 					npmPackagecount 	: 10,
@@ -246,7 +249,7 @@ function closeDataChannel(label) {
 }
 
 function NpmSend(label, message) {
-	console.log("datachannel send - label:" + label + ' - sleep:' + parameters[label].sleep);
+	// console.log("datachannel send - label:" + label + ' - sleep:' + parameters[label].sleep);
 	try {
 		channels[label].channel.send(message);
 		//channels[activeChannelCount[i]].statistics.npmBytesTx += message.length;
@@ -264,7 +267,7 @@ function NpmSend(label, message) {
 		console.log(e);
 		return;
 	}
-	updateChannelState();
+	//updateChannelState();
 };
 
 function funct() {
@@ -352,14 +355,13 @@ function bindEvents(channel) {
 		if(offerer == false){
 			answererOnMessage(e);
 		}
-		updateChannelState();
 	};
 }
 
 
 function answererOnMessage(e){		
 	rxData = e.data.toString();
-	console.log("Message for "+e.currentTarget.label + " - content:" + rxData.length);
+	// console.log("Message for "+e.currentTarget.label + " - content:" + rxData.length);
 	var tempChannelLabel = e.currentTarget.label;
 	var rxnpmPaketTemp = rxData.split(";");
 
@@ -386,21 +388,23 @@ function answererOnMessage(e){
 			break;
 		case 2:
 			channels[tempChannelLabel].statistics.t_end = new Date().getTime();
-
-			var returnArray	= 	calculation(
-									channels[tempChannelLabel].statistics.npmSize, 
-									npmSizetemp, 
-									channels[tempChannelLabel].statistics.t_start, 
-									channels[tempChannelLabel].statistics.t_end, 
-									t_startNewPackage, 
-									tempChannelLabel
-								);
-			channels[tempChannelLabel].statistics.npmSize = returnArray[0];
-			npmSizetemp = returnArray[1];
-
-			channels[tempChannelLabel].statistics.npmSize = channels[tempChannelLabel].statistics.npmSize + npmSizetemp;
-			t_startNewPackage = new Date().getTime();
+			channels[tempChannelLabel].statistics.npmBytesRx += rxData.length;
 			channels[tempChannelLabel].statistics.npmPktRx++;
+
+			// var returnArray	= 	calculation(
+									// channels[tempChannelLabel].statistics.npmSize, 
+									// npmSizetemp, 
+									// channels[tempChannelLabel].statistics.t_start, 
+									// channels[tempChannelLabel].statistics.t_end, 
+									// t_startNewPackage, 
+									// tempChannelLabel
+								// );
+			// channels[tempChannelLabel].statistics.npmSize = returnArray[0];
+			// npmSizetemp = returnArray[1];
+// 
+			// channels[tempChannelLabel].statistics.npmSize = channels[tempChannelLabel].statistics.npmSize + npmSizetemp;
+			// t_startNewPackage = new Date().getTime();
+			
 			break;
 	}
 }
@@ -428,10 +432,5 @@ function calculation(size, sizetemp, start, end, startNewPackage, channelLabel) 
 
 	//calculazion of the current Byte/s
 	channels[channelLabel].statistics.npmSizePerX = (Math.round(((npmSizetemp * (1 / ((channels[channelLabel].statistics.t_end - t_startNewPackage) / 1000))) / 1024) * 1000)) / 1000;
-
-	$('div#log').html("<div>current<br>" + channels[channelLabel].statistics.npmSizePerX + " " + (channels[channelLabel].statistics.npmPktRx + 1) + " kByte/s<br>average<br>" + channels[channelLabel].statistics.npmSizePerX2 + " kByte/s<br>" + channels[channelLabel].statistics.npmSizePerX3 + " MByte/s</div>");
-
-	console.log("GesGr.=" + channels[channelLabel].statistics.npmSize + " Byte/s=" + channels[channelLabel].statistics.npmSizePerX + " kByte/s=" + channels[channelLabel].statistics.npmSizePerX2 + " MByte/s=" + channels[channelLabel].statistics.npmSizePerX3 + " Start=" + channels[channelLabel].statistics.t_start + " Ende=" + channels[channelLabel].statistics.t_end + " GesT=" + t_duration);
-
 	return [channels[channelLabel].statistics.npmSize, npmSizetemp];
 }

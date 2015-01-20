@@ -1,4 +1,5 @@
 var npmControlChannelCounter = 1;
+var npmcStatisticsTimerActive = false;
 
 
 $('#npmControl button[name="toggleActive"]').click(function(event){
@@ -38,6 +39,7 @@ function addNpmControlRow() {
 	cloneRow.prop('id','npmControlC'+npmControlChannelCounter);
 	cloneRow.find('[name=toggleActive]').val('o'+npmControlChannelCounter);
 	cloneRow.find('[name=toggleActive]').html(npmControlChannelCounter);
+	cloneRow.find('[name=paramSleep]').val(cloneRow.find('[name=paramSleep]').val()*npmControlChannelCounter);
 	$('#npmControl tr').last().after(cloneRow);
 	
 }
@@ -58,19 +60,38 @@ function updatePeerConnectionState(event) {
 	return true;
 }
 
-function updateChannelState(event) {
-	//alert('channeländerun!');
-	$('table#dcStatus tbody').empty();
-	$.each(channels, function(key, value) {
-			var actionHTML = '';
-			if(value.channel.readyState === 'open') {
-				var actionHTML = '<button class="btn-default btn" onclick="closeDataChannel(\'' + value.channel.label + '\');">close</button>';
-			}
-			$('table#dcStatus tbody').append('<tr><td>'+ value.channel.id + '</td><td>' + value.channel.readyState + '</td><td>' + value.channel.label + '</td><td>' + value.statistics.npmPktRx + '</td><td>' + value.statistics.npmPktTx + '</td><td>'+actionHTML + '</td></tr>');
-	});
+function updateChannelState() {
 	
+	$('table#dcStatusOfferer tbody').empty();
+	$('table#dcStatusAnswerer tbody').empty();
+	var activeChannels = false;
 	
-	console.log(channels);
+	$.each(channels, function(key, value) {		
+		var actionHTML = '';
+		if(value.channel.readyState === 'open') {
+			activeChannels = true;
+			var actionHTML = '<button class="btn-default btn" onclick="closeDataChannel(\'' + value.channel.label + '\');">close</button>';
+		}
+		if(offerer) {
+			$('table#dcStatusOfferer tbody').append('<tr><td>'+ value.channel.id + '</td><td>' + value.channel.readyState + '</td><td>' + value.channel.label + '</td><td>' + value.statistics.npmPktRx + '</td><td>' + value.statistics.npmPktTx + '</td><td>'+actionHTML + '</td></tr>');
+		} else {
+			
+			rateAll = Math.round(value.statistics.npmBytesRx / ((value.statistics.t_end - value.statistics.t_start) / 1000));
+			
+			
+			$('table#dcStatusAnswerer tbody').append('<tr><td>'+ value.channel.id + '</td><td>' + value.channel.label + '</td><td>' + value.channel.readyState + '</td><td>' + value.statistics.npmPktRx + '</td><td>' + value.statistics.npmBytesRx + '</td><td></td><td>'+rateAll+'kb/s</td><td>'+actionHTML + '</td></tr>');
+	
+		}
+		
+		});
+	
+	if(activeChannels && npmcStatisticsTimerActive == false) {
+		npmcStatisticsTimerActive = true;
+		setTimeout(function(){
+			npmcStatisticsTimerActive = false;
+			updateChannelState();
+		},500);
+	} 
 	return true;
 }
 
