@@ -450,6 +450,9 @@ function handleJsonMessage(message) {
 	}
 }
 
+/*
+ * Send a message to peer with local timestamp
+ */
 function ping() {
 	var date = new Date();
 	timestampMessage = {
@@ -457,18 +460,25 @@ function ping() {
 		timestamp	: date.getTime(),
 	};
 	channels.init.channel.send(JSON.stringify(timestampMessage));
+	console.log('ping - sending timestamp to peer: ' + timestampMessage.timestamp);
 }
 
+/*
+ * Echo received timestamp to peer
+ */
 function handlePing(message) {
 	var timestampEcho = message;
 	timestampEcho.type = 'timestampEcho';
 	channels.init.channel.send(JSON.stringify(timestampEcho));
+	console.log('handlePing - echo received timestamp to peer: ' + timestampEcho.timestamp);
 }
 
+/*
+ * 
+ */
 function handlePingEcho(message) {
 	var date = new Date();
 	var t_delta = date.getTime() - message.timestamp;
-	
-	//alert('RTT:'+t_delta+'ms');
-	$('#npmcPing .rtt').html(': '+t_delta + 'ms');
+	$('#npmcPing .rtt').html(' - RTT: '+t_delta + ' ms');
+	console.log('handlePingEcho - received echoed timestamp from peer - RTT: ' + t_delta);
 }
