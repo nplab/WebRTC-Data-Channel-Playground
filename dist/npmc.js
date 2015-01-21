@@ -105,12 +105,12 @@ function updateChannelStatus(event) {
 		
 		// different statistics for offerer and answerer
 		if(offerer) {
-			$('table#dcStatusOfferer tbody').append('<tr><td>'+ value.channel.id + '</td><td><span class="dcStatus-'+value.channel.readyState+'">' + value.channel.readyState + '</span></td><td>' + value.channel.label + '</td><td>' + value.statistics.npmPktRx + '</td><td>' + value.statistics.npmPktTx + '</td><td>'+actionHTML + '</td></tr>');
+			$('table#dcStatusOfferer tbody').append('<tr><td>'+ value.channel.id + '</td><td><span class="dcStatus-'+value.channel.readyState+'">' + value.channel.readyState + '</span></td><td>' + value.channel.label + '</td><td>' + value.statistics.npmPktRxAnsw + '</td><td>' + value.statistics.npmPktTx + '</td><td>'+actionHTML + '</td></tr>');
 		} else {
 			// calculate some statistics
 			rateAll = Math.round(value.statistics.npmBytesRx / ((value.statistics.t_end - value.statistics.t_start) / 1000));
 			
-			$('table#dcStatusAnswerer tbody').append('<tr><td>'+ value.channel.id + '</td><td><span class="dcStatus-'+value.channel.readyState+'">' + value.channel.readyState + '</span></td><td>'+ value.channel.label + '</td><td>' + value.statistics.npmPktRx + '</td><td>' + value.statistics.npmBytesRx + '</td><td></td><td>'+rateAll+'kb/s</td><td>'+actionHTML + '</td></tr>');
+			$('table#dcStatusAnswerer tbody').append('<tr><td>'+ value.channel.id + '</td><td><span class="dcStatus-'+value.channel.readyState+'">' + value.channel.readyState + '</span></td><td>'+ value.channel.label + '</td><td>' + value.statistics.npmPktRxAnsw + '</td><td>' + value.statistics.npmBytesRx + '</td><td></td><td>'+rateAll+'kb/s</td><td>'+actionHTML + '</td></tr>');
 		}
 		
 	});

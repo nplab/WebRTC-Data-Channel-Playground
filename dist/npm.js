@@ -161,17 +161,17 @@ function connect() {
 					t_start 			: 0,
 					t_end 				: 0,
 					t_last				: 0,
-					npmPktRx 			: 0,
+					npmPktRxAnsw 		: 0,
 					npmPktTx			: 0,
 					npmBytesRx 			: 0,
 					npmBytesTx			: 0,
-					npmBytesRxLast		: 0,
+					npmBytesRxAnsw		: 0,
 					npmSize 			: 0,
 					npmParameterSleep 	: 500,
-					npmPackagecount 	: 10,
-					npm1SizePerX 		: 0,
-					npm1SizePerX2		: 0,
-					npm1SizePerX3		: 0,
+					npmPktCount 		: 10,
+					rateAll				: 0,
+					npmBytesLost		: 0,
+					npmPktLost			: 0,
 				}
 			};
 			updateChannelStatus();
@@ -229,17 +229,17 @@ function createDataChannel(label) {
 			t_start 			: 0,
 			t_end 				: 0,
 			t_last				: 0,
-			npmPktRx 			: 0,
+			npmPktRxAnsw 		: 0,
 			npmPktTx			: 0,
 			npmBytesRx 			: 0,
 			npmBytesTx			: 0,
-			npmBytesRxLast		: 0,
+			npmBytesRxAnsw		: 0,
 			npmSize 			: 0,
 			npmParameterSleep 	: 500,
-			npmPackagecount 	: 10,
-			npm1SizePerX 		: 0,
-			npm1SizePerX2		: 0,
-			npm1SizePerX3		: 0,
+			npmPktCount 		: 10,
+			rateAll				: 0,
+			npmBytesLost		: 0,
+			npmPktLost			: 0,
 		}
 		
 	};
@@ -255,9 +255,9 @@ function NpmSend(label, message) {
 	// console.log("datachannel send - label:" + label + ' - sleep:' + parameters[label].sleep);
 	try {
 		channels[label].channel.send(message);
-		//channels[activeChannelCount[i]].statistics.npmBytesTx += message.length;
+		channels[label].statistics.npmPktTx++;
+		channels[label].statistics.npmBytesTx += message.length;
 		if (channels[label].statistics.npmPktTx <= parameters[label].pktCount) {
-			channels[label].statistics.npmPktTx++;
 			// setTimeout(function(){
 				// NpmSend(label,message);
 			// }, parameters[label].sleep);
@@ -389,8 +389,8 @@ function sendStatistics(e){
 	alert("stats");
 	var jsonObjStats = {
 		type 		: 'stats',
-		bytesRX 	: channels[tempChannelLabel].statistics.npmBytesRx,
-		rxRateAvg	: Math.round(channels[tempChannelLabel].statistics.npmBytesRx / ((channels[tempChannelLabel].statistics.t_end - channels[tempChannelLabel].statistics.t_start) / 1000)),
+		label 		: tempChannelLabel,
+		stats 		: channels[tempChannelLabel].statistics,
 	};
 
 	channels.init.channel.send(JSON.stringify(jsonObjStats));
@@ -410,8 +410,7 @@ function answererOnMessage(e){
 	switch(messageencoder) {
 		case 1:
 			channels[tempChannelLabel].statistics.npmSizePerX 		= 0; 
-			channels[tempChannelLabel].statistics.npmPktRx 			= 0; 
-			channels[tempChannelLabel].statistics.npmPackagecount 	= 0;
+			channels[tempChannelLabel].statistics.npmPktRxAnsw 		= 0; 
 			
 			var rxDataString = rxData;
 			var rxDataArray = rxDataString.split(";");
@@ -419,24 +418,34 @@ function answererOnMessage(e){
 			channels[tempChannelLabel].statistics.npmParameterSleep 	= parseInt(rxDataArray[1]);
 			channels[tempChannelLabel].statistics.npmSize 				= parseInt(rxDataArray[2]);
 			npmSizetemp = channels[tempChannelLabel].statistics.npmSize;
-			channels[tempChannelLabel].statistics.npmPackagecount 		= rxDataArray[3];
+			channels[tempChannelLabel].statistics.npmPktCount 			= rxDataArray[3];
 
 			channels[tempChannelLabel].statistics.t_start = new Date().getTime();
 			break;
 		case 2:
 			channels[tempChannelLabel].statistics.t_end = new Date().getTime();
 			channels[tempChannelLabel].statistics.npmBytesRx += rxData.length;
-			channels[tempChannelLabel].statistics.npmPktRx++;
+			channels[tempChannelLabel].statistics.npmPktRxAnsw++;
 			break;
 	}
 }
 
 function handleJsonMessage(message) {
 	var messageObject = JSON.parse(message);
+	var tempChannelLabel = messageObject.label;
 
 	switch(messageObject.type) {
 		case 'stats':
-			console.log(messageObject);
+			channels[tempChannelLabel].statistics.t_start 			= messageObject.stats.t_start;
+			channels[tempChannelLabel].statistics.t_end 			= messageObject.stats.t_end;
+			channels[tempChannelLabel].statistics.t_last 			= messageObject.stats.t_end - messageObject.stats.t_start;
+			channels[tempChannelLabel].statistics.npmBytesRxAnsw	= messageObject.stats.npmBytesRx;
+			channels[tempChannelLabel].statistics.npmPktRxAnsw		= messageObject.stats.npmPktRxAnsw;
+			channels[tempChannelLabel].statistics.rateAll			= messageObject.stats.npmBytesRx / ((messageObject.stats.t_end - messageObject.stats.t_start) / 1000);
+			channels[tempChannelLabel].statistics.npmBytesLost		= channels[tempChannelLabel].statistics.npmBytesTx - messageObject.stats.npmBytesRx;
+			channels[tempChannelLabel].statistics.npmPktLost		= channels[tempChannelLabel].statistics.npmPktTx - messageObject.stats.npmPktRxAnsw;
+
+			console.log(channels[tempChannelLabel].statistics);
 			break;
 		case 'timestamp':
 			handlePing(messageObject);
