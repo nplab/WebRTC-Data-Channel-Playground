@@ -168,6 +168,7 @@ function connect() {
 					rateAll				: 0,
 					npmBytesLost		: 0,
 					npmPktLost			: 0,
+					runtime 			: 0,
 				}
 			};
 			updateChannelStatus();
@@ -233,6 +234,7 @@ function createDataChannel(label) {
 			rateAll				: 0,
 			npmBytesLost		: 0,
 			npmPktLost			: 0,
+			runtime 			: 0,
 		}
 		
 	};
@@ -247,23 +249,26 @@ function closeDataChannel(label) {
 function NpmSend(label, message) {
 	// console.log("datachannel send - label:" + label + ' - sleep:' + parameters[label].sleep);
 	try {
-		channels[label].channel.send(message);
-		channels[label].statistics.npmPktTx++;
-		channels[label].statistics.npmBytesTx += message.length;
-		if (channels[label].statistics.npmPktTx <= parameters[label].pktCount) {
-			// setTimeout(function(){
-				// NpmSend(label,message);
-			// }, parameters[label].sleep);
-			
-			var schedulerObject = {
-				sleep 	: parameters[label].sleep,
-				label 	: label,
-				data	: message,
-			};
-			scheduler.postMessage(schedulerObject);
-			
+		channels[label].statistics.t_end = new Date().getTime();
+		var tempTime = (channels[label].statistics.t_end - channels[label].statistics.t_start);
+		if(tempTime <= parameters[label].runtime){
+			channels[label].channel.send(message);
+			channels[label].statistics.npmPktTx++;
+			channels[label].statistics.npmBytesTx += message.length;
+			if (channels[label].statistics.npmPktTx <= parameters[label].pktCount) {
+				var schedulerObject = {
+					sleep 	: parameters[label].sleep,
+					label 	: label,
+					data	: message,
+				};
+				scheduler.postMessage(schedulerObject);
+				
+			} else {
+				channels[label].channel.close();
+			}	
 		} else {
 			channels[label].channel.close();
+			console.log("runtime break/close!!")
 		}
 	} catch(e) {
 		alert("Test Aborted!");
@@ -289,8 +294,8 @@ function parseParameters(){
 			pktCount: 		$(this).find('input[name="paramPktCount"]').val(),
 			sleep: 			$(this).find('input[name="paramSleep"]').val(),
 			reliableMethode:$(this).find('button.dropdown-toggle').data('method'),
-			reliableParam:  $(this).find('input[name="paramReliable"]').val()
-		
+			reliableParam:  $(this).find('input[name="paramReliable"]').val(),
+			runtime: 		$(this).find('input[name="paramRuntime"]').val(),
 		};
 	});
 }
@@ -319,6 +324,7 @@ function netPerfMeterRunByTrigger(label){
 	for(var i = 0; i < activeChannelCount.length; i++){			
 		if(activeChannelCount[i] == label) {
 			channels[activeChannelCount[i]].channel.send(1);
+			channels[activeChannelCount[i]].statistics.t_start = new Date().getTime();
 			channels[activeChannelCount[i]].statistics.npmBytesTx = 1;
 			
 			npmPaket = "";
