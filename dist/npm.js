@@ -8,7 +8,6 @@ var parameters = {};
 var labelButtonToggle = false;
 var t_startNewPackage = 0;
 var offerer = false;
-var npmSizetemp = 0;
 var scheduler = new Worker("dist/worker.scheduler.js");
 
 // get a reference to our FireBase database and child element: rooms
@@ -165,10 +164,7 @@ function connect() {
 					npmPktTx			: 0,
 					npmBytesRx 			: 0,
 					npmBytesTx			: 0,
-					npmBytesRxAnsw		: 0,
-					npmSize 			: 0,
-					npmParameterSleep 	: 500,
-					npmPktCount 		: 10,
+					npmPktCount 		: 0,
 					rateAll				: 0,
 					npmBytesLost		: 0,
 					npmPktLost			: 0,
@@ -233,10 +229,7 @@ function createDataChannel(label) {
 			npmPktTx			: 0,
 			npmBytesRx 			: 0,
 			npmBytesTx			: 0,
-			npmBytesRxAnsw		: 0,
-			npmSize 			: 0,
-			npmParameterSleep 	: 500,
-			npmPktCount 		: 10,
+			npmPktCount 		: 0,
 			rateAll				: 0,
 			npmBytesLost		: 0,
 			npmPktLost			: 0,
@@ -323,14 +316,10 @@ function netPerfMeter() {
 }
 //
 function netPerfMeterRunByTrigger(label){
-
-
 	for(var i = 0; i < activeChannelCount.length; i++){			
 		if(activeChannelCount[i] == label) {
-			var DataArray = new Array(1, parameters[activeChannelCount[i]].sleep, parameters[activeChannelCount[i]].pktSize, parameters[activeChannelCount[i]].pktCount);
-			var DataString = DataArray.join(";");
-			channels[activeChannelCount[i]].channel.send(DataString);
-			channels[activeChannelCount[i]].statistics.npmBytesTx = (1 + parameters[activeChannelCount[i]].sleep.length + parameters[activeChannelCount[i]].pktSize.length + parameters[activeChannelCount[i]].pktCount.length);
+			channels[activeChannelCount[i]].channel.send(1);
+			channels[activeChannelCount[i]].statistics.npmBytesTx = 1;
 			
 			npmPaket = "";
 			for (var j = 0; j < parameters[activeChannelCount[i]].pktSize; j++) {
@@ -338,7 +327,6 @@ function netPerfMeterRunByTrigger(label){
 			}
 			NpmSend(activeChannelCount[i], npmPaket);
 		}
-
 	}
 }
 
@@ -400,33 +388,14 @@ function answererOnMessage(e){
 	rxData = e.data.toString();
 	// console.log("Message for "+e.currentTarget.label + " - content:" + rxData.length);
 	var tempChannelLabel = e.currentTarget.label;
-	var rxnpmPaketTemp = rxData.split(";");
 
-	if (rxnpmPaketTemp[0] == 1) {
-		messageencoder = 1;
-	} else
-		messageencoder = 2;
-
-	switch(messageencoder) {
-		case 1:
-			channels[tempChannelLabel].statistics.npmSizePerX 		= 0; 
-			channels[tempChannelLabel].statistics.npmPktRxAnsw 		= 0; 
-			
-			var rxDataString = rxData;
-			var rxDataArray = rxDataString.split(";");
-			
-			channels[tempChannelLabel].statistics.npmParameterSleep 	= parseInt(rxDataArray[1]);
-			channels[tempChannelLabel].statistics.npmSize 				= parseInt(rxDataArray[2]);
-			npmSizetemp = channels[tempChannelLabel].statistics.npmSize;
-			channels[tempChannelLabel].statistics.npmPktCount 			= rxDataArray[3];
-
-			channels[tempChannelLabel].statistics.t_start = new Date().getTime();
-			break;
-		case 2:
-			channels[tempChannelLabel].statistics.t_end = new Date().getTime();
-			channels[tempChannelLabel].statistics.npmBytesRx += rxData.length;
-			channels[tempChannelLabel].statistics.npmPktRxAnsw++;
-			break;
+	if (rxData == "1") {
+		channels[tempChannelLabel].statistics.npmBytesRx = rxData.length;
+		channels[tempChannelLabel].statistics.t_start = new Date().getTime();
+	} else {
+		channels[tempChannelLabel].statistics.t_end = new Date().getTime();
+		channels[tempChannelLabel].statistics.npmBytesRx += rxData.length;
+		channels[tempChannelLabel].statistics.npmPktRxAnsw++;
 	}
 }
 
@@ -436,16 +405,14 @@ function handleJsonMessage(message) {
 
 	switch(messageObject.type) {
 		case 'stats':
-			channels[tempChannelLabel].statistics.t_start 			= messageObject.stats.t_start;
-			channels[tempChannelLabel].statistics.t_end 			= messageObject.stats.t_end;
-			channels[tempChannelLabel].statistics.t_last 			= messageObject.stats.t_end - messageObject.stats.t_start;
-			channels[tempChannelLabel].statistics.npmBytesRxAnsw	= messageObject.stats.npmBytesRx;
-			channels[tempChannelLabel].statistics.npmPktRxAnsw		= messageObject.stats.npmPktRxAnsw;
-			channels[tempChannelLabel].statistics.rateAll			= messageObject.stats.npmBytesRx / ((messageObject.stats.t_end - messageObject.stats.t_start) / 1000);
-			channels[tempChannelLabel].statistics.npmBytesLost		= channels[tempChannelLabel].statistics.npmBytesTx - messageObject.stats.npmBytesRx;
-			channels[tempChannelLabel].statistics.npmPktLost		= channels[tempChannelLabel].statistics.npmPktTx - messageObject.stats.npmPktRxAnsw;
+			channels[tempChannelLabel].statistics.rateAll					= Math.round(messageObject.stats.npmBytesRx / ((messageObject.stats.t_end - messageObject.stats.t_start) / 1000));
+			channels[tempChannelLabel].statistics.npmBytesLost				= channels[tempChannelLabel].statistics.npmBytesTx - messageObject.stats.npmBytesRx;
+			channels[tempChannelLabel].statistics.npmPktLost				= channels[tempChannelLabel].statistics.npmPktTx - messageObject.stats.npmPktRxAnsw;
+			channels[tempChannelLabel].statisticsRemote						= messageObject.stats;
+			channels[tempChannelLabel].statisticsRemote.t_last 		= messageObject.stats.t_end - messageObject.stats.t_start;
 
 			console.log(channels[tempChannelLabel].statistics);
+			console.log(channels[tempChannelLabel].statisticsRemote);
 			break;
 		case 'timestamp':
 			handlePing(messageObject);
@@ -488,6 +455,6 @@ function handlePing(message) {
 function handlePingEcho(message) {
 	var date = new Date();
 	var t_delta = date.getTime() - message.timestamp;
-	$('#npmcPing .rtt').html(' - RTT: '+t_delta + ' ms');
+	$('#npmcPing .rtt').html(' - RTT: ' + t_delta + ' ms');
 	console.log('handlePingEcho - received echoed timestamp from peer - RTT: ' + t_delta);
 }
