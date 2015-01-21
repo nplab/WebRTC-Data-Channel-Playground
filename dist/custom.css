@@ -1,4 +1,3 @@
-
 .footer {
 	margin-top: 20px;
 }
@@ -19,4 +18,16 @@ progress {
 
 .popover{
     max-width: 100%; // Max Width of the popover (depending on the container!)
+}
+
+span.dcStatus-open {
+	color:#3c763d;
+}
+
+span.dcStatus-closed {
+	color:#a94442;
+}
+
+span.dcStatus-connecting, span.dcStatus-closing {
+	color:#337ab7;
 }

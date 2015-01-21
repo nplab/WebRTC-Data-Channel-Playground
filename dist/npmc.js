@@ -8,7 +8,7 @@
  * SETTINGS SECTION BEGIN
  */
 
-npmcSettings = {
+var npmcSettings = {
 	// refresh rate for the status tables in ms
 	statusRefreshRate	: 500,
 };
@@ -51,13 +51,13 @@ $('#npmChannelParameters ul.reliabilitySelect a').click(function(event){
 // clone the first row from dc parameters and append it after the last row
 function cloneFirstParametersRow() {
 	npmcDcCounter++;
-	var cloneRow = $('#npmControl tr.tr_clone').clone(true);
+	var cloneRow = $('#npmChannelParameters > tbody > tr.tr_clone').clone(true);
 	cloneRow.removeClass('tr_clone');
 	cloneRow.prop('id','npmControlC'+npmcDcCounter);
 	cloneRow.find('[name=toggleActive]').val('o'+npmcDcCounter);
 	cloneRow.find('[name=toggleActive]').html(npmcDcCounter);
 	cloneRow.find('[name=paramSleep]').val(cloneRow.find('[name=paramSleep]').val()*npmcDcCounter);
-	$('#npmControl tr').last().after(cloneRow);
+	$('#npmChannelParameters tr').last().after(cloneRow);
 	
 }
 
@@ -86,22 +86,36 @@ function updateChannelStatus(event) {
 	$.each(channels, function(key, value) {		
 		var actionHTML = '';
 		
+		// if init channel is open, enable npm and ping - if not: disable!
+		if(value.channel.label == 'init') {
+			if(value.channel.readyState === 'open') {
+				$('#npmcRun').removeAttr('disabled');
+				$('#npmcPing').removeAttr('disabled');
+			} else {
+				$('#npmcRun').attr('disabled','disabled');
+				$('#npmcPing').attr('disabled','disabled');
+			}
+		}
+		
 		// if channel is open, offer to close it
 		if(value.channel.readyState === 'open') {
 			activeChannels = true;
-			var actionHTML = '<button class="btn-default btn" onclick="closeDataChannel(\'' + value.channel.label + '\');">close</button>';
+			var actionHTML = '<button class="btn-default btn btn-xs" onclick="closeDataChannel(\'' + value.channel.label + '\');">close</button>';
 		}
+		
+		// different statistics for offerer and answerer
 		if(offerer) {
-			$('table#dcStatusOfferer tbody').append('<tr><td>'+ value.channel.id + '</td><td>' + value.channel.readyState + '</td><td>' + value.channel.label + '</td><td>' + value.statistics.npmPktRx + '</td><td>' + value.statistics.npmPktTx + '</td><td>'+actionHTML + '</td></tr>');
+			$('table#dcStatusOfferer tbody').append('<tr><td>'+ value.channel.id + '</td><td><span class="dcStatus-'+value.channel.readyState+'">' + value.channel.readyState + '</span></td><td>' + value.channel.label + '</td><td>' + value.statistics.npmPktRx + '</td><td>' + value.statistics.npmPktTx + '</td><td>'+actionHTML + '</td></tr>');
 		} else {
+			// calculate some statistics
 			rateAll = Math.round(value.statistics.npmBytesRx / ((value.statistics.t_end - value.statistics.t_start) / 1000));
-			$('table#dcStatusAnswerer tbody').append('<tr><td>'+ value.channel.id + '</td><td>' + value.channel.label + '</td><td>' + value.channel.readyState + '</td><td>' + value.statistics.npmPktRx + '</td><td>' + value.statistics.npmBytesRx + '</td><td></td><td>'+rateAll+'kb/s</td><td>'+actionHTML + '</td></tr>');
-	
+			
+			$('table#dcStatusAnswerer tbody').append('<tr><td>'+ value.channel.id + '</td><td><span class="dcStatus-'+value.channel.readyState+'">' + value.channel.readyState + '</span></td><td>'+ value.channel.label + '</td><td>' + value.statistics.npmPktRx + '</td><td>' + value.statistics.npmBytesRx + '</td><td></td><td>'+rateAll+'kb/s</td><td>'+actionHTML + '</td></tr>');
 		}
 		
 	});
 	
-	if(activeChannels && npmcStatisticsTimerActive != false) {
+	if(activeChannels && npmcStatisticsTimerActive == false) {
 		npmcStatisticsTimerActive = true;
 		setTimeout(function(){
 			npmcStatisticsTimerActive = false;

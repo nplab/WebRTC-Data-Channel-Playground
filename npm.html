@@ -60,13 +60,13 @@
 				<div class="col-md-6">
 					<h3>Controlpanel</h3>
 					<div class="form-group">
-						<button class="btn btn-success btn-block" id="npmcRun" disabled="disabled" onclick="NetPerfMeter()">
+						<button class="btn btn-success btn-block" id="npmcRun" disabled="disabled" onclick="netPerfMeter()">
 							<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start NPM
 						</button>
 					</div>
 					<div class="form-group">
-						<button class="btn btn-primary btn-block" disabled="disabled" id="npmcPing">
-							<span class="glyphicon glyphicon-time" aria-hidden="true"></span> Ping Peer
+						<button class="btn btn-primary btn-block" disabled="disabled" id="npmcPing" onclick="ping()">
+							<span class="glyphicon glyphicon-time" aria-hidden="true"></span> Ping Peer<span class="rtt"></span>
 						</button>
 					</div>
 						
@@ -75,7 +75,6 @@
 				<div class="col-md-6">
 					
 					<h3>Peer- and Ice-Status</h3>
-					<div>Status of peer Connection: <span id="pcStatus"></span></div>
 					
 					<table class="table table-condensed">
 						<thead>
@@ -108,8 +107,8 @@
 				<thead>
 					<tr>
 						<th>id</th>
-						<th>label</th>
 						<th>state</th>
+						<th>label</th>
 						<th>rx-pkts</th>
 						<th>rx-bytes</th>
 						<th>rate-curr</th>

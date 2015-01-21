@@ -66,7 +66,7 @@ if (!ROOM) {
 
 if (type === "answerer") {
 	$('#link').append(" (answerer) - " + ROOM);
-	$('div.npmControlContainer').hide();
+	$('div.npmControlOfferer').hide();
 	
 };
 
@@ -287,7 +287,7 @@ function funct() {
 function parseParameters(){
 	
 
-	$('#npmControl > tbody > tr').each(function(){	
+	$('#npmChannelParameters > tbody > tr').each(function(){	
 		parameters[$(this).find('button[name="toggleActive"]').val()] = {
 
 			active: 		$(this).find('button[name="toggleActive"]').hasClass("btn-primary"),
@@ -303,7 +303,7 @@ function parseParameters(){
 }
 
 //
-function NetPerfMeter() {	
+function netPerfMeter() {	
 	var channelNo = -1;
 	var accc = 0;
 
@@ -366,7 +366,8 @@ function bindEvents(channel) {
 	};
 
 	channel.onmessage = function(e) {
-
+		console.log('incoming message: ' + e.data);
+		
 		if(e.currentTarget.label == 'init') {
 			handleJsonMessage(e.data);
 		} else if(offerer == false){
@@ -385,12 +386,11 @@ scheduler.onmessage = function(e) {
 
 function sendStatistics(e){
 	var tempChannelLabel = e.currentTarget.label;
-	rateAllTemp = getRateAll();
 	alert("stats");
 	var jsonObjStats = {
 		type 		: 'stats',
 		bytesRX 	: channels[tempChannelLabel].statistics.npmBytesRx,
-		rateAll		: rateAllTemp,
+		rxRateAvg	: Math.round(channels[tempChannelLabel].statistics.npmBytesRx / ((channels[tempChannelLabel].statistics.t_end - channels[tempChannelLabel].statistics.t_start) / 1000)),
 	};
 
 	channels.init.channel.send(JSON.stringify(jsonObjStats));
@@ -432,14 +432,43 @@ function answererOnMessage(e){
 }
 
 function handleJsonMessage(message) {
-	var messageObject = JSON.parse(message)
+	var messageObject = JSON.parse(message);
 
 	switch(messageObject.type) {
 		case 'stats':
 			console.log(messageObject);
 			break;
+		case 'timestamp':
+			handlePing(messageObject);
+			break;
+		case 'timestampEcho':
+			handlePingEcho(messageObject);
+			break;
 		default:
 			alert('Unknown messagetype!!');
 			break;
 	}
+}
+
+function ping() {
+	var date = new Date();
+	timestampMessage = {
+		type		: 'timestamp',
+		timestamp	: date.getTime(),
+	};
+	channels.init.channel.send(JSON.stringify(timestampMessage));
+}
+
+function handlePing(message) {
+	var timestampEcho = message;
+	timestampEcho.type = 'timestampEcho';
+	channels.init.channel.send(JSON.stringify(timestampEcho));
+}
+
+function handlePingEcho(message) {
+	var date = new Date();
+	var t_delta = date.getTime() - message.timestamp;
+	
+	//alert('RTT:'+t_delta+'ms');
+	$('#npmcPing .rtt').html(': '+t_delta + 'ms');
 }
