@@ -243,11 +243,15 @@ function createDataChannel(label) {
 }
 
 function closeDataChannel(label) {
+	console.log('closeDataChannel - channel:' + label);
 	channels[label].channel.close();
 }
 
 function NpmSend(label, message) {
 	// console.log("datachannel send - label:" + label + ' - sleep:' + parameters[label].sleep);
+	if(label == 'init') {
+		alert('darf nicht sein!0');
+	}
 	try {
 		channels[label].statistics.t_end = new Date().getTime();
 		var tempTime = (channels[label].statistics.t_end - channels[label].statistics.t_start);
@@ -264,11 +268,12 @@ function NpmSend(label, message) {
 				scheduler.postMessage(schedulerObject);
 				
 			} else {
-				channels[label].channel.close();
+				console.log('NpmSend - channel:'+label+' - all pkts sent');
+				closeDataChannel(label);
 			}	
 		} else {
-			channels[label].channel.close();
-			console.log("runtime break/close!!")
+			closeDataChannel(label);
+			console.log('NpmSend - channel:'+label+' - runtime reached');			
 		}
 	} catch(e) {
 		alert("Test Aborted!");
