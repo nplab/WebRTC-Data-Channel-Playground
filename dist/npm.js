@@ -297,11 +297,11 @@ function parseParameters(){
 			label:  		$(this).find('button[name="toggleActive"]').val(),
 			pktSize: 		$(this).find('input[name="paramPktSize"]').val(),
 			pktCount: 		$(this).find('input[name="paramPktCount"]').val(),
-			sleep: 			$(this).find('input[name="paramSleep"]').val(),
+			sleep: 			Math.floor((Math.random() * 100) + 1),//$(this).find('input[name="paramSleep"]').val(),
 			reliableMethode:$(this).find('button.dropdown-toggle').data('method'),
 			reliableParam:  $(this).find('input[name="paramReliable"]').val(),
 			runtime: 		($(this).find('input[name="paramRuntime"]').val() * 1000),
-			delay: 			($(this).find('input[name="paramDelay"]').val() * 1000),
+			delay: 			Math.floor((Math.random() * 10) + 1),//($(this).find('input[name="paramDelay"]').val() * 1000),
 		};
 	});
 }
@@ -395,8 +395,9 @@ function sendStatistics(e){
 		label 		: tempChannelLabel,
 		stats 		: channels[tempChannelLabel].statistics,
 	};
-
-	channels.init.channel.send(JSON.stringify(jsonObjStats));
+	var tempStringify = JSON.stringify(jsonObjStats);
+	alert(tempStringify.length);
+	channels.init.channel.send(tempStringify);
 }
 
 function answererOnMessage(e){		
