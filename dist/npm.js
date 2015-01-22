@@ -250,7 +250,7 @@ function closeDataChannel(label) {
 function NpmSend(label, message) {
 	// console.log("datachannel send - label:" + label + ' - sleep:' + parameters[label].sleep);
 	if(label == 'init') {
-		alert('darf nicht sein!0');
+		alert('darf nicht sein!');
 	}
 	try {
 		channels[label].statistics.t_end = new Date().getTime();
