@@ -295,7 +295,8 @@ function parseParameters(){
 			sleep: 			$(this).find('input[name="paramSleep"]').val(),
 			reliableMethode:$(this).find('button.dropdown-toggle').data('method'),
 			reliableParam:  $(this).find('input[name="paramReliable"]').val(),
-			runtime: 		$(this).find('input[name="paramRuntime"]').val(),
+			runtime: 		($(this).find('input[name="paramRuntime"]').val() * 1000),
+			delay: 			($(this).find('input[name="paramDelay"]').val() * 1000),
 		};
 	});
 }
@@ -321,9 +322,12 @@ function netPerfMeter() {
 }
 //
 function netPerfMeterRunByTrigger(label){
+	updateChannelStatus();
 	for(var i = 0; i < activeChannelCount.length; i++){			
 		if(activeChannelCount[i] == label) {
-			channels[activeChannelCount[i]].channel.send(1);
+
+			console.log('netPerfMeterRunByTrigger - channel: ' + label);
+			channels[activeChannelCount[i]].channel.send("1");
 			channels[activeChannelCount[i]].statistics.t_start = new Date().getTime();
 			channels[activeChannelCount[i]].statistics.npmBytesTx = 1;
 			
@@ -340,9 +344,10 @@ function netPerfMeterRunByTrigger(label){
 function bindEvents(channel) {
 	channel.onopen = function() {
 		console.log("datachannel opened - label:" + channel.label + ', ID:' + channel.id);
-		
-		if(offerer == true){
-			netPerfMeterRunByTrigger(channel.label);
+		if(offerer == true && channel.label != "init"){
+			setTimeout(function() {
+				netPerfMeterRunByTrigger(channel.label);
+			}, parameters[channel.label].delay);		
 		}
 		updateChannelStatus();
 	};
@@ -380,7 +385,6 @@ scheduler.onmessage = function(e) {
 
 function sendStatistics(e){
 	var tempChannelLabel = e.currentTarget.label;
-	alert("stats");
 	var jsonObjStats = {
 		type 		: 'stats',
 		label 		: tempChannelLabel,
@@ -415,7 +419,7 @@ function handleJsonMessage(message) {
 			channels[tempChannelLabel].statistics.npmBytesLost				= channels[tempChannelLabel].statistics.npmBytesTx - messageObject.stats.npmBytesRx;
 			channels[tempChannelLabel].statistics.npmPktLost				= channels[tempChannelLabel].statistics.npmPktTx - messageObject.stats.npmPktRxAnsw;
 			channels[tempChannelLabel].statisticsRemote						= messageObject.stats;
-			channels[tempChannelLabel].statisticsRemote.t_last 		= messageObject.stats.t_end - messageObject.stats.t_start;
+			channels[tempChannelLabel].statisticsRemote.t_last 				= messageObject.stats.t_end - messageObject.stats.t_start;
 
 			console.log(channels[tempChannelLabel].statistics);
 			console.log(channels[tempChannelLabel].statisticsRemote);
