@@ -125,15 +125,13 @@
 					<table class="table" id="npmChannelParameters">
 						<thead>
 							<tr>
-								<th><span id="npmChannelParametersClone" class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green;"></span></th>
-
-								
-								<th>#-packets</th>
-								<th>packetsize</th>
-								<th>reliable</th>
-								<th>sleep (ms)</th>
-								<th>delay</th>
-								<th>runtime</th>
+								<th style="width:10%"><span id="npmChannelParametersClone" class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green;"></span></th>
+								<th style="width:12%">pkt-count</th>
+								<th style="width:12%">pkt-size</th>
+								<th style="width:20%">reliable</th>
+								<th style="width:12%">sleep (ms)</th>
+								<th style="width:12%">delay (s)</th>
+								<th style="width:12%">runtime (s)</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -159,13 +157,13 @@
 										</button>
 										<ul class="dropdown-menu reliabilitySelect" role="menu">
 											<li>
-												<a href="#" data-method="reliable">reliable</a>
+												<a href="#" data-method="reliable" data-shortdesc="reliable">reliable</a>
 											</li>
 											<li>
-												<a href="#" data-method="maxRetransmit">maxRetransmit</a>
+												<a href="#" data-method="maxRetransmit" data-shortdesc="retrans">max retransmissions</a>
 											</li>
 											<li>
-												<a href="#" data-method="maxTimeout">maxTimeout</a>
+												<a href="#" data-method="maxTimeout" data-shortdesc="timeout">max timeout (ms)</a>
 											</li>
 										</ul>
 									</div><!-- /btn-group -->
@@ -176,10 +174,10 @@
 								<input class="form-control" name="paramSleep" value="100" size="4">
 								</td>
 								<td>
-								<input class="form-control" name="paramDelay" value="100" size="4">
+								<input class="form-control" name="paramDelay" value="5" size="4">
 								</td>
 								<td>
-								<input class="form-control" name="paramRuntime" value="100" size="4">
+								<input class="form-control" name="paramRuntime" value="30" size="4">
 								</td>
 							</tr>
 						</tbody>

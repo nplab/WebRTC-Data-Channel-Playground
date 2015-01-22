@@ -31,3 +31,9 @@ span.dcStatus-closed {
 span.dcStatus-connecting, span.dcStatus-closing {
 	color:#337ab7;
 }
+
+table#npmChannelParameters td,table#npmChannelParameters th {
+	padding:2px;
+	text-align:center;
+	vertical-align:middle;
+} 

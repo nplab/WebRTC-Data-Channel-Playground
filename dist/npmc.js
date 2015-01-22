@@ -35,7 +35,7 @@ $('#npmChannelParameters button[name="toggleActive"]').click(function(event){
 $('#npmChannelParameters ul.reliabilitySelect a').click(function(event){
 	var parentId 		= $(this).closest('tr').prop('id');
 	var toggleButton 	= $('#'+parentId+' .dropdown-toggle');
-	toggleButton.html($(this).data('method') + ' <span class="caret"></span>');
+	toggleButton.html($(this).data('shortdesc') + ' <span class="caret"></span>');
 	toggleButton.data('method',$(this).data('method'));
 	
 	var relInput = $('#'+parentId +' input[name=paramReliable]');	
