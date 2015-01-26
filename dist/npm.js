@@ -423,7 +423,6 @@ function sendStatistics(e){
 		stats 		: channels[tempChannelLabel].statistics,
 	};
 	var tempStringify = JSON.stringify(jsonObjStats);
-	alert(tempStringify.length);
 	channels.init.channel.send(tempStringify);
 }
 
@@ -501,3 +500,34 @@ function handlePingEcho(message) {
 	$('#npmcPing .rtt').html(' - RTT: ' + t_delta + ' ms');
 	console.log('handlePingEcho - received echoed timestamp from peer - RTT: ' + t_delta);
 }
+
+/*
+ *
+ */
+function seveCookies() {
+	parseParameters();
+	document.cookie = JSON.stringify(parameters);
+}
+
+/*
+ *
+ */
+function loadCookies() {
+	//Ich will ein einzelnes Feld ansprechen. Klappt aber noch nicht so richtig.
+	$('input[name="paramDelay"]').val('123'); 
+	//$('#npmChannelParametersC1 > tbody > tr').find('input[name="paramDelay"]').val('123');
+
+	parameters = JSON.parse(document.cookie);
+}
+
+/*
+ *
+ */
+ function saveStats() {
+ 	// Check for the various File API support.
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		
+	} else {
+	  alert('The File APIs are not fully supported in this browser.');
+	}
+ }

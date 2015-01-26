@@ -113,9 +113,11 @@ function updateChannelStatus(event) {
 			if(value.channel.readyState === 'open') {
 				$('#npmcRun').removeAttr('disabled');
 				$('#npmcPing').removeAttr('disabled');
+				$('#npmSaveStats').removeAttr('disabled');
 			} else {
 				$('#npmcRun').attr('disabled','disabled');
 				$('#npmcPing').attr('disabled','disabled');
+				$('#npmSaveStats').attr('disabled','disabled');
 			}
 		}
 		
