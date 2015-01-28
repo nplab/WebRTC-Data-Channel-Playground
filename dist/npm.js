@@ -36,6 +36,7 @@ var labelButtonToggle = false;
 var t_startNewPackage = 0;
 var offerer = false;
 var scheduler = new Worker("dist/worker.scheduler.js");
+var array;
 
 // get a reference to our FireBase database and child element: rooms
 var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
@@ -505,8 +506,8 @@ function handlePingEcho(message) {
  *
  */
 function seveCookies() {
-	parseParameters();
-	document.cookie = JSON.stringify(parameters);
+	var htmlCodeForCookie = $("npmChannelParametersC1").html();
+	$.cookie('Settings', htmlCodeForCookie);
 }
 
 /*
@@ -523,11 +524,69 @@ function loadCookies() {
 /*
  *
  */
+function copyFromTextarea(){
+	document.getElementById("csv").focus();
+	document.getElementById("csv").select();
+}
+
+/*
+ *
+ */
  function saveStats() {
- 	// Check for the various File API support.
-	if (window.File && window.FileReader && window.FileList && window.Blob) {
-		
-	} else {
-	  alert('The File APIs are not fully supported in this browser.');
-	}
+ 	$('#csv').html("");
+ 	for(var i = 0; i < activeChannelCount.length; i++){
+	 	var statsExpStrg = (
+	 		"Stats for channel " + activeChannelCount[i] + ":\r" +
+	 		channels[activeChannelCount[i]].statistics.rateAll + " kb/s.\r" +
+	 		channels[activeChannelCount[i]].statistics.npmPktTx + " Pkt send.\r" +
+	 		channels[activeChannelCount[i]].statisticsRemote.npmPktRxAnsw + " Pkt received.\r" +
+	 		channels[activeChannelCount[i]].statisticsRemote.npmPktLost + " Pkt lost.\r" + 
+	 		channels[activeChannelCount[i]].statistics.npmBytesTx + " Bytes send.\r" +
+	 		channels[activeChannelCount[i]].statisticsRemote.npmBytesRx + " Bytes received.\r" +
+	 		channels[activeChannelCount[i]].statisticsRemote.npmBytesLost + " Bytes lost.\r\r" 
+	 	);
+	 	$('#csv').append(statsExpStrg);
+ 	}
+
+ 	/*var statsArray = new Array;
+ 	var statsString = "";
+ 	for(var i = 0; i < activeChannelCount.length; i++){
+ 		var items = [
+ 			{stats: 		channels[activeChannelCount[i]].statistics},
+ 		 	{statsremote: 	channels[activeChannelCount[i]].statisticsRemote},
+ 		]
+	    var jsonObject = JSON.stringify(items);
+	    console.log(jsonObject);
+	    console.log(ConvertToCSV(jsonObject));
+ 		statsString += ConvertToCSV(jsonObject);
+ 	}
+ 	$('#csv').val(statsString);*/
  }
+/*
+ *
+ */
+// JSON to CSV Converter
+/*function ConvertToCSV(objArray) {
+    if(typeof objArray != 'object'){
+    	array = JSON.parse(objArray);
+    } else {
+    	array = objArray;
+    }  
+    var str = '';
+    alert(array.length);
+    for (var i = 0; i < array.length; i++) {
+        var line = '';
+        for (var index in array[i]) {
+            if (line != ''){
+            	line += ',';	
+            } 
+            line += array[i];
+        }
+
+        str += line + '\r\n';
+        console.log(str);
+    }
+
+    return str;
+}
+*/

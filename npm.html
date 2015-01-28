@@ -19,6 +19,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
 		<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+		<script src="/path/to/jquery.cookie.js"></script>
 
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
@@ -71,8 +72,12 @@
 					</div>
 					<div class="form-group">
 						<button class="btn btn-primary btn-block" disabled="disabled" id="npmSaveStats" onclick="saveStats()">
-							<span class="glyphicon glyphicon-hdd" aria-hidden="true"></span> Save stats<span class="rtt"></span>
+							<span class="glyphicon glyphicon-hdd" aria-hidden="true"></span> Display stats<span class="rtt"></span>
 						</button>
+					</div>
+					<div class="form-group">
+						<textarea  onclick="copyFromTextarea()" class="btn btn-primary btn-block" cols="50" rows="10" id="csv" text="Bla">
+						</textarea>
 					</div>
 					<div class="form-group">
 						<button class="btn btn-primary btn-block" id="npmSaveCookie" onclick="saveCookies()">
@@ -84,7 +89,6 @@
 							<span class="glyphicon glyphicon-floppy-open" aria-hidden="false"></span> Load settings<span class="rtt"></span>
 						</button>
 					</div>
-
 						
 				</div>
 				
