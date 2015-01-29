@@ -506,19 +506,18 @@ function handlePingEcho(message) {
  *
  */
 function seveCookies() {
-	var htmlCodeForCookie = $("npmChannelParametersC1").html();
-	$.cookie('Settings', htmlCodeForCookie);
+	var htmlCodeForCookie = $("#npmChannelParametersC1").html();
+	localStorage.setItem('Settings', htmlCodeForCookie);
+	console.log(htmlCodeForCookie);
+	//$.cookie('Settings', htmlCodeForCookie);	
 }
 
 /*
  *
  */
 function loadCookies() {
-	//Ich will ein einzelnes Feld ansprechen. Klappt aber noch nicht so richtig.
-	$('input[name="paramDelay"]').val('123'); 
-	//$('#npmChannelParametersC1 > tbody > tr').find('input[name="paramDelay"]').val('123');
-
-	parameters = JSON.parse(document.cookie);
+	var htmlCodeForCookie = localStorage.getItem('Settings');
+	$("#npmChannelParametersC1").html(htmlCodeForCookie);
 }
 
 /*
