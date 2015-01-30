@@ -316,8 +316,6 @@ function funct() {
 
 //
 function parseParameters(){
-	
-
 	$('#npmChannelParameters > tbody > tr').each(function(){	
 		parameters[$(this).find('button[name="toggleActive"]').val()] = {
 
@@ -506,9 +504,19 @@ function handlePingEcho(message) {
  *
  */
 function seveCookies() {
-	var htmlCodeForCookie = $("#npmChannelParametersC1").html();
-	localStorage.setItem('Settings', htmlCodeForCookie);
-	console.log(htmlCodeForCookie);
+	//$('#npmChannelParameters > tbody > tr').each(function(){	
+		localStorage.setItem('pktSize', 		$('#npmChannelParameters > tbody > tr').find('input[name="paramPktSize"]').val());
+		localStorage.setItem('pktCount', 		$('#npmChannelParameters > tbody > tr').find('input[name="paramPktCount"]').val());
+		localStorage.setItem('sleep', 			$('#npmChannelParameters > tbody > tr').find('input[name="paramSleep"]').val());
+		localStorage.setItem('reliableMethode', $('#npmChannelParameters > tbody > tr').find('button.dropdown-toggle').data('method'));
+		localStorage.setItem('reliableParam',	$('#npmChannelParameters > tbody > tr').find('input[name="paramReliable"]').val());
+		localStorage.setItem('runtime',			$('#npmChannelParameters > tbody > tr').find('input[name="paramRuntime"]').val());
+		localStorage.setItem('delay',			$('#npmChannelParameters > tbody > tr').find('input[name="paramDelay"]').val());
+	//});
+
+	//var htmlCodeForCookie = $("#npmChannelParametersC1").html();
+	//localStorage.setItem('Settings', htmlCodeForCookie);
+	//console.log(htmlCodeForCookie);
 	//$.cookie('Settings', htmlCodeForCookie);	
 }
 
@@ -516,8 +524,18 @@ function seveCookies() {
  *
  */
 function loadCookies() {
-	var htmlCodeForCookie = localStorage.getItem('Settings');
-	$("#npmChannelParametersC1").html(htmlCodeForCookie);
+	//$('#npmChannelParameters > tbody > tr').each(function(){	
+		$('#npmChannelParameters > tbody > tr').find('input[name="paramPktSize"]').val(localStorage.getItem('pktSize'));
+		$('#npmChannelParameters > tbody > tr').find('input[name="paramPktCount"]').val(localStorage.getItem('pktCount'));
+		$('#npmChannelParameters > tbody > tr').find('input[name="paramSleep"]').val(localStorage.getItem('sleep'));
+		//$('#npmChannelParameters > tbody > tr').find('button.dropdown-toggle').data('method') = localStorage.getItem('reliableMethode');
+		$('#npmChannelParameters > tbody > tr').find('input[name="paramReliable"]').val(localStorage.getItem('reliableParam'));
+		$('#npmChannelParameters > tbody > tr').find('input[name="paramRuntime"]').val(localStorage.getItem('runtime'));
+		$('#npmChannelParameters > tbody > tr').find('input[name="paramDelay"]').val(localStorage.getItem('delay'));
+	//});
+
+	//var htmlCodeForCookie = localStorage.getItem('Settings');
+	//$("#npmChannelParametersC1").html(htmlCodeForCookie); 
 }
 
 /*
