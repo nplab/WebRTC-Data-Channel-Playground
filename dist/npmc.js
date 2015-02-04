@@ -43,9 +43,10 @@ var npmcDcCounter = 1;
 var npmcStatisticsTimerActive = false;
 
 // button toggle used to activate and deactivate channels
-$('#npmChannelParameters button[name="toggleActive"]').click(function(event){
-	$(this).toggleClass('btn-default btn-primary');
-	if($(this).hasClass('btn-primary')) {
+$('#npmChannelParameters').on('click', 'button[name="toggleActive"]', function(event){
+	
+	$(this).toggleClass('btn-default btn-success');
+	if($(this).hasClass('btn-success')) {
 		$(this).data('active',true);
 	} else {
 		$(this).data('active',false);
@@ -54,7 +55,7 @@ $('#npmChannelParameters button[name="toggleActive"]').click(function(event){
 });
 
 // select reliability options for specific channel - this function provides dropdown functionality
-$('#npmChannelParameters ul.reliabilitySelect a').click(function(event){
+$('#npmChannelParameters').on('click', 'ul.reliabilitySelect a', function(event){
 	var parentId 		= $(this).closest('tr').prop('id');
 	var toggleButton 	= $('#'+parentId+' .dropdown-toggle');
 	toggleButton.html($(this).data('shortdesc') + ' <span class="caret"></span>');
@@ -73,9 +74,9 @@ $('#npmChannelParameters ul.reliabilitySelect a').click(function(event){
 // clone the first row from dc parameters and append it after the last row
 function cloneFirstParametersRow() {
 	npmcDcCounter++;
-	var cloneRow = $('#npmChannelParameters > tbody > tr.tr_clone').clone(true);
+	var cloneRow = $('#npmChannelParameters > tbody > tr.tr_clone').clone();
 	cloneRow.removeClass('tr_clone');
-	cloneRow.prop('id','npmControlC'+npmcDcCounter);
+	cloneRow.prop('id','npmChannelParametersC'+npmcDcCounter);
 	cloneRow.find('[name=toggleActive]').val('o'+npmcDcCounter);
 	cloneRow.find('[name=toggleActive]').html(npmcDcCounter);
 	cloneRow.find('[name=paramSleep]').val(cloneRow.find('[name=paramSleep]').val()*npmcDcCounter);
