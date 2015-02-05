@@ -85,6 +85,8 @@ var array;
 var signalingID = location.hash.substr(1);
 var role = "answerer";
 var peerRole = "offerer";
+var peerIceCandidates = [];
+var localIceCandidates = [];
 // get a reference to our FireBase database and child element: signalingID
 var signalingIDRef = dbRef.child("ids");
 
@@ -137,7 +139,8 @@ function errorHandler(err) {
 
 function extractIpFromString(string) {
 	var pattern = '(?:25[0-5]|2[0-4][0-9]|1?[0-9][0-9]{1,2}|[0-9]){1,}(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}|0)){3}';
-	return string.match(pattern);
+	var match = string.match(pattern);
+	return match[0];
 }
 
 function extractProtocolFromStrig(string) {
@@ -150,18 +153,14 @@ pc.onicecandidate = function(event) {
 		return;
 	}
 	
-	console.log('local ice candidate: '+event.candidate.candidate);
 	var ip = extractIpFromString(event.candidate.candidate);
-	if(options.iceOfferAll == false && !confirm('ICE - offer ip: '+ip+'?')) {
-		return;
+	if(localIceCandidates.indexOf(ip) == -1) {
+		localIceCandidates.push(ip);
+		$('#localIceCandidates').append(ip+'<br/>');
 	}
 	
-	if($('#localIceFilter').val() != '' && $('#localIceFilter').val() != ip) {
-		return;
-	}
-
-	$('#localIceCandidates').append(ip+'<br/>');
 	signalingIDRef.child(signalingID).child(role+'-iceCandidates').push(JSON.stringify(event.candidate));
+	
 	console.log('onicecandidate - ip:' + ip);
 	updatePeerConnectionStatus(event);
 };
@@ -256,7 +255,10 @@ function connect() {
 		pc.addIceCandidate(new IceCandidate(peerCandidate));
 		
 		var peerIp = extractIpFromString(peerIceCandidate.candidate);
-		$('#peerIceCandidates').append(peerIp+'<br/>');
+		if(peerIceCandidates.indexOf(peerIp) == -1) {
+			peerIceCandidates.push(peerIp);
+			$('#peerIceCandidates').append(peerIp+'<br/>');
+		}	
 		
 		//console.log(peerIceCandidate);
 		console.log('peerIceCandidate: '+peerIp);
