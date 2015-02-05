@@ -51,12 +51,12 @@ var iceServer = {
 };
 
 // constraints on the offer SDP.
-var sdpConstraints = {'mandatory':
-  {
-    'OfferToReceiveAudio': false,
-    'OfferToReceiveVideo': false
-  }
-};
+var sdpConstraints; // = {'mandatory':
+  // {
+    // 'OfferToReceiveAudio': false,
+    // 'OfferToReceiveVideo': false
+  // }
+// };
 
 // Reference to Firebase APP
 var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
@@ -140,38 +140,29 @@ function extractIpFromString(string) {
 	return string.match(pattern);
 }
 
+function extractProtocolFromStrig(string) {
+	
+}
+
 pc.onicecandidate = function(event) {
 	// take the first candidate that isn't null
-	if (!event.candidate) {
+	if (!pc || !event || !event.candidate) {
 		return;
 	}
 	
-	console.log(event);
-	
+	console.log('local ice candidate: '+event.candidate.candidate);
 	var ip = extractIpFromString(event.candidate.candidate);
-	
 	if(options.iceOfferAll == false && !confirm('ICE - offer ip: '+ip+'?')) {
 		return;
 	}
 	
+	if($('#localIceFilter').val() != '' && $('#localIceFilter').val() != ip) {
+		return;
+	}
+
+	$('#localIceCandidates').append(ip+'<br/>');
+	signalingIDRef.child(signalingID).child(role+'-iceCandidates').push(JSON.stringify(event.candidate));
 	console.log('onicecandidate - ip:' + ip);
-	
-	// stop eventhandler after first successful event
-	//pc.onicecandidate = null;
-
-	// request the other peers ICE candidate
-	// firebaseReceive(signalingID, "candidate:" + peerRole, function(candidate) {
-		// pc.addIceCandidate(new IceCandidate(JSON.parse(candidate)));
-	// });
-	signalingIDRef.child(signalingID).child(peerRole+'-iceCandidates').on('child_added', function(childSnapshot, prevChildName) {
-		console.log('remote ice: ' + childSnapshot.val());
-	});
-// 	
-
-	// send our ICE candidate
-	//firebaseSend(signalingID, "candidate:" + role, JSON.stringify(event.candidate));
-	signalingIDRef.child(signalingID).child(role+'-iceCandidates').push(event.candidate);
-	
 	updatePeerConnectionStatus(event);
 };
 
@@ -192,6 +183,9 @@ var channels = new Object();
 
 // start start peer connection
 function connect() {
+	
+
+	
 	if (role === "offerer") {
 		
 		createDataChannel('init');
@@ -252,6 +246,21 @@ function connect() {
 		});
 		console.log('connect passive');
 	}
+	
+		signalingIDRef.child(signalingID).child(peerRole+'-iceCandidates').on('child_added', function(childSnapshot) {
+		var childVal = childSnapshot.val();
+		var peerCandidate = JSON.parse(childVal);
+		console.log(peerCandidate);
+		
+		var peerIceCandidate = new IceCandidate(peerCandidate);
+		pc.addIceCandidate(new IceCandidate(peerCandidate));
+		
+		var peerIp = extractIpFromString(peerIceCandidate.candidate);
+		$('#peerIceCandidates').append(peerIp+'<br/>');
+		
+		//console.log(peerIceCandidate);
+		console.log('peerIceCandidate: '+peerIp);
+	});
 }
 
 //Create Datachannels

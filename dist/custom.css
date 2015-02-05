@@ -2,6 +2,19 @@
 	margin-top: 20px;
 }
 
+h1 {
+	font-size: 30px;
+}
+
+h2 {
+	font-size: 26px;
+}
+
+h3 {
+	font-size: 22px;
+}
+
+
 .testControls {
 	margin-bottom: 20px;
 	width: 100%;

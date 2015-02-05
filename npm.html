@@ -12,6 +12,7 @@
 		<!-- CSS Section -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans' type='text/css'>
 		<link rel="stylesheet" href="dist/custom.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
 
@@ -57,15 +58,15 @@
 
 			<div class="row">
 
-				<div class="col-sm-4" id="dcControls">
-					<h3>Controlpanel</h3>
-
-					<button class="btn btn-primary btn-block btn-sm " disabled="disabled" id="npmcPing" onclick="ping()">
-						<span class="glyphicon glyphicon-time" aria-hidden="true"></span> Ping Peer<span class="rtt"></span>
-					</button>
+				<div class="col-sm-3" id="dcControls">
+					<h3>Control</h3>
 					
 					<button class="btn btn-success btn-block btn-sm " id="npmConnect" onclick="connect()">
 						<span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> Connect
+					</button>
+
+					<button class="btn btn-primary btn-block btn-sm " disabled="disabled" id="npmcPing" onclick="ping()">
+						<span class="glyphicon glyphicon-time" aria-hidden="true"></span> Ping Peer<span class="rtt"></span>
 					</button>
 
 					<button class="btn btn-success btn-block btn-sm " id="npmRun" disabled="disabled" onclick="netPerfMeter()">
@@ -82,9 +83,10 @@
 
 				</div>
 
-				<div class="col-sm-8">
+				
+				<div class="col-sm-5">
 
-					<h3>Peer- and Ice-Status</h3>
+					<h3>Status</h3>
 
 					<table class="table table-condensed">
 						<thead>
@@ -109,7 +111,29 @@
 						</tbody>
 					</table>
 				</div>
+				
+				<div class="col-sm-4">
 
+					<h3>ICE Candidates</h3>
+					
+      
+      			<input type="text" id="localIceFilter" class="form-control input-sm" value="212.201.121.94" placeholder="filter local ip">
+
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>local</th>
+								<th>peer</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td id="localIceCandidates"></td>
+								<td id="peerIceCandidates"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
 
 			<table class="table table-condensed" id="dcStatusAnswerer">
@@ -210,19 +234,6 @@
 						</tbody>
 					</table>
 				</div>
-			</div>
-
-			<div>
-				<pre>
-				
-   Wellenlänge    +0 nm       +1 nm       +2 nm       +3 nm
-----------------------------------------------------------------
-    380 nm    0.0002000   0.0002280   0.0002610   0.0002990
-    385 nm    0.0003960   0.0004550   0.0005250   0.0006040
-    390 nm    0.0008000   0.0009160   0.0010500   0.0012000
-    </pre>				
-				
-
 			</div>
 		</div>
 
