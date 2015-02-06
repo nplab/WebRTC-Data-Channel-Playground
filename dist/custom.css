@@ -51,4 +51,10 @@ table#npmChannelParameters td,table#npmChannelParameters th {
 	
 	text-align:center;
 	vertical-align:middle;
-} 
+}
+
+#signalingID {
+	font-size: 16px;
+	margin-bottom: 5px;
+	text-align:center;
+}

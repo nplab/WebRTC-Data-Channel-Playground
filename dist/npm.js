@@ -95,14 +95,14 @@ if (!signalingID) {
 	remRef.remove();
 	role = "offerer";
 	peerRole = "answerer";
-	$('#signalingID').val(signalingID);
+	
 	$('#statusRole').html(role);
 	$('#statusSigID').html("<a href='#" + signalingID + "'>" + signalingID + "</a>");
 	$('#dcStatusAnswerer').hide();
 	
 } else {
-	
 	$('#statusSigID').html(signalingID);
+	$('#signalingID').val(signalingID);
 	$('#statusRole').html(role);
 	$('div.npmControlOfferer').hide();
 };
