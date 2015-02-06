@@ -33,15 +33,19 @@
  * SETTINGS BEGIN
  */
 
-// ICE, STUN, TURN Servers
+
 var options = {
 	iceOfferAll : true,
 };
 
+// ICE, STUN, TURN Servers
 var iceServer = {
-	iceServers : [{
-		urls : "stun:stun4.l.google.com:19302"
-	}]
+	iceServers : [
+	{urls:'stun:stun.l.google.com:19302'},
+	{urls:'stun:stun1.l.google.com:19302'},
+	{urls:'stun:stun2.l.google.com:19302'},
+	{urls:'stun:stun3.l.google.com:19302'},
+	{urls:'stun:stun4.l.google.com:19302'}]
 };
 
 // constraints on the offer SDP.
@@ -65,42 +69,40 @@ var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || 
 var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
 var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 
-
-
-var pc = new PeerConnection(iceServer);
-var dcCounter = 0;
 var activeChannelCount = new Array();
-var parameters = {};
+var channels = {};
+var dcCounter = 0;
 var labelButtonToggle = false;
-var t_startNewPackage = 0;
-var offerer = false;
-var scheduler = new Worker("dist/worker.scheduler.js");
-var array;
-var signalingID = location.hash.substr(1);
-var role = "answerer";
-var peerRole = "offerer";
-var peerIceCandidates = [];
 var localIceCandidates = [];
-// get a reference to our FireBase database and child element: signalingID
-var signalingIDRef = dbRef.child("ids");
+var offerer = false;
+var parameters = {};
+var pc = new PeerConnection(iceServer);
+var peerIceCandidates = [];
+var peerRole = "offerer";
+var role = "answerer";
+var scheduler = new Worker("dist/worker.scheduler.js");
+var signalingID = location.hash.substr(1);
+var signalingIDRef = dbRef.child("npmIDs");
+var t_startNewPackage = 0;
 
 // no signalingID specified, so create one
 // which makes us the offerer
 if (!signalingID) {
 	//signalingID = generateSignalingID();
-	
 	signalingID = 10;
 	
 	var remRef = signalingIDRef.child(signalingID);
 	remRef.remove();
 	role = "offerer";
 	peerRole = "answerer";
-	$('#link').append(" (offerer) - <a href='#" + signalingID + "'>" + signalingID + "</a>");
+	
+	$('#statusRole').html(role);
+	$('#statusSigID').html("<a href='#" + signalingID + "'>" + signalingID + "</a>");
 	$('#dcStatusAnswerer').hide();
-}
-
-if (role === "answerer") {
-	$('#link').append(" (answerer) - " + signalingID);
+	
+} else {
+	$('#statusSigID').html(signalingID);
+	$('#statusRole').html(role);
 	$('div.npmControlOfferer').hide();
 };
 
@@ -175,15 +177,15 @@ pc.oniceconnectionstatechange = function(event) {
 
 
 
-// define the channel var
-var channels = new Object();
-
-//connect();
+// initiate signaling channel and role
+function init() {
+	
+}
 
 // start start peer connection
 function connect() {
 	
-
+	$('#npmConnect').prop('disabled',true);
 	
 	if (role === "offerer") {
 		
@@ -612,9 +614,13 @@ function getStats(peer) {
     });
 };
 
+
+
 function myGetStats(peer, callback) {
-    if (!!navigator.mozGetUserMedia) {
-    	console.log('iam not mozilla1');
+	console.log(peer);
+	
+    if (!!window.mozRTCSessionDescription) {
+    	console.log('stats for Mozilla');
         peer.getStats(
             function (res) {
                 var items = [];
@@ -626,7 +632,7 @@ function myGetStats(peer, callback) {
             callback
         );
     } else {
-    	console.log('iam  mozilla1');
+    	console.log('stats for other');
         peer.getStats(function (res) {
             var items = [];
             res.result().forEach(function (result) {
