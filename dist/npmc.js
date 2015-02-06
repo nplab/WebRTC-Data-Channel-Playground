@@ -71,6 +71,21 @@ $('#npmChannelParameters').on('click', 'ul.reliabilitySelect a', function(event)
 	event.preventDefault();
 });
 
+$('#npmRoleSelectMenu a').click(function(event){
+	if($(this).data('role') == role) {
+		//return;
+	}
+	
+	if($(this).data('role') == 'answerer') {
+		$('#signalingID').prop('disabled',false);
+	} else {
+		$('#signalingID').prop('disabled',true);
+	}
+	
+	event.preventDefault();
+});
+
+
 // clone the first row from dc parameters and append it after the last row
 function cloneFirstParametersRow() {
 	npmcDcCounter++;
