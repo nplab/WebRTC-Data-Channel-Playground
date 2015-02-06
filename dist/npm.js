@@ -33,36 +33,39 @@
  * SETTINGS BEGIN
  */
 
-
 var options = {
 	iceOfferAll : true,
 };
 
 // ICE, STUN, TURN Servers
 var iceServer = {
-	iceServers : [
-	{urls:'stun:stun.l.google.com:19302'},
-	{urls:'stun:stun1.l.google.com:19302'},
-	{urls:'stun:stun2.l.google.com:19302'},
-	{urls:'stun:stun3.l.google.com:19302'},
-	{urls:'stun:stun4.l.google.com:19302'}]
+	iceServers : [{
+		urls : 'stun:stun.l.google.com:19302'
+	}, {
+		urls : 'stun:stun1.l.google.com:19302'
+	}, {
+		urls : 'stun:stun2.l.google.com:19302'
+	}, {
+		urls : 'stun:stun3.l.google.com:19302'
+	}, {
+		urls : 'stun:stun4.l.google.com:19302'
+	}]
 };
 
 // constraints on the offer SDP.
-var sdpConstraints = {'mandatory':
-  {
-    'OfferToReceiveAudio': false,
-    'OfferToReceiveVideo': false
-  }
+var sdpConstraints = {
+	'mandatory' : {
+		'OfferToReceiveAudio' : false,
+		'OfferToReceiveVideo' : false
+	}
 };
 
 // Reference to Firebase APP
 var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
 
-
 /*
- * SETTINGS END
- */
+* SETTINGS END
+*/
 
 // shims - wrappers for webkit and mozilla connections
 var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
@@ -81,31 +84,46 @@ var peerIceCandidates = [];
 var peerRole = "offerer";
 var role = "answerer";
 var scheduler = new Worker("dist/worker.scheduler.js");
-var signalingID = location.hash.substr(1);
+var signalingID;
+var freshSignalingID = generateSignalingID();
 var signalingIDRef = dbRef.child("npmIDs");
 var t_startNewPackage = 0;
 
-// no signalingID specified, so create one
-// which makes us the offerer
-if (!signalingID) {
-	//signalingID = generateSignalingID();
-	signalingID = 10;
+// clean firebase ref
+signalingIDRef.child(freshSignalingID).remove();
+$('#signalingID').val(location.hash.substring(1));
+
+
+prepareRole();
+
+function prepareRole() {
 	
-	var remRef = signalingIDRef.child(signalingID);
-	remRef.remove();
-	role = "offerer";
-	peerRole = "answerer";
-	
-	$('#statusRole').html(role);
-	$('#statusSigID').html("<a href='#" + signalingID + "'>" + signalingID + "</a>");
-	$('#dcStatusAnswerer').hide();
-	
-} else {
-	$('#statusSigID').html(signalingID);
-	$('#signalingID').val(signalingID);
-	$('#statusRole').html(role);
-	$('div.npmControlOfferer').hide();
-};
+	// role offerer
+	if ($('#signalingID').val() != '') {
+		
+		if($('#signalingID').val() != '') {
+			signalingID = $('#signalingID').val();
+		}
+		role = "answerer";
+		peerRole = "offerer";
+
+				
+		$('#statusSigID').html(signalingID);
+		$('#statusRole').html(role);
+		$('div.npmControlOfferer').hide();
+		$('#dcStatusAnswerer').show();
+
+	} else {
+		role = 'offerer';
+		peerRole = 'answerer';
+		signalingID = freshSignalingID;
+		$('#statusRole').html(role);
+		$('#statusSigID').html("<a href='#" + signalingID + "'>" + signalingID + "</a>");
+		$('#dcStatusAnswerer').hide();
+		$('div.npmControlOfferer').show();
+
+	};
+}
 
 // generate a unique-ish string for storage in firebase
 function generateSignalingID() {
@@ -141,7 +159,7 @@ function extractIpFromString(string) {
 }
 
 function extractProtocolFromStrig(string) {
-	
+
 }
 
 pc.onicecandidate = function(event) {
@@ -149,26 +167,25 @@ pc.onicecandidate = function(event) {
 	if (!pc || !event || !event.candidate) {
 		return;
 	}
-	
+
 	var ip = extractIpFromString(event.candidate.candidate);
-	
-	if($('#localIceFilter').val() != '' && $('#localIceFilter').val() != ip) {
+
+	if ($('#localIceFilter').val() != '' && $('#localIceFilter').val() != ip) {
 		return;
 	}
 
-	
-	if(localIceCandidates.indexOf(ip) == -1) {
+	if (localIceCandidates.indexOf(ip) == -1) {
 		localIceCandidates.push(ip);
-		$('#localIceCandidates').append(ip+'<br/>');
+		$('#localIceCandidates').append(ip + '<br/>');
 	}
-	
-	signalingIDRef.child(signalingID).child(role+'-iceCandidates').push(JSON.stringify(event.candidate));
-	
+
+	signalingIDRef.child(signalingID).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
+
 	console.log('onicecandidate - ip:' + ip);
 	updatePeerConnectionStatus(event);
 };
 
-pc.onsignalingstatechange  = function(event) {
+pc.onsignalingstatechange = function(event) {
 	updatePeerConnectionStatus(event);
 };
 
@@ -176,20 +193,19 @@ pc.oniceconnectionstatechange = function(event) {
 	updatePeerConnectionStatus(event);
 };
 
-
-
 // initiate signaling channel and role
 function init() {
-	
+
 }
 
 // start start peer connection
 function connect() {
-	
-	$('#npmConnect').prop('disabled',true);
-	
+
+	$('#npmConnect').prop('disabled', true);
+	$('#signalingID').prop('disabled', true);
+
 	if (role === "offerer") {
-		
+
 		createDataChannel('init');
 		// create the offer SDP
 		pc.createOffer(function(offer) {
@@ -206,7 +222,7 @@ function connect() {
 
 		console.log("creating offer");
 
-	} else { // answerer role
+	} else {// answerer role
 		// answerer must wait for the data channel
 		pc.ondatachannel = function(event) {
 			var channel = event.channel;
@@ -215,20 +231,20 @@ function connect() {
 			console.log('incoming datachannel');
 
 			channels[channel.label] = {
-				channel: channel,
+				channel : channel,
 				statistics : {
-					t_start 			: 0,
-					t_end 				: 0,
-					t_last				: 0,
-					npmPktRxAnsw 		: 0,
-					npmPktTx			: 0,
-					npmBytesRx 			: 0,
-					npmBytesTx			: 0,
-					npmPktCount 		: 0,
-					rateAll				: 0,
-					npmBytesLost		: 0,
-					npmPktLost			: 0,
-					runtime 			: 0,
+					t_start : 0,
+					t_end : 0,
+					t_last : 0,
+					npmPktRxAnsw : 0,
+					npmPktTx : 0,
+					npmBytesRx : 0,
+					npmBytesTx : 0,
+					npmPktCount : 0,
+					rateAll : 0,
+					npmBytesLost : 0,
+					npmPktLost : 0,
+					runtime : 0,
 				}
 			};
 			updateChannelStatus();
@@ -248,72 +264,71 @@ function connect() {
 		});
 		console.log('connect passive');
 	}
-	
-		signalingIDRef.child(signalingID).child(peerRole+'-iceCandidates').on('child_added', function(childSnapshot) {
+
+	signalingIDRef.child(signalingID).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
 		var childVal = childSnapshot.val();
 		var peerCandidate = JSON.parse(childVal);
 		console.log(peerCandidate);
-		
+
 		var peerIceCandidate = new IceCandidate(peerCandidate);
 		pc.addIceCandidate(new IceCandidate(peerCandidate));
-		
+
 		var peerIp = extractIpFromString(peerIceCandidate.candidate);
-		if(peerIceCandidates.indexOf(peerIp) == -1) {
+		if (peerIceCandidates.indexOf(peerIp) == -1) {
 			peerIceCandidates.push(peerIp);
-			$('#peerIceCandidates').append(peerIp+'<br/>');
-		}	
-		
+			$('#peerIceCandidates').append(peerIp + '<br/>');
+		}
+
 		//console.log(peerIceCandidate);
-		console.log('peerIceCandidate: '+peerIp);
+		console.log('peerIceCandidate: ' + peerIp);
 	});
 }
 
 //Create Datachannels
 function createDataChannel(label) {
-	// 	
+	//
 
 	var dataChannelOptions;
-	if(typeof parameters[label] != 'undefined'){
-		switch(parameters[label].reliableMethode){
-			case "reliable":
-				dataChannelOptions = {
-				};
-				break;
-			case "maxRetransmit":
-				dataChannelOptions = {
-					maxRetransmits		: parameters[label].reliableParam,
-				};
-				break;
-			case "maxTimeout":
-				dataChannelOptions = {
-					maxRetransmitTime	: parameters[label].reliableParam,
-				};
-				break;
+	if ( typeof parameters[label] != 'undefined') {
+		switch(parameters[label].reliableMethode) {
+		case "reliable":
+			dataChannelOptions = {
+			};
+			break;
+		case "maxRetransmit":
+			dataChannelOptions = {
+				maxRetransmits : parameters[label].reliableParam,
+			};
+			break;
+		case "maxTimeout":
+			dataChannelOptions = {
+				maxRetransmitTime : parameters[label].reliableParam,
+			};
+			break;
 		}
 	}
-		
 
 	// offerer creates the data channel
 	var tempChannel = pc.createDataChannel(label, dataChannelOptions);
 	bindEvents(tempChannel);
-	
+
 	channels[tempChannel.label] = {
 		channel : tempChannel,
-		statistics: {
-			t_start 			: 0,
-			t_end 				: 0,
-			t_last				: 0,
-			npmPktRxAnsw 		: 0,
-			npmPktTx			: 0,
-			npmBytesRx 			: 0,
-			npmBytesTx			: 0,
-			npmPktCount 		: 0,
-			rateAll				: 0,
-			npmBytesLost		: 0,
-			npmPktLost			: 0,
-			runtime 			: 0,
+		statistics : {
+			t_start : 0,
+			t_end : 0,
+			t_last : 0,
+			npmPktRxAnsw : 0,
+			npmPktTx : 0,
+			npmBytesRx : 0,
+			npmBytesTx : 0,
+			npmPktCount : 0,
+			rateAll : 0,
+			npmBytesLost : 0,
+			npmPktLost : 0,
+			runtime : 0,
 		}
-		
+
 	};
 	updateChannelStatus();
 	console.log("datachannel created - label:" + tempChannel.id + ', id:' + tempChannel.label);
@@ -326,31 +341,31 @@ function closeDataChannel(label) {
 
 function NpmSend(label, message) {
 	// console.log("datachannel send - label:" + label + ' - sleep:' + parameters[label].sleep);
-	if(label == 'init') {
+	if (label == 'init') {
 		alert('darf nicht sein!');
 	}
 	try {
 		channels[label].statistics.t_end = new Date().getTime();
 		var tempTime = (channels[label].statistics.t_end - channels[label].statistics.t_start);
-		if(tempTime <= parameters[label].runtime){
+		if (tempTime <= parameters[label].runtime) {
 			channels[label].channel.send(message);
 			channels[label].statistics.npmPktTx++;
 			channels[label].statistics.npmBytesTx += message.length;
 			if (channels[label].statistics.npmPktTx <= parameters[label].pktCount) {
 				var schedulerObject = {
-					sleep 	: parameters[label].sleep,
-					label 	: label,
-					data	: message,
+					sleep : parameters[label].sleep,
+					label : label,
+					data : message,
 				};
 				scheduler.postMessage(schedulerObject);
-				
+
 			} else {
-				console.log('NpmSend - channel:'+label+' - all pkts sent');
+				console.log('NpmSend - channel:' + label + ' - all pkts sent');
 				closeDataChannel(label);
-			}	
+			}
 		} else {
 			closeDataChannel(label);
-			console.log('NpmSend - channel:'+label+' - runtime reached');			
+			console.log('NpmSend - channel:' + label + ' - runtime reached');
 		}
 	} catch(e) {
 		alert("Test Aborted!");
@@ -364,53 +379,53 @@ function funct() {
 };
 
 //
-function parseParameters(){
-	$('#npmChannelParameters > tbody > tr').each(function(){	
+function parseParameters() {
+	$('#npmChannelParameters > tbody > tr').each(function() {
 		parameters[$(this).find('button[name="toggleActive"]').val()] = {
 
-			active: 		$(this).find('button[name="toggleActive"]').hasClass("btn-primary"),
-			label:  		$(this).find('button[name="toggleActive"]').val(),
-			pktSize: 		$(this).find('input[name="paramPktSize"]').val(),
-			pktCount: 		$(this).find('input[name="paramPktCount"]').val(),
-			sleep: 			Math.floor((Math.random() * 100) + 1),//$(this).find('input[name="paramSleep"]').val(),
-			reliableMethode:$(this).find('button.dropdown-toggle').data('method'),
-			reliableParam:  $(this).find('input[name="paramReliable"]').val(),
-			runtime: 		($(this).find('input[name="paramRuntime"]').val() * 1000),
-			delay: 			Math.floor((Math.random() * 10) + 1),//($(this).find('input[name="paramDelay"]').val() * 1000),
+			active : $(this).find('button[name="toggleActive"]').hasClass("btn-primary"),
+			label : $(this).find('button[name="toggleActive"]').val(),
+			pktSize : $(this).find('input[name="paramPktSize"]').val(),
+			pktCount : $(this).find('input[name="paramPktCount"]').val(),
+			sleep : Math.floor((Math.random() * 100) + 1), //$(this).find('input[name="paramSleep"]').val(),
+			reliableMethode : $(this).find('button.dropdown-toggle').data('method'),
+			reliableParam : $(this).find('input[name="paramReliable"]').val(),
+			runtime : ($(this).find('input[name="paramRuntime"]').val() * 1000),
+			delay : Math.floor((Math.random() * 10) + 1),//($(this).find('input[name="paramDelay"]').val() * 1000),
 		};
 	});
 }
 
 //
-function netPerfMeter() {	
+function netPerfMeter() {
 	var channelNo = -1;
 	var accc = 0;
 
 	parseParameters();
 
-	for(var key in parameters){
+	for (var key in parameters) {
 		if (parameters.hasOwnProperty(key)) {
-			if(parameters[key].active == true){
+			if (parameters[key].active == true) {
 				createDataChannel(key);
 				activeChannelCount[accc] = key;
 				accc++;
 			}
 		}
 	}
-	
-	
+
 }
+
 //
-function netPerfMeterRunByTrigger(label){
+function netPerfMeterRunByTrigger(label) {
 	updateChannelStatus();
-	for(var i = 0; i < activeChannelCount.length; i++){			
-		if(activeChannelCount[i] == label) {
+	for (var i = 0; i < activeChannelCount.length; i++) {
+		if (activeChannelCount[i] == label) {
 
 			console.log('netPerfMeterRunByTrigger - channel: ' + label);
 			channels[activeChannelCount[i]].channel.send("1");
 			channels[activeChannelCount[i]].statistics.t_start = new Date().getTime();
 			channels[activeChannelCount[i]].statistics.npmBytesTx = 1;
-			
+
 			npmPaket = "";
 			for (var j = 0; j < parameters[activeChannelCount[i]].pktSize; j++) {
 				npmPaket += "a";
@@ -424,17 +439,17 @@ function netPerfMeterRunByTrigger(label){
 function bindEvents(channel) {
 	channel.onopen = function() {
 		console.log("datachannel opened - label:" + channel.label + ', ID:' + channel.id);
-		if(offerer == true && channel.label != "init"){
+		if (offerer == true && channel.label != "init") {
 			setTimeout(function() {
 				netPerfMeterRunByTrigger(channel.label);
-			}, parameters[channel.label].delay);		
+			}, parameters[channel.label].delay);
 		}
 		updateChannelStatus();
 	};
 
 	channel.onclose = function(e) {
 		console.log("datachannel closed - label:" + channel.label + ', ID:' + channel.id);
-		if(offerer == false){
+		if (offerer == false) {
 			sendStatistics(e);
 		}
 		updateChannelStatus();
@@ -446,35 +461,35 @@ function bindEvents(channel) {
 
 	channel.onmessage = function(e) {
 		console.log('incoming message: ' + e.data);
-		
-		if(e.currentTarget.label == 'init') {
+
+		if (e.currentTarget.label == 'init') {
 			handleJsonMessage(e.data);
-		} else if(offerer == false){
+		} else if (offerer == false) {
 			answererOnMessage(e);
-		} 
+		}
 	};
 }
 
 scheduler.onmessage = function(e) {
 	var message = e.data;
-	
-	if(message.label != undefined && message.sleep != undefined && message.data != undefined) {
+
+	if (message.label != undefined && message.sleep != undefined && message.data != undefined) {
 		NpmSend(message.label, message.data);
 	}
 };
 
-function sendStatistics(e){
+function sendStatistics(e) {
 	var tempChannelLabel = e.currentTarget.label;
 	var jsonObjStats = {
-		type 		: 'stats',
-		label 		: tempChannelLabel,
-		stats 		: channels[tempChannelLabel].statistics,
+		type : 'stats',
+		label : tempChannelLabel,
+		stats : channels[tempChannelLabel].statistics,
 	};
 	var tempStringify = JSON.stringify(jsonObjStats);
 	channels.init.channel.send(tempStringify);
 }
 
-function answererOnMessage(e){		
+function answererOnMessage(e) {
 	rxData = e.data.toString();
 	// console.log("Message for "+e.currentTarget.label + " - content:" + rxData.length);
 	var tempChannelLabel = e.currentTarget.label;
@@ -494,25 +509,25 @@ function handleJsonMessage(message) {
 	var tempChannelLabel = messageObject.label;
 
 	switch(messageObject.type) {
-		case 'stats':
-			channels[tempChannelLabel].statistics.rateAll					= Math.round(messageObject.stats.npmBytesRx / ((messageObject.stats.t_end - messageObject.stats.t_start) / 1000));
-			channels[tempChannelLabel].statistics.npmBytesLost				= channels[tempChannelLabel].statistics.npmBytesTx - messageObject.stats.npmBytesRx;
-			channels[tempChannelLabel].statistics.npmPktLost				= channels[tempChannelLabel].statistics.npmPktTx - messageObject.stats.npmPktRxAnsw;
-			channels[tempChannelLabel].statisticsRemote						= messageObject.stats;
-			channels[tempChannelLabel].statisticsRemote.t_last 				= messageObject.stats.t_end - messageObject.stats.t_start;
+	case 'stats':
+		channels[tempChannelLabel].statistics.rateAll = Math.round(messageObject.stats.npmBytesRx / ((messageObject.stats.t_end - messageObject.stats.t_start) / 1000));
+		channels[tempChannelLabel].statistics.npmBytesLost = channels[tempChannelLabel].statistics.npmBytesTx - messageObject.stats.npmBytesRx;
+		channels[tempChannelLabel].statistics.npmPktLost = channels[tempChannelLabel].statistics.npmPktTx - messageObject.stats.npmPktRxAnsw;
+		channels[tempChannelLabel].statisticsRemote = messageObject.stats;
+		channels[tempChannelLabel].statisticsRemote.t_last = messageObject.stats.t_end - messageObject.stats.t_start;
 
-			console.log(channels[tempChannelLabel].statistics);
-			console.log(channels[tempChannelLabel].statisticsRemote);
-			break;
-		case 'timestamp':
-			handlePing(messageObject);
-			break;
-		case 'timestampEcho':
-			handlePingEcho(messageObject);
-			break;
-		default:
-			alert('Unknown messagetype!!');
-			break;
+		console.log(channels[tempChannelLabel].statistics);
+		console.log(channels[tempChannelLabel].statisticsRemote);
+		break;
+	case 'timestamp':
+		handlePing(messageObject);
+		break;
+	case 'timestampEcho':
+		handlePingEcho(messageObject);
+		break;
+	default:
+		alert('Unknown messagetype!!');
+		break;
 	}
 }
 
@@ -522,8 +537,8 @@ function handleJsonMessage(message) {
 function ping() {
 	var date = new Date();
 	timestampMessage = {
-		type		: 'timestamp',
-		timestamp	: date.getTime(),
+		type : 'timestamp',
+		timestamp : date.getTime(),
 	};
 	channels.init.channel.send(JSON.stringify(timestampMessage));
 	console.log('ping - sending timestamp to peer: ' + timestampMessage.timestamp);
@@ -540,7 +555,7 @@ function handlePing(message) {
 }
 
 /*
- * 
+ *
  */
 function handlePingEcho(message) {
 	var date = new Date();
@@ -553,8 +568,8 @@ function handlePingEcho(message) {
  * Save the channel settings to webstorage
  */
 function saveChannelSettings() {
-	$('#npmChannelParameters > tbody > tr > td > input').each(function(){
-		$(this).attr('value',$(this).val());
+	$('#npmChannelParameters > tbody > tr > td > input').each(function() {
+		$(this).attr('value', $(this).val());
 	});
 
 	var channelSettingsHTML = $("#npmChannelParameters").html();
@@ -565,20 +580,20 @@ function saveChannelSettings() {
  * load channel settings from webstorage
  */
 function loadChannelSetting() {
-	
+
 	var channelSettingsHTML = localStorage.getItem('npmChannelSettings');
-	if(channelSettingsHTML) {
-		$("#npmChannelParameters").html(channelSettingsHTML); 
+	if (channelSettingsHTML) {
+		$("#npmChannelParameters").html(channelSettingsHTML);
 	} else {
 		alert('Sorry - No saved settings available!');
 	}
-	
+
 }
 
 /*
  *
  */
-function copyFromTextarea(){
+function copyFromTextarea() {
 	document.getElementById("csv").focus();
 	document.getElementById("csv").select();
 }
@@ -586,67 +601,52 @@ function copyFromTextarea(){
 /*
  *
  */
- function saveStats() {
- 	$('#csv').html("");
- 	for(var i = 0; i < activeChannelCount.length; i++){
-	 	var statsExpStrg = (
-	 		"Stats for channel " + activeChannelCount[i] + ":\r" +
-	 		channels[activeChannelCount[i]].statistics.rateAll + " kb/s.\r" +
-	 		channels[activeChannelCount[i]].statistics.npmPktTx + " Pkt send.\r" +
-	 		channels[activeChannelCount[i]].statisticsRemote.npmPktRxAnsw + " Pkt received.\r" +
-	 		channels[activeChannelCount[i]].statisticsRemote.npmPktLost + " Pkt lost.\r" + 
-	 		channels[activeChannelCount[i]].statistics.npmBytesTx + " Bytes send.\r" +
-	 		channels[activeChannelCount[i]].statisticsRemote.npmBytesRx + " Bytes received.\r" +
-	 		channels[activeChannelCount[i]].statisticsRemote.npmBytesLost + " Bytes lost.\r\r" 
-	 	);
-	 	$('#csvOutput').html(statsExpStrg);
- 	}
- }
-
+function saveStats() {
+	$('#csv').html("");
+	for (var i = 0; i < activeChannelCount.length; i++) {
+		var statsExpStrg = ("Stats for channel " + activeChannelCount[i] + ":\r" + channels[activeChannelCount[i]].statistics.rateAll + " kb/s.\r" + channels[activeChannelCount[i]].statistics.npmPktTx + " Pkt send.\r" + channels[activeChannelCount[i]].statisticsRemote.npmPktRxAnsw + " Pkt received.\r" + channels[activeChannelCount[i]].statisticsRemote.npmPktLost + " Pkt lost.\r" + channels[activeChannelCount[i]].statistics.npmBytesTx + " Bytes send.\r" + channels[activeChannelCount[i]].statisticsRemote.npmBytesRx + " Bytes received.\r" + channels[activeChannelCount[i]].statisticsRemote.npmBytesLost + " Bytes lost.\r\r"
+		);
+		$('#csvOutput').html(statsExpStrg);
+	}
+}
 
 function getStats(peer) {
-    myGetStats(peer, function (results) {
-        for (var i = 0; i < results.length; ++i) {
-            var res = results[i];
-            console.log(res);
-        }
+	myGetStats(peer, function(results) {
+		for (var i = 0; i < results.length; ++i) {
+			var res = results[i];
+			console.log(res);
+		}
 
-        
-    });
+	});
 };
-
-
 
 function myGetStats(peer, callback) {
 	console.log(peer);
-	
-    if (!!window.mozRTCSessionDescription) {
-    	console.log('stats for Mozilla');
-        peer.getStats(
-            function (res) {
-                var items = [];
-                res.forEach(function (result) {
-                    items.push(result);
-                });
-                callback(items);
-            },
-            callback
-        );
-    } else {
-    	console.log('stats for other');
-        peer.getStats(function (res) {
-            var items = [];
-            res.result().forEach(function (result) {
-                var item = {};
-                result.names().forEach(function (name) {
-                    item[name] = result.stat(name);
-                });
-                item.id = result.id;
-                item.type = result.type;
-                item.timestamp = result.timestamp;
-                items.push(item);
-            });
-            callback(items);
-        });
-    }
+
+	if (!!window.mozRTCSessionDescription) {
+		console.log('stats for Mozilla');
+		peer.getStats(function(res) {
+			var items = [];
+			res.forEach(function(result) {
+				items.push(result);
+			});
+			callback(items);
+		}, callback);
+	} else {
+		console.log('stats for other');
+		peer.getStats(function(res) {
+			var items = [];
+			res.result().forEach(function(result) {
+				var item = {};
+				result.names().forEach(function(name) {
+					item[name] = result.stat(name);
+				});
+				item.id = result.id;
+				item.type = result.type;
+				item.timestamp = result.timestamp;
+				items.push(item);
+			});
+			callback(items);
+		});
+	}
 };
