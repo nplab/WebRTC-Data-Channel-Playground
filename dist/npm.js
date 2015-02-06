@@ -40,23 +40,17 @@ var options = {
 
 var iceServer = {
 	iceServers : [{
-		urls : "stun:23.21.150.121"
-	}, {
-		urls : "stun:stun.l.google.com:19302"
-	}, {
-		urls : "turn:numb.viagenie.ca",
-		credential : "webrtcdemo",
-		username : "louis%40mozilla.com"
+		urls : "stun:stun4.l.google.com:19302"
 	}]
 };
 
 // constraints on the offer SDP.
-var sdpConstraints; // = {'mandatory':
-  // {
-    // 'OfferToReceiveAudio': false,
-    // 'OfferToReceiveVideo': false
-  // }
-// };
+var sdpConstraints = {'mandatory':
+  {
+    'OfferToReceiveAudio': false,
+    'OfferToReceiveVideo': false
+  }
+};
 
 // Reference to Firebase APP
 var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
@@ -154,6 +148,12 @@ pc.onicecandidate = function(event) {
 	}
 	
 	var ip = extractIpFromString(event.candidate.candidate);
+	
+	if($('#localIceFilter').val() != '' && $('#localIceFilter').val() != ip) {
+		return;
+	}
+
+	
 	if(localIceCandidates.indexOf(ip) == -1) {
 		localIceCandidates.push(ip);
 		$('#localIceCandidates').append(ip+'<br/>');

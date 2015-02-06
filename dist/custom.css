@@ -1,5 +1,7 @@
 .footer {
 	margin-top: 20px;
+	padding-top: 5px;
+	border-top: 1px solid #ddd;
 }
 
 h1 {
@@ -46,7 +48,7 @@ span.dcStatus-connecting, span.dcStatus-closing {
 }
 
 table#npmChannelParameters td,table#npmChannelParameters th {
-	padding:2px;
+	
 	text-align:center;
 	vertical-align:middle;
 } 
