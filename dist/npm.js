@@ -97,7 +97,6 @@ $('#signalingID').val(location.hash.substring(1));
 prepareRole();
 
 function prepareRole() {
-	
 	// role offerer
 	if ($('#signalingID').val() != '') {
 		
@@ -112,7 +111,8 @@ function prepareRole() {
 		$('#statusRole').html(role);
 		$('div.npmControlOfferer').hide();
 		$('#dcStatusAnswerer').show();
-
+	
+	// role answerer
 	} else {
 		role = 'offerer';
 		peerRole = 'answerer';
@@ -152,16 +152,14 @@ function errorHandler(err) {
 	console.error(err);
 }
 
+// find and return an IPv4 Address from a given string
 function extractIpFromString(string) {
 	var pattern = '(?:25[0-5]|2[0-4][0-9]|1?[0-9][0-9]{1,2}|[0-9]){1,}(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}|0)){3}';
 	var match = string.match(pattern);
 	return match[0];
 }
 
-function extractProtocolFromStrig(string) {
-
-}
-
+// handle local ice candidates
 pc.onicecandidate = function(event) {
 	// take the first candidate that isn't null
 	if (!pc || !event || !event.candidate) {
@@ -170,20 +168,25 @@ pc.onicecandidate = function(event) {
 
 	var ip = extractIpFromString(event.candidate.candidate);
 
+	// if filter is set: ignore all other addresses
 	if ($('#localIceFilter').val() != '' && $('#localIceFilter').val() != ip) {
 		return;
 	}
 
+	// add local candidates only once to statusinfo
 	if (localIceCandidates.indexOf(ip) == -1) {
 		localIceCandidates.push(ip);
 		$('#localIceCandidates').append(ip + '<br/>');
 	}
 
+	// add local ice candidate to firebase
 	signalingIDRef.child(signalingID).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
 
 	console.log('onicecandidate - ip:' + ip);
+	
 	updatePeerConnectionStatus(event);
 };
+
 
 pc.onsignalingstatechange = function(event) {
 	updatePeerConnectionStatus(event);
@@ -193,16 +196,14 @@ pc.oniceconnectionstatechange = function(event) {
 	updatePeerConnectionStatus(event);
 };
 
-// initiate signaling channel and role
-function init() {
 
-}
-
-// start start peer connection
+// establish connection to remote peer via webrtc
 function connect() {
-
+	
+	// disable inputs
 	$('#npmConnect').prop('disabled', true);
 	$('#signalingID').prop('disabled', true);
+	$('#localIceFilter').prop('disabled', true);
 
 	if (role === "offerer") {
 
@@ -220,33 +221,15 @@ function connect() {
 			});
 		}, errorHandler, sdpConstraints);
 
-		console.log("creating offer");
-
-	} else {// answerer role
+		console.log("connect - role: offerer");
+		
+	// answerer role
+	} else {
+		
 		// answerer must wait for the data channel
 		pc.ondatachannel = function(event) {
-			var channel = event.channel;
-			bindEvents(channel);
-
+			bindEvents(event.channel);
 			console.log('incoming datachannel');
-
-			channels[channel.label] = {
-				channel : channel,
-				statistics : {
-					t_start : 0,
-					t_end : 0,
-					t_last : 0,
-					npmPktRxAnsw : 0,
-					npmPktTx : 0,
-					npmBytesRx : 0,
-					npmBytesTx : 0,
-					npmPktCount : 0,
-					rateAll : 0,
-					npmBytesLost : 0,
-					npmPktLost : 0,
-					runtime : 0,
-				}
-			};
 			updateChannelStatus();
 		};
 
@@ -262,14 +245,14 @@ function connect() {
 				firebaseSend(signalingID, "answer", JSON.stringify(answer));
 			}, errorHandler, sdpConstraints);
 		});
-		console.log('connect passive');
+		console.log('connect - role answerer');
 	}
 
+	// add handler for peers ice candidates
 	signalingIDRef.child(signalingID).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
 		var childVal = childSnapshot.val();
 		var peerCandidate = JSON.parse(childVal);
-		console.log(peerCandidate);
-
+		
 		var peerIceCandidate = new IceCandidate(peerCandidate);
 		pc.addIceCandidate(new IceCandidate(peerCandidate));
 
@@ -286,7 +269,6 @@ function connect() {
 
 //Create Datachannels
 function createDataChannel(label) {
-	//
 
 	var dataChannelOptions;
 	if ( typeof parameters[label] != 'undefined') {
@@ -318,7 +300,6 @@ function createDataChannel(label) {
 			t_start : 0,
 			t_end : 0,
 			t_last : 0,
-			npmPktRxAnsw : 0,
 			npmPktTx : 0,
 			npmBytesRx : 0,
 			npmBytesTx : 0,
@@ -439,17 +420,35 @@ function netPerfMeterRunByTrigger(label) {
 function bindEvents(channel) {
 	channel.onopen = function() {
 		console.log("datachannel opened - label:" + channel.label + ', ID:' + channel.id);
-		if (offerer == true && channel.label != "init") {
-			setTimeout(function() {
-				netPerfMeterRunByTrigger(channel.label);
-			}, parameters[channel.label].delay);
+		
+		if (role == 'offerer'){
+			if(channel.label == "init") {
+				$('#npmRun').prop('disabled',false);
+			} else {
+				setTimeout(function() {
+					netPerfMeterRunByTrigger(channel.label);
+				}, parameters[channel.label].delay);
+			}
+		} else {
+			channels[channel.label] = {
+				channel : channel,
+				statistics : {
+					t_start : 0,
+					t_end : 0,
+					rx_bytes : 0,
+					rx_pkts : 0,
+					tx_bytes: 0,
+					tx_pkts:0,
+				}
+			};
 		}
+		
 		updateChannelStatus();
 	};
 
 	channel.onclose = function(e) {
 		console.log("datachannel closed - label:" + channel.label + ', ID:' + channel.id);
-		if (offerer == false) {
+		if (role == 'answerer') {
 			sendStatistics(e);
 		}
 		updateChannelStatus();
@@ -464,7 +463,7 @@ function bindEvents(channel) {
 
 		if (e.currentTarget.label == 'init') {
 			handleJsonMessage(e.data);
-		} else if (offerer == false) {
+		} else if (role == 'answerer') {
 			answererOnMessage(e);
 		}
 	};
@@ -572,8 +571,9 @@ function saveChannelSettings() {
 		$(this).attr('value', $(this).val());
 	});
 
-	var channelSettingsHTML = $("#npmChannelParameters").html();
-	localStorage.setItem('npmChannelSettings', channelSettingsHTML);
+	//var channelSettingsHTML = $("#npmChannelParameters").html(); 
+	localStorage.setItem('npmChannelSettings', $("#npmChannelParameters").html());
+	localStorage.setItem('localIceFilter',$('#localIceFilter').val());
 }
 
 /*
@@ -582,9 +582,18 @@ function saveChannelSettings() {
 function loadChannelSetting() {
 
 	var channelSettingsHTML = localStorage.getItem('npmChannelSettings');
+	var localIceFilter = localStorage.getItem('localIceFilter');
+	
+	if (localIceFilter) {
+		$("#localIceFilter").val(localIceFilter);
+	} 
+	
 	if (channelSettingsHTML) {
 		$("#npmChannelParameters").html(channelSettingsHTML);
-	} else {
+	} 
+	
+	
+	if (!localIceFilter && !channelSettingsHTML) {
 		alert('Sorry - No saved settings available!');
 	}
 

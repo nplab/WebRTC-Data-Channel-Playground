@@ -44,7 +44,6 @@ var npmcStatisticsTimerActive = false;
 
 // button toggle used to activate and deactivate channels
 $('#npmChannelParameters').on('click', 'button[name="toggleActive"]', function(event){
-	
 	$(this).toggleClass('btn-default btn-success');
 	if($(this).hasClass('btn-success')) {
 		$(this).data('active',true);
@@ -55,19 +54,26 @@ $('#npmChannelParameters').on('click', 'button[name="toggleActive"]', function(e
 });
 
 // select reliability options for specific channel - this function provides dropdown functionality
-$('#npmChannelParameters').on('click', 'ul.reliabilitySelect a', function(event){
-	var parentId 		= $(this).closest('tr').prop('id');
-	var toggleButton 	= $('#'+parentId+' .dropdown-toggle');
-	toggleButton.html($(this).data('shortdesc') + ' <span class="caret"></span>');
-	toggleButton.data('method',$(this).data('method'));
+$('#npmChannelParameters').on('change', 'select[name=paramMode]', function(event){
+	var parentId 				= $(this).closest('tr').prop('id');
+	var paramModeValueInput 	= $('#' +parentId + ' input[name=paramModeValue]');
+	var selectedMode			= $(this).val();
 	
-	var relInput = $('#'+parentId +' input[name=paramReliable]');	
 	
-	if($(this).data('method') == "reliable"){
-		relInput.prop('disabled',true);
+	if(selectedMode== "reliable"){
+		paramModeValueInput.prop('disabled',true);
 	} else {
-		relInput.prop('disabled',false);
+		paramModeValueInput.prop('disabled',false);
 	}
+	
+	$(this).children("option").each(function(){
+		if($(this).val() == selectedMode) {
+			$(this).attr('selected',true);
+		} else {
+			$(this).attr('selected',false);
+		}
+	});
+	
 	event.preventDefault();
 });
 
@@ -88,12 +94,6 @@ function cloneFirstParametersRow() {
 	$('#npmChannelParameters tr').last().after(cloneRow);
 	
 }
-
-// bind cloneFirstParametersRow() to button
-$('#npmChannelParametersClone').click(function(event){
-	cloneFirstParametersRow();
-	event.preventDefault();
-});
 
 // update the PeerConnectionStatus Table
 function updatePeerConnectionStatus(event) {
@@ -134,7 +134,7 @@ function updateChannelStatus(event) {
 		}
 		
 		// different statistics for offerer and answerer
-		if(offerer) {
+		if(role == 'offerer') {
 			$('table#dcStatusOfferer tbody').append('<tr><td>'+ value.channel.id + '</td><td><span class="dcStatus-'+value.channel.readyState+'">' + value.channel.readyState + '</span></td><td>' + value.channel.label + '</td><td>' + value.statistics.npmPktRxAnsw + '</td><td>' + value.statistics.npmPktTx + '</td><td>'+actionHTML + '</td></tr>');
 		} else {
 			// calculate some statistics

@@ -15,6 +15,10 @@
 		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans' type='text/css'>
 		<link rel="stylesheet" href="dist/custom.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
+		
+		<!-- ICON Section -->
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="apple-touch-icon" href="/favicon-apple.png"/>
 
 		<!-- JAVSCRIPT Section -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
@@ -69,9 +73,9 @@
 
 				<div class="col-sm-3" id="dcControls">
 					<h3>Control</h3>
-					
+
 					<input type="text" class="form-control input-sm" placeholder="peer-id - blank for offerer" id="signalingID">
-		
+
 					<button class="btn btn-success btn-block btn-sm " id="npmConnect" onclick="connect()">
 						<span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> Connect
 					</button>
@@ -160,71 +164,61 @@
 				</thead>
 				<tbody></tbody>
 			</table>
-
-			<div class="row npmControlOfferer">
-				<div class="col-lg-6 npmControl table-responsive">
+			
+				<div class="npmControl table-responsive">
 					<h3>Netperfmeter Control</h3>
 					<table class="table table-condensed" id="npmChannelParameters">
 						<thead>
 							<tr>
-								<th style="width:5%"><span id="npmChannelParametersClone" class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green;"></span></th>
-								<th style="width:12%">pkt-count</th>
-								<th style="width:12%">pkt-size</th>
-								<th style="width:20%">reliable</th>
-								<th style="width:12%">sleep (ms)</th>
-								<th style="width:12%">delay (s)</th>
-								<th style="width:12%">runtime (s)</th>
+								<th style="width:9%"><span id="npmChannelParametersClone" onclick="cloneFirstParametersRow();" class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green;"></span></th>
+								<th style="width:13%">pkt-count</th>
+								<th style="width:13%">pkt-size</th>
+								<th style="width:13%">mode</th>
+								<th style="width:13%">modepar</th>
+								<th style="width:13%">sleep (ms)</th>
+								<th style="width:13%">delay (s)</th>
+								<th style="width:13%">runtime (s)</th>
 							</tr>
 						</thead>
 						<tbody>
 
 							<tr id="npmChannelParametersC1" class="tr_clone">
 								<td>
-								<button type="button" name="toggleActive" class="btn btn-default btn-sm toggleActive" value="o1">
-									1
-								</button></td>
-
-								<td>
-								<input class="form-control input-sm" name="paramPktCount" value="100" size="5">
+									<button type="button" name="toggleActive" class="btn btn-default btn-sm toggleActive" value="o1">
+											1
+									</button>
 								</td>
 								<td>
-								<input class="form-control input-sm" name="paramPktSize" value="200" size="5">
+									<input class="form-control input-sm" name="paramPktCount" value="100" size="5">
 								</td>
 								<td>
-								<div class="input-group">
-									<div class="input-group-btn">
-										<button type="button" name="paramReliable" data-method="reliable" class="btn btn-default dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false">
-											reliable <span class="caret"></span>
-										</button>
-										<ul class="dropdown-menu reliabilitySelect" role="menu">
-											<li>
-												<a href="#" data-method="reliable" data-shortdesc="reliable">reliable</a>
-											</li>
-											<li>
-												<a href="#" data-method="maxRetransmit" data-shortdesc="retrans">max retransmissions</a>
-											</li>
-											<li>
-												<a href="#" data-method="maxTimeout" data-shortdesc="timeout">max timeout (ms)</a>
-											</li>
-										</ul>
-									</div><!-- /btn-group -->
-									<input type="text" class="form-control input-sm" name="paramReliable" size="4" aria-label="..." value="1" disabled="disabled">
-								</div><!-- /input-group --></td>
-								<td>
-								<input class="form-control input-sm" name="paramSleep" value="100" size="4">
+									<input class="form-control input-sm" name="paramPktSize" value="200" size="5">
 								</td>
 								<td>
-								<input class="form-control input-sm" name="paramDelay" value="5" size="4">
+									<select class="form-control" name="paramMode">
+										<option value="reliable" selected>reliable</option>
+										<option value="retrans">max restransmissions</option>
+										<option value="timeout">max timeout</option>
+									</select>
 								</td>
 								<td>
-								<input class="form-control input-sm" name="paramRuntime" value="30" size="4">
+									<input type="text" class="form-control input-sm" name="paramModeValue" size="4" aria-label="..." value="1" disabled>
+								</td>
+								<td>
+									<input class="form-control input-sm" name="paramSleep" value="100" size="4">
+								</td>
+								<td>
+									<input class="form-control input-sm" name="paramDelay" value="5" size="4">
+								</td>
+								<td>
+									<input class="form-control input-sm" name="paramRuntime" value="30" size="4">
 								</td>
 							</tr>
 						</tbody>
 					</table>
 
 				</div>
-				<div class="col-lg-6">
+				
 					<h3>Data-Channel Status</h3>
 					<table class="table table-condensed" id="dcStatusOfferer">
 						<thead>
@@ -241,7 +235,7 @@
 
 						</tbody>
 					</table>
-				</div>
+				
 			</div>
 
 			<div class="footer text-center">

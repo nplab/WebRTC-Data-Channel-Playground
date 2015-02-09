@@ -47,14 +47,13 @@ span.dcStatus-connecting, span.dcStatus-closing {
 	color:#337ab7;
 }
 
-table#npmChannelParameters td,table#npmChannelParameters th {
-	
+table#npmChannelParameters td,table#npmChannelParameters th, table#npmChannelParameters input {
 	text-align:center;
 	vertical-align:middle;
 }
 
 #signalingID {
-	font-size: 16px;
+	font-size: 14px;
 	margin-bottom: 5px;
 	text-align:center;
 }
