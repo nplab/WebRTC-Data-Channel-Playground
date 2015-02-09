@@ -15,7 +15,7 @@
 		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans' type='text/css'>
 		<link rel="stylesheet" href="dist/custom.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
-		
+
 		<!-- ICON Section -->
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 		<link rel="apple-touch-icon" href="/favicon-apple.png"/>
@@ -84,15 +84,15 @@
 						<span class="glyphicon glyphicon-time" aria-hidden="true"></span> Ping Peer<span class="rtt"></span>
 					</button>
 
-					<button class="btn btn-success btn-block btn-sm " id="npmRun" disabled="disabled" onclick="netPerfMeter()">
+					<button class="btn btn-success btn-block btn-sm " id="npmRun" disabled="disabled" onclick="npmStart()">
 						<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start NPM
 					</button>
 
-					<button class="btn btn-primary btn-block btn-sm " id="npmLoadCookie" onclick="loadChannelSetting()">
+					<button class="btn btn-primary btn-block btn-sm " id="npmLoadSettings" onclick="loadChannelSetting()">
 						<span class="glyphicon glyphicon-floppy-open" aria-hidden="false"></span> Load settings<span class="rtt"></span>
 					</button>
 
-					<button class="btn btn-primary btn-block btn-sm " id="npmSaveCookie" onclick="saveChannelSettings()">
+					<button class="btn btn-primary btn-block btn-sm " id="npmSaveSettings" onclick="saveChannelSettings()">
 						<span class="glyphicon glyphicon-floppy-save" aria-hidden="false"></span> Save settings<span class="rtt"></span>
 					</button>
 
@@ -100,7 +100,7 @@
 
 				<div class="col-sm-5">
 
-					<h3>Status</h3>
+					<h3>PC-Status</h3>
 
 					<table class="table table-condensed">
 						<thead>
@@ -128,7 +128,7 @@
 
 				<div class="col-sm-4">
 
-					<h3>ICE Candidates</h3>
+					<h3>ICE-Candidates</h3>
 
 					<table class="table table-condensed">
 						<thead>
@@ -148,94 +148,73 @@
 
 				</div>
 			</div>
+			<div class="npmControl table-responsive" id="npmChannelParametersContainer">
+				<h3>Netperfmeter Control</h3>
+				<table class="table table-condensed" id="npmChannelParameters">
+					<thead>
+						<tr>
+							<th style="width:9%"><span id="npmChannelParametersClone" onclick="cloneFirstParametersRow();" class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green;"></span></th>
+							<th style="width:13%">pkt-count</th>
+							<th style="width:13%">pkt-size</th>
+							<th style="width:13%">mode</th>
+							<th style="width:13%">modepar</th>
+							<th style="width:13%">sleep (ms)</th>
+							<th style="width:13%">delay (s)</th>
+							<th style="width:13%">runtime (s)</th>
+						</tr>
+					</thead>
+					<tbody>
 
-			<table class="table table-condensed" id="dcStatusAnswerer">
-				<thead>
-					<tr>
-						<th>id</th>
-						<th>state</th>
-						<th>label</th>
-						<th>rx-pkts</th>
-						<th>rx-bytes</th>
-						<th>rate-curr</th>
-						<th>rate-all</th>
-						<th>action</th>
-					</tr>
-				</thead>
-				<tbody></tbody>
-			</table>
-			
-				<div class="npmControl table-responsive">
-					<h3>Netperfmeter Control</h3>
-					<table class="table table-condensed" id="npmChannelParameters">
-						<thead>
-							<tr>
-								<th style="width:9%"><span id="npmChannelParametersClone" onclick="cloneFirstParametersRow();" class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green;"></span></th>
-								<th style="width:13%">pkt-count</th>
-								<th style="width:13%">pkt-size</th>
-								<th style="width:13%">mode</th>
-								<th style="width:13%">modepar</th>
-								<th style="width:13%">sleep (ms)</th>
-								<th style="width:13%">delay (s)</th>
-								<th style="width:13%">runtime (s)</th>
-							</tr>
-						</thead>
-						<tbody>
+						<tr id="npmChannelParametersC1" class="tr_clone">
+							<td>
+							<button type="button" name="toggleActive" class="btn btn-default btn-sm toggleActive" value="o1">
+								1
+							</button></td>
+							<td>
+							<input class="form-control input-sm" name="paramPktCount" value="100" size="5">
+							</td>
+							<td>
+							<input class="form-control input-sm" name="paramPktSize" value="200" size="5">
+							</td>
+							<td>
+							<select class="form-control" name="paramMode">
+								<option value="reliable" selected>reliable</option>
+								<option value="retransmit">max restransmissions</option>
+								<option value="timeout">max timeout</option>
+							</select></td>
+							<td>
+							<input type="text" class="form-control input-sm" name="paramModeValue" size="4" aria-label="..." value="1" disabled>
+							</td>
+							<td>
+							<input class="form-control input-sm" name="paramSleep" value="100" size="4">
+							</td>
+							<td>
+							<input class="form-control input-sm" name="paramDelay" value="5" size="4">
+							</td>
+							<td>
+							<input class="form-control input-sm" name="paramRuntime" value="30" size="4">
+							</td>
+						</tr>
+					</tbody>
+				</table>
 
-							<tr id="npmChannelParametersC1" class="tr_clone">
-								<td>
-									<button type="button" name="toggleActive" class="btn btn-default btn-sm toggleActive" value="o1">
-											1
-									</button>
-								</td>
-								<td>
-									<input class="form-control input-sm" name="paramPktCount" value="100" size="5">
-								</td>
-								<td>
-									<input class="form-control input-sm" name="paramPktSize" value="200" size="5">
-								</td>
-								<td>
-									<select class="form-control" name="paramMode">
-										<option value="reliable" selected>reliable</option>
-										<option value="retrans">max restransmissions</option>
-										<option value="timeout">max timeout</option>
-									</select>
-								</td>
-								<td>
-									<input type="text" class="form-control input-sm" name="paramModeValue" size="4" aria-label="..." value="1" disabled>
-								</td>
-								<td>
-									<input class="form-control input-sm" name="paramSleep" value="100" size="4">
-								</td>
-								<td>
-									<input class="form-control input-sm" name="paramDelay" value="5" size="4">
-								</td>
-								<td>
-									<input class="form-control input-sm" name="paramRuntime" value="30" size="4">
-								</td>
-							</tr>
-						</tbody>
-					</table>
-
-				</div>
-				
-					<h3>Data-Channel Status</h3>
-					<table class="table table-condensed" id="dcStatusOfferer">
-						<thead>
-							<tr>
-								<th>id</th>
-								<th>status</th>
-								<th>label</th>
-								<th>tx-pkts</th>
-								<th>tx-bytes</th>
-								<th>action</th>
-							</tr>
-						</thead>
-						<tbody>
-
-						</tbody>
-					</table>
-				
+			</div>
+			<div id="dcStatusContainer">
+				<h3>DC-Status</h3>
+				<table class="table table-condensed" id="dcStatus">
+					<thead>
+						<tr>
+							<th>id</th>
+							<th>state</th>
+							<th>label</th>
+							<th>pkts</th>
+							<th>bytes</th>
+							<th>rate avg</th>
+							<th>action</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
 			</div>
 
 			<div class="footer text-center">

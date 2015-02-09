@@ -77,6 +77,8 @@ $('#npmChannelParameters').on('change', 'select[name=paramMode]', function(event
 	event.preventDefault();
 });
 
+
+// after chaning the signaling ID value - prepare role
 $('#signalingID').change(function(){
 	prepareRole();
 });
@@ -93,6 +95,7 @@ function cloneFirstParametersRow() {
 	cloneRow.find('[name=paramSleep]').val(cloneRow.find('[name=paramSleep]').val()*npmcDcCounter);
 	$('#npmChannelParameters tr').last().after(cloneRow);
 	
+	return true;
 }
 
 // update the PeerConnectionStatus Table
@@ -107,40 +110,44 @@ function updatePeerConnectionStatus(event) {
 // update the ChannelStatus Table - in dependency of being offerer or sender
 function updateChannelStatus(event) {
 	
-	$('table#dcStatusOfferer tbody').empty();
-	$('table#dcStatusAnswerer tbody').empty();
+	$('table#dcStatus tbody').empty();
 	var activeChannels = false;
 	
 	$.each(channels, function(key, value) {		
-		var actionHTML = '';
+		var channel 	= value.channel;
+		var statistics 	= value.statistics;
 		
 		// if init channel is open, enable npm and ping - if not: disable!
-		if(value.channel.label == 'init') {
-			if(value.channel.readyState === 'open') {
+		if(channel.label == 'init') {
+			if(channel.readyState === 'open') {
 				$('#npmcRun').removeAttr('disabled');
 				$('#npmcPing').removeAttr('disabled');
 				$('#npmSaveStats').removeAttr('disabled');
 			} else {
-				$('#npmcRun').attr('disabled','disabled');
-				$('#npmcPing').attr('disabled','disabled');
-				$('#npmSaveStats').attr('disabled','disabled');
+				$('#npmcRun').attr('disabled',true);
+				$('#npmcPing').attr('disabled',true);
+				$('#npmSaveStats').attr('disabled',true);
 			}
 		}
 		
 		// if channel is open, offer to close it
-		if(value.channel.readyState === 'open') {
+		var actionHTML = '';
+		if(channel.readyState === 'open') {
 			activeChannels = true;
-			var actionHTML = '<button class="btn-default btn btn-xs" onclick="closeDataChannel(\'' + value.channel.label + '\');">close</button>';
+			actionHTML = '<button class="btn-default btn btn-xs" onclick="closeDataChannel(\'' + value.channel.label + '\');">close</button>';
 		}
 		
-		// different statistics for offerer and answerer
+		// calculate statistics
+		if(statistics.t_start != 0) {
+			statistics.rx_rate_avg = statistics.rx_bytes / (statistics.t_end - statistics.t_start) * 1000;
+			statistics.tx_rate_avg = statistics.tx_bytes / (statistics.t_end - statistics.t_start) * 1000;
+		}
+		
 		if(role == 'offerer') {
-			$('table#dcStatusOfferer tbody').append('<tr><td>'+ value.channel.id + '</td><td><span class="dcStatus-'+value.channel.readyState+'">' + value.channel.readyState + '</span></td><td>' + value.channel.label + '</td><td>' + value.statistics.npmPktRxAnsw + '</td><td>' + value.statistics.npmPktTx + '</td><td>'+actionHTML + '</td></tr>');
+			$('table#dcStatus tbody').append('<tr><td>'+ channel.id + '</td><td><span class="dcStatus-'+channel.readyState+'">' + channel.readyState + '</span></td><td>' + channel.label + '</td><td>' + statistics.tx_pkts + '</td><td>' + bytesToSize(statistics.tx_bytes) + '</td><td>'+bytesToSize(statistics.tx_rate_avg)+'/s</td><td>'+actionHTML + '</td></tr>');
 		} else {
-			// calculate some statistics
-			rateAll = Math.round(value.statistics.npmBytesRx / ((value.statistics.t_end - value.statistics.t_start) / 1000));
-			
-			$('table#dcStatusAnswerer tbody').append('<tr><td>'+ value.channel.id + '</td><td><span class="dcStatus-'+value.channel.readyState+'">' + value.channel.readyState + '</span></td><td>'+ value.channel.label + '</td><td>' + value.statistics.npmPktRxAnsw + '</td><td>' + value.statistics.npmBytesRx + '</td><td></td><td>'+rateAll+'kb/s</td><td>'+actionHTML + '</td></tr>');
+			$('table#dcStatus tbody').append('<tr><td>'+ channel.id + '</td><td><span class="dcStatus-'+channel.readyState+'">' + channel.readyState + '</span></td><td>' + channel.label + '</td><td>' + statistics.rx_pkts + '</td><td>' + bytesToSize(statistics.rx_bytes) + '</td><td>'+bytesToSize(statistics.rx_rate_avg)+'/s</td><td>'+actionHTML + '</td></tr>');
+
 		}
 		
 	});

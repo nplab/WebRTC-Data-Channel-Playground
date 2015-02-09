@@ -109,8 +109,7 @@ function prepareRole() {
 				
 		$('#statusSigID').html(signalingID);
 		$('#statusRole').html(role);
-		$('div.npmControlOfferer').hide();
-		$('#dcStatusAnswerer').show();
+		$('#npmChannelParametersContainer').hide();
 	
 	// role answerer
 	} else {
@@ -119,8 +118,8 @@ function prepareRole() {
 		signalingID = freshSignalingID;
 		$('#statusRole').html(role);
 		$('#statusSigID').html("<a href='#" + signalingID + "'>" + signalingID + "</a>");
-		$('#dcStatusAnswerer').hide();
-		$('div.npmControlOfferer').show();
+		$('#npmChannelParametersContainer').show();
+		
 
 	};
 }
@@ -204,6 +203,7 @@ function connect() {
 	$('#npmConnect').prop('disabled', true);
 	$('#signalingID').prop('disabled', true);
 	$('#localIceFilter').prop('disabled', true);
+	$('#npmLoadSettings').prop('disabled',true);
 
 	if (role === "offerer") {
 
@@ -267,52 +267,54 @@ function connect() {
 	});
 }
 
-//Create Datachannels
+//create new datachannel
 function createDataChannel(label) {
-
+	// set options for datachannel
 	var dataChannelOptions;
-	if ( typeof parameters[label] != 'undefined') {
-		switch(parameters[label].reliableMethode) {
+	if (typeof parameters[label] != 'undefined') {
+		switch(parameters[label].reliableMode) {
 		case "reliable":
 			dataChannelOptions = {
 			};
 			break;
-		case "maxRetransmit":
+		case "restransmit":
 			dataChannelOptions = {
-				maxRetransmits : parameters[label].reliableParam,
+				maxRetransmits : parameters[label].reliableParam
 			};
 			break;
-		case "maxTimeout":
+		case "timeout":
 			dataChannelOptions = {
-				maxRetransmitTime : parameters[label].reliableParam,
+				maxPacketLifeTime: parameters[label].reliableParam
 			};
 			break;
 		}
 	}
 
 	// offerer creates the data channel
-	var tempChannel = pc.createDataChannel(label, dataChannelOptions);
-	bindEvents(tempChannel);
+	var newChannel = pc.createDataChannel(label, dataChannelOptions);
+	bindEvents(newChannel);
 
-	channels[tempChannel.label] = {
-		channel : tempChannel,
+	channels[newChannel.label] = {
+		channel : newChannel,
 		statistics : {
-			t_start : 0,
-			t_end : 0,
-			t_last : 0,
-			npmPktTx : 0,
-			npmBytesRx : 0,
-			npmBytesTx : 0,
-			npmPktCount : 0,
-			rateAll : 0,
-			npmBytesLost : 0,
-			npmPktLost : 0,
-			runtime : 0,
+			t_start 	: 0,
+			t_end 		: 0,
+			t_last 		: 0,
+			tx_pkts		: 0,
+			tx_bytes	: 0,
+			tx_rate_avg : 0,
+			tx_rate_cur : 0,
+			rx_pkts		: 0,
+			rx_bytes	: 0,
+			rx_rate_avg : 0,
+			rx_rate_cur	: 0
 		}
 
 	};
+	
+	
 	updateChannelStatus();
-	console.log("datachannel created - label:" + tempChannel.id + ', id:' + tempChannel.label);
+	console.log("createDataChannel - label:" + newChannel.label + ', id:' + newChannel.id);
 }
 
 function closeDataChannel(label) {
@@ -320,130 +322,140 @@ function closeDataChannel(label) {
 	channels[label].channel.close();
 }
 
-function NpmSend(label, message) {
-	// console.log("datachannel send - label:" + label + ' - sleep:' + parameters[label].sleep);
-	if (label == 'init') {
-		alert('darf nicht sein!');
+// read parameters from table and save in parameters object
+function parseParameters() {
+	$('#npmChannelParameters > tbody > tr').each(function() {
+		parameters[$(this).find('button[name="toggleActive"]').val()] = {
+			active 			: $(this).find('button[name="toggleActive"]').hasClass("btn-success"),
+			label 			: $(this).find('button[name="toggleActive"]').val(),
+			pktSize 		: parseInt($(this).find('input[name="paramPktSize"]').val()),
+			pktCount 		: parseInt($(this).find('input[name="paramPktCount"]').val()),
+			sleep 			: parseInt($(this).find('input[name="paramSleep"]').val()),
+			reliableMode	: $(this).find('select[name="paramMode"]').val(),
+			reliableParam 	: parseInt($(this).find('input[name="paramModeValue"]').val()),
+			runtime 		: parseInt(($(this).find('input[name="paramRuntime"]').val() * 1000)),
+			delay 			: parseInt(($(this).find('input[name="paramDelay"]').val() * 1000))
+		};
+		
+	});
+	
+	console.log(parameters);
+}
+
+// run npm - read parameters and create datachannels
+function npmStart() {
+	var channelNo = -1;
+	var accc = 0;
+
+	parseParameters();
+
+	for (var label in parameters) {
+		console.log('netPerfMeter - send');
+		if (parameters.hasOwnProperty(label)) {
+			if (parameters[label].active == true) {
+				createDataChannel(label);
+			}
+		}
 	}
+
+}
+
+
+function npmSend(label) {
+	
+	if (label == 'init') {
+		alert('init darf das nicht!');
+	}
+	
+	if(channels[label].statistics.t_start == 0) {
+		channels[label].statistics.t_start = new Date().getTime();
+	}
+	
 	try {
 		channels[label].statistics.t_end = new Date().getTime();
-		var tempTime = (channels[label].statistics.t_end - channels[label].statistics.t_start);
-		if (tempTime <= parameters[label].runtime) {
-			channels[label].channel.send(message);
-			channels[label].statistics.npmPktTx++;
-			channels[label].statistics.npmBytesTx += message.length;
-			if (channels[label].statistics.npmPktTx <= parameters[label].pktCount) {
-				var schedulerObject = {
-					sleep : parameters[label].sleep,
-					label : label,
-					data : message,
-				};
-				scheduler.postMessage(schedulerObject);
+		var runtime = (channels[label].statistics.t_end - channels[label].statistics.t_start);
+		var message = generateByteString(parameters[label].pktSize);
+		
+		
+		if (runtime <= parameters[label].runtime) {
+			
+			if(channels[label].channel.bufferedAmount < 30000) {
+				channels[label].channel.send(message);
+				channels[label].statistics.tx_pkts++;
+				channels[label].statistics.tx_bytes += message.length;
+			}
+			
+			if (channels[label].statistics.tx_pkts < parameters[label].pktCount) {
+				
+				// if(parameters[label].sleep == 0) {
+					// npmSend(label);
+				// } else {
+					var schedulerObject = {
+						sleep : parameters[label].sleep,
+						label : label
+					};
+					scheduler.postMessage(schedulerObject);
+				//}
+				
 
 			} else {
-				console.log('NpmSend - channel:' + label + ' - all pkts sent');
+				console.log('npmSend - channel:' + label + ' - all pkts sent');
 				closeDataChannel(label);
 			}
 		} else {
 			closeDataChannel(label);
-			console.log('NpmSend - channel:' + label + ' - runtime reached');
+			console.log('npmSend - channel:' + label + ' - runtime reached');
 		}
 	} catch(e) {
 		alert("Test Aborted!");
 		console.log(e);
 		return;
 	}
+	
+	
 	//updateChannelState();
 };
 
-function funct() {
-};
-
-//
-function parseParameters() {
-	$('#npmChannelParameters > tbody > tr').each(function() {
-		parameters[$(this).find('button[name="toggleActive"]').val()] = {
-
-			active : $(this).find('button[name="toggleActive"]').hasClass("btn-primary"),
-			label : $(this).find('button[name="toggleActive"]').val(),
-			pktSize : $(this).find('input[name="paramPktSize"]').val(),
-			pktCount : $(this).find('input[name="paramPktCount"]').val(),
-			sleep : Math.floor((Math.random() * 100) + 1), //$(this).find('input[name="paramSleep"]').val(),
-			reliableMethode : $(this).find('button.dropdown-toggle').data('method'),
-			reliableParam : $(this).find('input[name="paramReliable"]').val(),
-			runtime : ($(this).find('input[name="paramRuntime"]').val() * 1000),
-			delay : Math.floor((Math.random() * 10) + 1),//($(this).find('input[name="paramDelay"]').val() * 1000),
-		};
-	});
-}
-
-//
-function netPerfMeter() {
-	var channelNo = -1;
-	var accc = 0;
-
-	parseParameters();
-
-	for (var key in parameters) {
-		if (parameters.hasOwnProperty(key)) {
-			if (parameters[key].active == true) {
-				createDataChannel(key);
-				activeChannelCount[accc] = key;
-				accc++;
-			}
-		}
-	}
-
-}
-
-//
-function netPerfMeterRunByTrigger(label) {
-	updateChannelStatus();
-	for (var i = 0; i < activeChannelCount.length; i++) {
-		if (activeChannelCount[i] == label) {
-
-			console.log('netPerfMeterRunByTrigger - channel: ' + label);
-			channels[activeChannelCount[i]].channel.send("1");
-			channels[activeChannelCount[i]].statistics.t_start = new Date().getTime();
-			channels[activeChannelCount[i]].statistics.npmBytesTx = 1;
-
-			npmPaket = "";
-			for (var j = 0; j < parameters[activeChannelCount[i]].pktSize; j++) {
-				npmPaket += "a";
-			}
-			NpmSend(activeChannelCount[i], npmPaket);
-		}
-	}
-}
 
 // bind the channel events
 function bindEvents(channel) {
 	channel.onopen = function() {
-		console.log("datachannel opened - label:" + channel.label + ', ID:' + channel.id);
 		
+		// datachannel openend on offerer-side
 		if (role == 'offerer'){
 			if(channel.label == "init") {
 				$('#npmRun').prop('disabled',false);
 			} else {
+				$('#npmRun').prop('disabled',true);
+				
+				// start netperfmeter after defined delay
 				setTimeout(function() {
-					netPerfMeterRunByTrigger(channel.label);
+					npmSend(channel.label);
 				}, parameters[channel.label].delay);
 			}
+		
+		// datachannel openend on answerer-side
 		} else {
 			channels[channel.label] = {
 				channel : channel,
 				statistics : {
-					t_start : 0,
-					t_end : 0,
-					rx_bytes : 0,
-					rx_pkts : 0,
-					tx_bytes: 0,
-					tx_pkts:0,
+					t_start 	: 0,
+					t_end 		: 0,
+					t_last 		: 0,
+					tx_pkts		: 0,
+					tx_bytes	: 0,
+					tx_rate_avg : 0,
+					tx_rate_cur : 0,
+					rx_pkts		: 0,
+					rx_bytes	: 0,
+					rx_rate_avg : 0,
+					rx_rate_cur	: 0
 				}
 			};
 		}
 		
 		updateChannelStatus();
+		console.log("datachannel opened - label:" + channel.label + ', ID:' + channel.id);
 	};
 
 	channel.onclose = function(e) {
@@ -459,12 +471,10 @@ function bindEvents(channel) {
 	};
 
 	channel.onmessage = function(e) {
-		console.log('incoming message: ' + e.data);
-
 		if (e.currentTarget.label == 'init') {
 			handleJsonMessage(e.data);
 		} else if (role == 'answerer') {
-			answererOnMessage(e);
+			handleDataMessage(e);
 		}
 	};
 }
@@ -472,8 +482,8 @@ function bindEvents(channel) {
 scheduler.onmessage = function(e) {
 	var message = e.data;
 
-	if (message.label != undefined && message.sleep != undefined && message.data != undefined) {
-		NpmSend(message.label, message.data);
+	if (message.label != undefined && message.sleep != undefined) {
+		npmSend(message.label, message.data);
 	}
 };
 
@@ -488,19 +498,16 @@ function sendStatistics(e) {
 	channels.init.channel.send(tempStringify);
 }
 
-function answererOnMessage(e) {
-	rxData = e.data.toString();
-	// console.log("Message for "+e.currentTarget.label + " - content:" + rxData.length);
-	var tempChannelLabel = e.currentTarget.label;
-
-	if (rxData == "1") {
-		channels[tempChannelLabel].statistics.npmBytesRx = rxData.length;
-		channels[tempChannelLabel].statistics.t_start = new Date().getTime();
-	} else {
-		channels[tempChannelLabel].statistics.t_end = new Date().getTime();
-		channels[tempChannelLabel].statistics.npmBytesRx += rxData.length;
-		channels[tempChannelLabel].statistics.npmPktRxAnsw++;
+function handleDataMessage(e) {
+	rxDataLength = e.data.toString().length;
+	
+	var label = e.currentTarget.label;
+	if(channels[label].statistics.t_start == 0) {
+		channels[label].statistics.t_start = new Date().getTime();
 	}
+	channels[label].statistics.t_end = new Date().getTime();
+	channels[label].statistics.rx_bytes += rxDataLength;
+	channels[label].statistics.rx_pkts++;
 }
 
 function handleJsonMessage(message) {
@@ -531,6 +538,28 @@ function handleJsonMessage(message) {
 }
 
 /*
+ * generate a string with given length (byte)
+ */
+
+function generateByteString(length) {
+	var str = new Array(length + 1).join('x');
+	return str;
+}
+
+/*
+ * conver sizes
+ * http://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+ */
+
+function bytesToSize(bytes) {
+   if(bytes == 0) return '0 Byte';
+   var k = 1000;
+   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+   var i = Math.floor(Math.log(bytes) / Math.log(k));
+   return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+}
+
+/*
  * Send a message to peer with local timestamp
  */
 function ping() {
@@ -554,7 +583,7 @@ function handlePing(message) {
 }
 
 /*
- *
+ * evaluate received Echo
  */
 function handlePingEcho(message) {
 	var date = new Date();
@@ -592,70 +621,8 @@ function loadChannelSetting() {
 		$("#npmChannelParameters").html(channelSettingsHTML);
 	} 
 	
-	
 	if (!localIceFilter && !channelSettingsHTML) {
 		alert('Sorry - No saved settings available!');
 	}
-
 }
 
-/*
- *
- */
-function copyFromTextarea() {
-	document.getElementById("csv").focus();
-	document.getElementById("csv").select();
-}
-
-/*
- *
- */
-function saveStats() {
-	$('#csv').html("");
-	for (var i = 0; i < activeChannelCount.length; i++) {
-		var statsExpStrg = ("Stats for channel " + activeChannelCount[i] + ":\r" + channels[activeChannelCount[i]].statistics.rateAll + " kb/s.\r" + channels[activeChannelCount[i]].statistics.npmPktTx + " Pkt send.\r" + channels[activeChannelCount[i]].statisticsRemote.npmPktRxAnsw + " Pkt received.\r" + channels[activeChannelCount[i]].statisticsRemote.npmPktLost + " Pkt lost.\r" + channels[activeChannelCount[i]].statistics.npmBytesTx + " Bytes send.\r" + channels[activeChannelCount[i]].statisticsRemote.npmBytesRx + " Bytes received.\r" + channels[activeChannelCount[i]].statisticsRemote.npmBytesLost + " Bytes lost.\r\r"
-		);
-		$('#csvOutput').html(statsExpStrg);
-	}
-}
-
-function getStats(peer) {
-	myGetStats(peer, function(results) {
-		for (var i = 0; i < results.length; ++i) {
-			var res = results[i];
-			console.log(res);
-		}
-
-	});
-};
-
-function myGetStats(peer, callback) {
-	console.log(peer);
-
-	if (!!window.mozRTCSessionDescription) {
-		console.log('stats for Mozilla');
-		peer.getStats(function(res) {
-			var items = [];
-			res.forEach(function(result) {
-				items.push(result);
-			});
-			callback(items);
-		}, callback);
-	} else {
-		console.log('stats for other');
-		peer.getStats(function(res) {
-			var items = [];
-			res.result().forEach(function(result) {
-				var item = {};
-				result.names().forEach(function(name) {
-					item[name] = result.stat(name);
-				});
-				item.id = result.id;
-				item.type = result.type;
-				item.timestamp = result.timestamp;
-				items.push(item);
-			});
-			callback(items);
-		});
-	}
-};

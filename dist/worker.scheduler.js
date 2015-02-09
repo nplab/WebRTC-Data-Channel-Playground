@@ -26,8 +26,12 @@
  */
 
  onmessage = function(e) {
-  console.log('Message received from main script');
-  setTimeout(function(){
-  	postMessage(e.data);
-  },e.data.sleep);  
+ 	if(e.data.sleep > 0) {
+ 		setTimeout(function(){
+  			postMessage(e.data);
+  		},e.data.sleep);
+ 	} else {
+ 		postMessage(e.data);
+ 	}
+ 	  
 };
