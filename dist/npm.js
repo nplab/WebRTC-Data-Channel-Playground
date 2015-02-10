@@ -72,7 +72,7 @@ var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || 
 var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
 var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 
-var activeChannelCount = new Array();
+var activeChannelCount = -1;
 var channels = {};
 var dcCounter = 0;
 var labelButtonToggle = false;
@@ -302,10 +302,12 @@ function createDataChannel(label) {
 			t_last 		: 0,
 			tx_pkts		: 0,
 			tx_bytes	: 0,
+			tx_bytes_last:0,
 			tx_rate_avg : 0,
 			tx_rate_cur : 0,
 			rx_pkts		: 0,
 			rx_bytes	: 0,
+			rx_bytes_last:0,
 			rx_rate_avg : 0,
 			rx_rate_cur	: 0
 		}
@@ -344,10 +346,9 @@ function parseParameters() {
 
 // run npm - read parameters and create datachannels
 function npmStart() {
-	var channelNo = -1;
-	var accc = 0;
-
 	parseParameters();
+	
+	//channels[init].channel.send(parameters);
 
 	for (var label in parameters) {
 		console.log('netPerfMeter - send');
@@ -386,18 +387,11 @@ function npmSend(label) {
 			}
 			
 			if (channels[label].statistics.tx_pkts < parameters[label].pktCount) {
-				
-				// if(parameters[label].sleep == 0) {
-					// npmSend(label);
-				// } else {
-					var schedulerObject = {
-						sleep : parameters[label].sleep,
-						label : label
-					};
-					scheduler.postMessage(schedulerObject);
-				//}
-				
-
+				var schedulerObject = {
+					sleep : parameters[label].sleep,
+					label : label
+				};
+				scheduler.postMessage(schedulerObject);‚
 			} else {
 				console.log('npmSend - channel:' + label + ' - all pkts sent');
 				closeDataChannel(label);
@@ -444,10 +438,12 @@ function bindEvents(channel) {
 					t_last 		: 0,
 					tx_pkts		: 0,
 					tx_bytes	: 0,
+					tx_bytes_last:0,
 					tx_rate_avg : 0,
 					tx_rate_cur : 0,
 					rx_pkts		: 0,
 					rx_bytes	: 0,
+					rx_bytes_last:0,
 					rx_rate_avg : 0,
 					rx_rate_cur	: 0
 				}
@@ -458,27 +454,31 @@ function bindEvents(channel) {
 		console.log("datachannel opened - label:" + channel.label + ', ID:' + channel.id);
 	};
 
+	// after close: update channel stats
 	channel.onclose = function(e) {
-		console.log("datachannel closed - label:" + channel.label + ', ID:' + channel.id);
-		if (role == 'answerer') {
-			sendStatistics(e);
-		}
 		updateChannelStatus();
+		console.log("datachannel closed - label:" + channel.label + ', ID:' + channel.id);
 	};
+
 
 	window.onbeforeunload = function() {
 		channel.close();
 	};
 
+	// handle messages
 	channel.onmessage = function(e) {
+		
+		// control messages on init-channel
 		if (e.currentTarget.label == 'init') {
 			handleJsonMessage(e.data);
+		// handle data messages
 		} else if (role == 'answerer') {
 			handleDataMessage(e);
 		}
 	};
 }
 
+// scheduler only used for npmSend
 scheduler.onmessage = function(e) {
 	var message = e.data;
 
@@ -486,17 +486,6 @@ scheduler.onmessage = function(e) {
 		npmSend(message.label, message.data);
 	}
 };
-
-function sendStatistics(e) {
-	var tempChannelLabel = e.currentTarget.label;
-	var jsonObjStats = {
-		type : 'stats',
-		label : tempChannelLabel,
-		stats : channels[tempChannelLabel].statistics,
-	};
-	var tempStringify = JSON.stringify(jsonObjStats);
-	channels.init.channel.send(tempStringify);
-}
 
 function handleDataMessage(e) {
 	rxDataLength = e.data.toString().length;
@@ -515,19 +504,17 @@ function handleJsonMessage(message) {
 	var tempChannelLabel = messageObject.label;
 
 	switch(messageObject.type) {
-	case 'stats':
-		channels[tempChannelLabel].statistics.rateAll = Math.round(messageObject.stats.npmBytesRx / ((messageObject.stats.t_end - messageObject.stats.t_start) / 1000));
-		channels[tempChannelLabel].statistics.npmBytesLost = channels[tempChannelLabel].statistics.npmBytesTx - messageObject.stats.npmBytesRx;
-		channels[tempChannelLabel].statistics.npmPktLost = channels[tempChannelLabel].statistics.npmPktTx - messageObject.stats.npmPktRxAnsw;
-		channels[tempChannelLabel].statisticsRemote = messageObject.stats;
-		channels[tempChannelLabel].statisticsRemote.t_last = messageObject.stats.t_end - messageObject.stats.t_start;
-
-		console.log(channels[tempChannelLabel].statistics);
-		console.log(channels[tempChannelLabel].statisticsRemote);
+		
+	// statistics
+	case 'statistics':
 		break;
+	
+	// timestamp - echo timestamp to sender
 	case 'timestamp':
 		handlePing(messageObject);
 		break;
+	
+	// timestampEcho - measure RTT
 	case 'timestampEcho':
 		handlePingEcho(messageObject);
 		break;
