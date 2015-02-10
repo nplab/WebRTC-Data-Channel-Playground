@@ -74,6 +74,8 @@ var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDes
 
 var activeChannelCount = -1;
 var channels = {};
+var channelStats = [];
+var channelStatsCounter = 0;
 var dcCounter = 0;
 var labelButtonToggle = false;
 var localIceCandidates = [];
@@ -88,6 +90,7 @@ var signalingID;
 var freshSignalingID = generateSignalingID();
 var signalingIDRef = dbRef.child("npmIDs");
 var t_startNewPackage = 0;
+
 
 // clean firebase ref
 signalingIDRef.child(freshSignalingID).remove();
@@ -349,15 +352,26 @@ function npmStart() {
 	parseParameters();
 	
 	//channels[init].channel.send(parameters);
+	
+	var npmChannelLabels = [];
+	npmChannelLabels.push('timestamp');
 
 	for (var label in parameters) {
 		console.log('netPerfMeter - send');
 		if (parameters.hasOwnProperty(label)) {
 			if (parameters[label].active == true) {
+				npmChannelLabels.push(label);
 				createDataChannel(label);
 			}
 		}
 	}
+	
+	var collectStatsMessage = {
+		type : 'collectStats',
+		data : npmChannelLabels
+	};
+	console.log(npmChannelLabels);
+	channels['init'].channel.send(JSON.stringify(collectStatsMessage));
 
 }
 
@@ -384,14 +398,17 @@ function npmSend(label) {
 				channels[label].channel.send(message);
 				channels[label].statistics.tx_pkts++;
 				channels[label].statistics.tx_bytes += message.length;
+			} else {
+				console.log('npmSend - bufferedAmount >= 30000');
 			}
 			
 			if (channels[label].statistics.tx_pkts < parameters[label].pktCount) {
 				var schedulerObject = {
-					sleep : parameters[label].sleep,
-					label : label
+					type	: 'npmSendTrigger',
+					sleep 	: parameters[label].sleep,
+					data 	: label
 				};
-				scheduler.postMessage(schedulerObject);‚
+				scheduler.postMessage(schedulerObject);
 			} else {
 				console.log('npmSend - channel:' + label + ' - all pkts sent');
 				closeDataChannel(label);
@@ -482,8 +499,19 @@ function bindEvents(channel) {
 scheduler.onmessage = function(e) {
 	var message = e.data;
 
-	if (message.label != undefined && message.sleep != undefined) {
-		npmSend(message.label, message.data);
+	if (message.data != undefined && message.sleep != undefined && message.type != undefined) {
+		switch(message.type) {
+			case 'npmSendTrigger':
+				npmSend(message.data);
+				break;
+			case 'recordStatsVector':
+				recordStats();
+				break;
+			default:
+				alert('scheduler - unknown messagetype!');
+				break;
+		}
+		
 	}
 };
 
@@ -518,11 +546,72 @@ function handleJsonMessage(message) {
 	case 'timestampEcho':
 		handlePingEcho(messageObject);
 		break;
+	case 'collectStats':
+		statsCollectInit(messageObject);
+		break;
 	default:
 		alert('Unknown messagetype!!');
 		break;
 	}
 }
+
+
+function statsCollectInit(messageObject) {
+	channelStats.push(messageObject.data);
+	console.log(channelStats);
+	setTimeout(statsCollect,500);
+}
+
+function statsCollect() {
+	var activeChannels = 0;
+	
+	var tempTime = new Date().getTime();
+	var tempRxRate = 0;
+	var tempStatsArray = [];
+	tempStatsArray.push(channelStatsCounter++);
+	
+	for (var i = 1; i < channelStats[0].length; i++) {
+		var label = channelStats[0][i];
+		alert(label);
+		if(channels[label].channel.readyState == 'open') {
+			activeChannels++;
+			
+			tempRxRate = (channels[label].statistics.rx_bytes - channels[label].statistics.rx_bytes_last) / (tempTime - channels[label].statistics.t_last) * 1000;
+			tempStatsArray.push(tempRxRate);
+			
+			
+			channels[label].statistics.rx_bytes_last = channels[label].statistics.rx_bytes;
+			channels[label].statistics.t_last = tempTime;
+			
+			
+		} else {
+			tempStatsArray.push(0);
+		}
+	}
+	
+	channelStats.push(tempStatsArray);
+	
+	if(activeChannels > 0) {
+		setTimeout(statsCollect,1000);
+	} else {
+		console.log('statsCollect - no active channels left!');
+		statsDrawChart();
+	}
+}
+
+function statsDrawChart() {
+        var data = google.visualization.arrayToDataTable(channelStats);
+
+        var options = {
+          title: 'DC Performance',
+          curveType: 'function',
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('channelChart'));
+
+        chart.draw(data, options);
+      }
 
 /*
  * generate a string with given length (byte)
