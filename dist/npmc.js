@@ -113,6 +113,7 @@ function updateChannelStatus(event) {
 	$('table#dcStatus tbody').empty();
 	var activeChannels = false;
 	
+	
 	$.each(channels, function(key, value) {		
 		var channel 	= value.channel;
 		var statistics 	= value.statistics;
@@ -159,6 +160,8 @@ function updateChannelStatus(event) {
 			updateChannelStatus();
 		},npmcSettings.statusRefreshRate);
 	} 
+	
+	statsDrawChart();
 	return true;
 }
 

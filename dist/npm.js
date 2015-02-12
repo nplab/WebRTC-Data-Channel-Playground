@@ -91,30 +91,27 @@ var freshSignalingID = generateSignalingID();
 var signalingIDRef = dbRef.child("npmIDs");
 var t_startNewPackage = 0;
 
-
 // clean firebase ref
 signalingIDRef.child(freshSignalingID).remove();
 $('#signalingID').val(location.hash.substring(1));
-
 
 prepareRole();
 
 function prepareRole() {
 	// role offerer
 	if ($('#signalingID').val() != '') {
-		
-		if($('#signalingID').val() != '') {
+
+		if ($('#signalingID').val() != '') {
 			signalingID = $('#signalingID').val();
 		}
 		role = "answerer";
 		peerRole = "offerer";
 
-				
 		$('#statusSigID').html(signalingID);
 		$('#statusRole').html(role);
 		$('#npmChannelParametersContainer').hide();
-	
-	// role answerer
+
+		// role answerer
 	} else {
 		role = 'offerer';
 		peerRole = 'answerer';
@@ -122,7 +119,6 @@ function prepareRole() {
 		$('#statusRole').html(role);
 		$('#statusSigID').html("<a href='#" + signalingID + "'>" + signalingID + "</a>");
 		$('#npmChannelParametersContainer').show();
-		
 
 	};
 }
@@ -185,10 +181,9 @@ pc.onicecandidate = function(event) {
 	signalingIDRef.child(signalingID).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
 
 	console.log('onicecandidate - ip:' + ip);
-	
+
 	updatePeerConnectionStatus(event);
 };
-
 
 pc.onsignalingstatechange = function(event) {
 	updatePeerConnectionStatus(event);
@@ -198,15 +193,14 @@ pc.oniceconnectionstatechange = function(event) {
 	updatePeerConnectionStatus(event);
 };
 
-
 // establish connection to remote peer via webrtc
 function connect() {
-	
+
 	// disable inputs
 	$('#npmConnect').prop('disabled', true);
 	$('#signalingID').prop('disabled', true);
 	$('#localIceFilter').prop('disabled', true);
-	$('#npmLoadSettings').prop('disabled',true);
+	$('#npmLoadSettings').prop('disabled', true);
 
 	if (role === "offerer") {
 
@@ -225,10 +219,10 @@ function connect() {
 		}, errorHandler, sdpConstraints);
 
 		console.log("connect - role: offerer");
-		
-	// answerer role
+
+		// answerer role
 	} else {
-		
+
 		// answerer must wait for the data channel
 		pc.ondatachannel = function(event) {
 			bindEvents(event.channel);
@@ -255,7 +249,7 @@ function connect() {
 	signalingIDRef.child(signalingID).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
 		var childVal = childSnapshot.val();
 		var peerCandidate = JSON.parse(childVal);
-		
+
 		var peerIceCandidate = new IceCandidate(peerCandidate);
 		pc.addIceCandidate(new IceCandidate(peerCandidate));
 
@@ -274,7 +268,7 @@ function connect() {
 function createDataChannel(label) {
 	// set options for datachannel
 	var dataChannelOptions;
-	if (typeof parameters[label] != 'undefined') {
+	if ( typeof parameters[label] != 'undefined') {
 		switch(parameters[label].reliableMode) {
 		case "reliable":
 			dataChannelOptions = {
@@ -287,7 +281,7 @@ function createDataChannel(label) {
 			break;
 		case "timeout":
 			dataChannelOptions = {
-				maxPacketLifeTime: parameters[label].reliableParam
+				maxPacketLifeTime : parameters[label].reliableParam
 			};
 			break;
 		}
@@ -300,24 +294,23 @@ function createDataChannel(label) {
 	channels[newChannel.label] = {
 		channel : newChannel,
 		statistics : {
-			t_start 	: 0,
-			t_end 		: 0,
-			t_last 		: 0,
-			tx_pkts		: 0,
-			tx_bytes	: 0,
-			tx_bytes_last:0,
+			t_start : 0,
+			t_end : 0,
+			t_last : 0,
+			tx_pkts : 0,
+			tx_bytes : 0,
+			tx_bytes_last : 0,
 			tx_rate_avg : 0,
 			tx_rate_cur : 0,
-			rx_pkts		: 0,
-			rx_bytes	: 0,
-			rx_bytes_last:0,
+			rx_pkts : 0,
+			rx_bytes : 0,
+			rx_bytes_last : 0,
 			rx_rate_avg : 0,
-			rx_rate_cur	: 0
+			rx_rate_cur : 0
 		}
 
 	};
-	
-	
+
 	updateChannelStatus();
 	console.log("createDataChannel - label:" + newChannel.label + ', id:' + newChannel.id);
 }
@@ -331,28 +324,28 @@ function closeDataChannel(label) {
 function parseParameters() {
 	$('#npmChannelParameters > tbody > tr').each(function() {
 		parameters[$(this).find('button[name="toggleActive"]').val()] = {
-			active 			: $(this).find('button[name="toggleActive"]').hasClass("btn-success"),
-			label 			: $(this).find('button[name="toggleActive"]').val(),
-			pktSize 		: parseInt($(this).find('input[name="paramPktSize"]').val()),
-			pktCount 		: parseInt($(this).find('input[name="paramPktCount"]').val()),
-			sleep 			: parseInt($(this).find('input[name="paramSleep"]').val()),
-			reliableMode	: $(this).find('select[name="paramMode"]').val(),
-			reliableParam 	: parseInt($(this).find('input[name="paramModeValue"]').val()),
-			runtime 		: parseInt(($(this).find('input[name="paramRuntime"]').val() * 1000)),
-			delay 			: parseInt(($(this).find('input[name="paramDelay"]').val() * 1000))
+			active : $(this).find('button[name="toggleActive"]').hasClass("btn-success"),
+			label : $(this).find('button[name="toggleActive"]').val(),
+			pktSize : parseInt($(this).find('input[name="paramPktSize"]').val()),
+			pktCount : parseInt($(this).find('input[name="paramPktCount"]').val()),
+			sleep : parseInt($(this).find('input[name="paramSleep"]').val()),
+			reliableMode : $(this).find('select[name="paramMode"]').val(),
+			reliableParam : parseInt($(this).find('input[name="paramModeValue"]').val()),
+			runtime : parseInt(($(this).find('input[name="paramRuntime"]').val() * 1000)),
+			delay : parseInt(($(this).find('input[name="paramDelay"]').val() * 1000))
 		};
-		
+
 	});
-	
+
 	console.log(parameters);
 }
 
 // run npm - read parameters and create datachannels
 function npmStart() {
 	parseParameters();
-	
+
 	//channels[init].channel.send(parameters);
-	
+
 	var npmChannelLabels = [];
 	npmChannelLabels.push('timestamp');
 
@@ -365,7 +358,7 @@ function npmStart() {
 			}
 		}
 	}
-	
+
 	var collectStatsMessage = {
 		type : 'collectStats',
 		data : npmChannelLabels
@@ -375,38 +368,36 @@ function npmStart() {
 
 }
 
-
 function npmSend(label) {
-	
+
 	if (label == 'init') {
 		alert('init darf das nicht!');
 	}
-	
-	if(channels[label].statistics.t_start == 0) {
+
+	if (channels[label].statistics.t_start == 0) {
 		channels[label].statistics.t_start = new Date().getTime();
 	}
-	
+
 	try {
 		channels[label].statistics.t_end = new Date().getTime();
 		var runtime = (channels[label].statistics.t_end - channels[label].statistics.t_start);
 		var message = generateByteString(parameters[label].pktSize);
-		
-		
+
 		if (runtime <= parameters[label].runtime) {
-			
-			if(channels[label].channel.bufferedAmount < 30000) {
+
+			if (channels[label].channel.bufferedAmount < 30000) {
 				channels[label].channel.send(message);
 				channels[label].statistics.tx_pkts++;
 				channels[label].statistics.tx_bytes += message.length;
 			} else {
 				console.log('npmSend - bufferedAmount >= 30000');
 			}
-			
+
 			if (channels[label].statistics.tx_pkts < parameters[label].pktCount) {
 				var schedulerObject = {
-					type	: 'npmSendTrigger',
-					sleep 	: parameters[label].sleep,
-					data 	: label
+					type : 'npmSendTrigger',
+					sleep : parameters[label].sleep,
+					data : label
 				};
 				scheduler.postMessage(schedulerObject);
 			} else {
@@ -422,51 +413,49 @@ function npmSend(label) {
 		console.log(e);
 		return;
 	}
-	
-	
+
 	//updateChannelState();
 };
-
 
 // bind the channel events
 function bindEvents(channel) {
 	channel.onopen = function() {
-		
+
 		// datachannel openend on offerer-side
-		if (role == 'offerer'){
-			if(channel.label == "init") {
-				$('#npmRun').prop('disabled',false);
+		if (role == 'offerer') {
+			if (channel.label == "init") {
+				$('#npmRun').prop('disabled', false);
 			} else {
-				$('#npmRun').prop('disabled',true);
-				
+				$('#npmRun').prop('disabled', true);
+
 				// start netperfmeter after defined delay
 				setTimeout(function() {
 					npmSend(channel.label);
 				}, parameters[channel.label].delay);
 			}
-		
-		// datachannel openend on answerer-side
+
+			// datachannel openend on answerer-side
 		} else {
 			channels[channel.label] = {
 				channel : channel,
 				statistics : {
-					t_start 	: 0,
-					t_end 		: 0,
-					t_last 		: 0,
-					tx_pkts		: 0,
-					tx_bytes	: 0,
-					tx_bytes_last:0,
+					t_start : 0,
+					t_end : 0,
+					t_last : 0,
+					tx_pkts : 0,
+					tx_bytes : 0,
+					tx_bytes_last : 0,
 					tx_rate_avg : 0,
 					tx_rate_cur : 0,
-					rx_pkts		: 0,
-					rx_bytes	: 0,
-					rx_bytes_last:0,
+					rx_pkts : 0,
+					rx_bytes : 0,
+					rx_bytes_last : 0,
 					rx_rate_avg : 0,
-					rx_rate_cur	: 0
+					rx_rate_cur : 0
 				}
 			};
 		}
-		
+
 		updateChannelStatus();
 		console.log("datachannel opened - label:" + channel.label + ', ID:' + channel.id);
 	};
@@ -477,18 +466,17 @@ function bindEvents(channel) {
 		console.log("datachannel closed - label:" + channel.label + ', ID:' + channel.id);
 	};
 
-
 	window.onbeforeunload = function() {
 		channel.close();
 	};
 
 	// handle messages
 	channel.onmessage = function(e) {
-		
+
 		// control messages on init-channel
 		if (e.currentTarget.label == 'init') {
 			handleJsonMessage(e.data);
-		// handle data messages
+			// handle data messages
 		} else if (role == 'answerer') {
 			handleDataMessage(e);
 		}
@@ -501,25 +489,25 @@ scheduler.onmessage = function(e) {
 
 	if (message.data != undefined && message.sleep != undefined && message.type != undefined) {
 		switch(message.type) {
-			case 'npmSendTrigger':
-				npmSend(message.data);
-				break;
-			case 'recordStatsVector':
-				recordStats();
-				break;
-			default:
-				alert('scheduler - unknown messagetype!');
-				break;
+		case 'npmSendTrigger':
+			npmSend(message.data);
+			break;
+		case 'recordStatsVector':
+			recordStats();
+			break;
+		default:
+			alert('scheduler - unknown messagetype!');
+			break;
 		}
-		
+
 	}
 };
 
 function handleDataMessage(e) {
 	rxDataLength = e.data.toString().length;
-	
+
 	var label = e.currentTarget.label;
-	if(channels[label].statistics.t_start == 0) {
+	if (channels[label].statistics.t_start == 0) {
 		channels[label].statistics.t_start = new Date().getTime();
 	}
 	channels[label].statistics.t_end = new Date().getTime();
@@ -532,16 +520,16 @@ function handleJsonMessage(message) {
 	var tempChannelLabel = messageObject.label;
 
 	switch(messageObject.type) {
-		
+
 	// statistics
 	case 'statistics':
 		break;
-	
+
 	// timestamp - echo timestamp to sender
 	case 'timestamp':
 		handlePing(messageObject);
 		break;
-	
+
 	// timestampEcho - measure RTT
 	case 'timestampEcho':
 		handlePingEcho(messageObject);
@@ -555,44 +543,41 @@ function handleJsonMessage(message) {
 	}
 }
 
-
 function statsCollectInit(messageObject) {
 	channelStats.push(messageObject.data);
 	console.log(channelStats);
-	setTimeout(statsCollect,500);
+	setTimeout(statsCollect, 500);
 }
 
 function statsCollect() {
 	var activeChannels = 0;
-	
+
 	var tempTime = new Date().getTime();
 	var tempRxRate = 0;
 	var tempStatsArray = [];
 	tempStatsArray.push(channelStatsCounter++);
-	
+
 	for (var i = 1; i < channelStats[0].length; i++) {
 		var label = channelStats[0][i];
 		//alert(label);
-		if(channels[label].channel.readyState == 'open') {
+		if (channels[label].channel.readyState == 'open') {
 			activeChannels++;
-			
+
 			tempRxRate = (channels[label].statistics.rx_bytes - channels[label].statistics.rx_bytes_last) / (tempTime - channels[label].statistics.t_last) * 1000;
 			tempStatsArray.push(tempRxRate);
-			
-			
+
 			channels[label].statistics.rx_bytes_last = channels[label].statistics.rx_bytes;
 			channels[label].statistics.t_last = tempTime;
-			
-			
+
 		} else {
 			tempStatsArray.push(0);
 		}
 	}
-	
+
 	channelStats.push(tempStatsArray);
-	
-	if(activeChannels > 0) {
-		setTimeout(statsCollect,1000);
+
+	if (activeChannels > 0) {
+		setTimeout(statsCollect, 1000);
 	} else {
 		console.log('statsCollect - no active channels left!');
 		statsDrawChart();
@@ -600,18 +585,28 @@ function statsCollect() {
 }
 
 function statsDrawChart() {
-        var data = google.visualization.arrayToDataTable(channelStats);
 
-        var options = {
-          title: 'DC Performance',
-          //curveType: 'function',
-          legend: { position: 'bottom' }
-        };
+	if (channelStats.length < 2) {
+		return;
+	}
+	var data = google.visualization.arrayToDataTable(channelStats);
 
-        var chart = new google.visualization.ScatterChart(document.getElementById('channelChart'));
+	var options = {
+		title : 'DC Performance',
+		//curveType: 'function',
+		legend : {
+			position : 'bottom'
+		},
+		animation : {
+			duration : 1000,
+			easing : 'in'
+		}
+	};
 
-        chart.draw(data, options);
-      }
+	var chart = new google.visualization.LineChart(document.getElementById('channelChart'));
+
+	chart.draw(data, options);
+}
 
 /*
  * generate a string with given length (byte)
@@ -628,11 +623,12 @@ function generateByteString(length) {
  */
 
 function bytesToSize(bytes) {
-   if(bytes == 0) return '0 Byte';
-   var k = 1000;
-   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-   var i = Math.floor(Math.log(bytes) / Math.log(k));
-   return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+	if (bytes == 0)
+		return '0 Byte';
+	var k = 1000;
+	var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+	var i = Math.floor(Math.log(bytes) / Math.log(k));
+	return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
 }
 
 /*
@@ -676,9 +672,9 @@ function saveChannelSettings() {
 		$(this).attr('value', $(this).val());
 	});
 
-	//var channelSettingsHTML = $("#npmChannelParameters").html(); 
+	//var channelSettingsHTML = $("#npmChannelParameters").html();
 	localStorage.setItem('npmChannelSettings', $("#npmChannelParameters").html());
-	localStorage.setItem('localIceFilter',$('#localIceFilter').val());
+	localStorage.setItem('localIceFilter', $('#localIceFilter').val());
 }
 
 /*
@@ -688,15 +684,15 @@ function loadChannelSetting() {
 
 	var channelSettingsHTML = localStorage.getItem('npmChannelSettings');
 	var localIceFilter = localStorage.getItem('localIceFilter');
-	
+
 	if (localIceFilter) {
 		$("#localIceFilter").val(localIceFilter);
-	} 
-	
+	}
+
 	if (channelSettingsHTML) {
 		$("#npmChannelParameters").html(channelSettingsHTML);
-	} 
-	
+	}
+
 	if (!localIceFilter && !channelSettingsHTML) {
 		alert('Sorry - No saved settings available!');
 	}
