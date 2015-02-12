@@ -572,7 +572,7 @@ function statsCollect() {
 	
 	for (var i = 1; i < channelStats[0].length; i++) {
 		var label = channelStats[0][i];
-		alert(label);
+		//alert(label);
 		if(channels[label].channel.readyState == 'open') {
 			activeChannels++;
 			
@@ -604,11 +604,11 @@ function statsDrawChart() {
 
         var options = {
           title: 'DC Performance',
-          curveType: 'function',
+          //curveType: 'function',
           legend: { position: 'bottom' }
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('channelChart'));
+        var chart = new google.visualization.ScatterChart(document.getElementById('channelChart'));
 
         chart.draw(data, options);
       }
