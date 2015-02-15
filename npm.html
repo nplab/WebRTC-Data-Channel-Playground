@@ -152,48 +152,111 @@
 			<div class="npmControl table-responsive" id="npmChannelParametersContainer">
 				<h3>Netperfmeter Control</h3>
 				<table class="table table-condensed" id="npmChannelParameters">
+					<thead>
+						<tr>
+							<th style="width: 7%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Activate or deactivate the datachannel"></span></th>
+							<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Amount of packets to sent"></span></th>
+							<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>10</kbd> - constant<br/><kbd>e:10</kbd> - exponential distribution<br/><kbd>u:0:10</kbd> - uniformed distribution"></span></th>
+							<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Send-mode<br/><kbd>[blank]</kbd> - reliable<br/><kbd>rt:10</kbd> - try max. 10 retransmissions<br/><kbd>to:10</kbd> - timeout after 10 seconds"></span></th>
+							<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Interval between each sent packet in ms<br/>set to 0 to send as much as possible<br/><kbd>10</kbd> - constant<br/><kbd>e:10</kbd> - exponential distribution<br/><kbd>u:0:10</kbd> - uniformed distribution"></span></th>
+							<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Start-delay in seconds"></span></th>
+							<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Channel-runtime in seconds"></span></th>
+							<th style="width: 9%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Remove or clone channel-settings"></span></th>
+						</tr>
+					</thead>
 					<tbody>
 
-						<tr id="npmChannelParametersC1" class="tr_clone">
+						<tr id="npmChannelParametersC1">
 							<td>
-							<button type="button" name="toggleActive" data-toggle="tooltip" title="Click to toogle channel" class="btn btn-default btn-sm toggleActive" value="o1">
+							<button type="button" name="toggleActive" class="btn btn-success btn-sm toggleActive" value="o1">
 								1
 							</button></td>
 							<td>
-							<input class="form-control input-sm" name="paramPktCount" placeholder="packetcount" data-toggle="tooltip" title="Amount of packets" size="5">
+							<input class="form-control input-sm" name="paramPktCount" placeholder="p" size="5" value="1000">
+							</td>
+							
+							<td>
+							<input class="form-control input-sm" name="paramPktSize" size="4" placeholder="packet-size" value="1600">
+							</td>
+							
+							<td>
+							<input type="text" class="form-control input-sm" name="paramModeValue" placeholder="mode" size="4" aria-label="..." value="">
 							</td>
 							<td>
-							<select class="selectpicker form-control input-sm"  name="paramMode" data-toggle="tooltip" data-html="true" title="Mode for packetsize:<br/>- constant<br/>- discrete uniformed<br/>- exponential distributed">
-								<option value="constant">constant</option>
-								<option value="uniformed">uniformed</option>
-								<option value="exponential">exponential</option>
-							</select>
-							</td>
-						‚<td>
-							<input class="form-control input-sm" name="paramPktSize" data-toggle="tooltip" title="Packetsize in byte" placeholder="Packetsize">
+							<input type="text" class="form-control input-sm" name="paramSleep" size="4" placeholder="interval" value="10">
 							</td>
 							<td>
-							<select class="form-control input-sm" name="paramMode">
-								<option value="reliable" selected>reliable</option>
-								<option value="retransmit">max restransmissions</option>
-								<option value="timeout">max timeout</option>
-							</select></td>
-							<td>
-							<input type="text" class="form-control input-sm" name="paramModeValue" size="4" aria-label="..." value="1" disabled>
+							<input type="text" class="form-control input-sm" name="paramDelay" size="4" placeholder="start-delay" value="5">
 							</td>
 							<td>
-							<input class="form-control input-sm" name="paramSleep" value="100" size="4">
-							</td>
-							<td>
-							<input class="form-control input-sm" name="paramDelay" value="5" size="4">
-							</td>
-							<td>
-							<input class="form-control input-sm" name="paramRuntime" value="30" size="4">
+							<input type="text" class="form-control input-sm" name="paramRuntime" size="4" placeholder="runtime" value="30">
 							</td>
 							<td>
 							<p class="text-nowrap">
-								<span id="npmChannelParametersClone" onclick="parametersRowCopy();" class="glyphicon glyphicon-plus glGreen" aria-hidden="true"></span>
-								<span id="npmChannelParametersRemove" onclick="parametersRowDelte();" class="glyphicon glyphicon-minus glRed" aria-hidden="true"></span>
+								<span id="npmChannelParametersClone" onclick="parametersRowCopy();" title="Clone row" class="glyphicon glyphicon-plus glGreen" aria-hidden="true"></span>
+								<span id="npmChannelParametersRemove" onclick="parametersRowDelte();" title="Remove row" class="glyphicon glyphicon-minus glRed" aria-hidden="true"></span>
+							</p></td>
+						</tr>
+						<tr id="npmChannelParametersC2">
+							<td>
+							<button type="button" name="toggleActive" class="btn btn-success btn-sm toggleActive" value="o2">
+								1
+							</button></td>
+							<td>
+							<input class="form-control input-sm" name="paramPktCount" placeholder="p" size="5" value="1000">
+							</td>
+							
+							<td>
+							<input class="form-control input-sm" name="paramPktSize" size="4" placeholder="packet-size" value="u:1024:2048">
+							</td>
+							
+							<td>
+							<input type="text" class="form-control input-sm" name="paramModeValue" placeholder="mode" size="4" aria-label="..." value="rt:10">
+							</td>
+							<td>
+							<input type="text" class="form-control input-sm" name="paramSleep" size="4" placeholder="interval" value="e:10">
+							</td>
+							<td>
+							<input type="text" class="form-control input-sm" name="paramDelay" size="4" placeholder="start-delay" value="5">
+							</td>
+							<td>
+							<input type="text" class="form-control input-sm" name="paramRuntime" size="4" placeholder="runtime" value="30">
+							</td>
+							<td>
+							<p class="text-nowrap">
+								<span id="npmChannelParametersClone" onclick="parametersRowCopy();" title="Clone row" class="glyphicon glyphicon-plus glGreen" aria-hidden="true"></span>
+								<span id="npmChannelParametersRemove" onclick="parametersRowDelte();" title="Remove row" class="glyphicon glyphicon-minus glRed" aria-hidden="true"></span>
+							</p></td>
+						</tr>
+						<tr id="npmChannelParametersC2">
+							<td>
+							<button type="button" name="toggleActive" class="btn btn-default btn-sm toggleActive" value="o2">
+								1
+							</button></td>
+							<td>
+							<input class="form-control input-sm" name="paramPktCount" placeholder="p" size="5">
+							</td>
+							
+							<td>
+							<input class="form-control input-sm" name="paramPktSize" size="4" placeholder="packet-size">
+							</td>
+							
+							<td>
+							<input type="text" class="form-control input-sm" name="paramModeValue" placeholder="mode" size="4" aria-label="...">
+							</td>
+							<td>
+							<input type="text" class="form-control input-sm" name="paramSleep" size="4" placeholder="interval">
+							</td>
+							<td>
+							<input type="text" class="form-control input-sm" name="paramDelay" size="4" placeholder="start-delay">
+							</td>
+							<td>
+							<input type="text" class="form-control input-sm" name="paramRuntime" size="4" placeholder="runtime">
+							</td>
+							<td>
+							<p class="text-nowrap">
+								<span id="npmChannelParametersClone" onclick="parametersRowCopy();" title="Clone row" class="glyphicon glyphicon-plus glGreen" aria-hidden="true"></span>
+								<span id="npmChannelParametersRemove" onclick="parametersRowDelte();" title="Remove row" class="glyphicon glyphicon-minus glRed" aria-hidden="true"></span>
 							</p></td>
 						</tr>
 					</tbody>
@@ -265,8 +328,10 @@
 		<script type="text/javascript">
 			jQuery(document).ready(function($) {
 
-				//$('[data-toggle="tooltip"]').tooltip();
-				$('[data-toggle="tooltip"]').tooltip();
+				$('[data-toggle="popover"]').popover({
+					placement: 	'top',
+					html:		'true'
+				})
 
 				// for ( i = 1; i < 5; i++) {
 				// cloneFirstParametersRow();// }

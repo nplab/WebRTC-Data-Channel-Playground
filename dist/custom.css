@@ -77,3 +77,7 @@ table#npmChannelParameters td,table#npmChannelParameters th, table#npmChannelPar
 .glGreen:hover {
 	background-color: #E0F0D9;
 }
+
+#npmChannelParameters th span.glyphicon {
+	cursor: pointer;
+}
