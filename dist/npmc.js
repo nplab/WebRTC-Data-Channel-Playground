@@ -32,7 +32,7 @@
 
 var npmcSettings = {
 	// refresh rate for the status tables in ms
-	statusRefreshRate	: 500,
+	statusRefreshRate	: 1000,
 };
 
 /*
@@ -134,7 +134,10 @@ function updateChannelStatus(event) {
 		// if channel is open, offer to close it
 		var actionHTML = '';
 		if(channel.readyState === 'open') {
-			activeChannels = true;
+			if(channel.label != 'init') {
+				activeChannels = true;
+			}
+			
 			actionHTML = '<button class="btn-default btn btn-xs" onclick="closeDataChannel(\'' + value.channel.label + '\');">close</button>';
 		}
 		
@@ -159,9 +162,13 @@ function updateChannelStatus(event) {
 			npmcStatisticsTimerActive = false;
 			updateChannelStatus();
 		},npmcSettings.statusRefreshRate);
+		refreshCounter++;
 	} 
+	if(refreshCounter%3 == 0) {
+		console.log('Graphzeichenn!!!');
+		statsDrawChart();
+	}
 	
-	statsDrawChart();
 	return true;
 }
 

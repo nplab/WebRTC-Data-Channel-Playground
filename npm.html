@@ -10,20 +10,18 @@
 		<title>WebRTC-DataChannel Testsuite</title>
 
 		<!-- CSS Section -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
-		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans' type='text/css'>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="dist/custom.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
 
 		<!-- ICON Section -->
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 		<link rel="apple-touch-icon" href="/favicon-apple.png"/>
 
 		<!-- JAVSCRIPT Section -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+
 		<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
@@ -95,6 +93,9 @@
 					<button class="btn btn-primary btn-block btn-sm " id="npmSaveSettings" onclick="saveChannelSettings()">
 						<span class="glyphicon glyphicon-floppy-save" aria-hidden="false"></span> Save settings<span class="rtt"></span>
 					</button>
+					<button class="btn btn-primary btn-block btn-sm " id="npmEditSettings" data-toggle="modal" data-target="#settingsModal">
+						<span class="glyphicon glyphicon-floppy-save" aria-hidden="false"></span> Save settings<span class="rtt"></span>
+					</button>
 
 				</div>
 
@@ -151,33 +152,28 @@
 			<div class="npmControl table-responsive" id="npmChannelParametersContainer">
 				<h3>Netperfmeter Control</h3>
 				<table class="table table-condensed" id="npmChannelParameters">
-					<thead>
-						<tr>
-							<th style="width:9%"><span id="npmChannelParametersClone" onclick="cloneFirstParametersRow();" class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green;"></span></th>
-							<th style="width:13%">pkt-count</th>
-							<th style="width:13%">pkt-size</th>
-							<th style="width:13%">mode</th>
-							<th style="width:13%">modepar</th>
-							<th style="width:13%">sleep (ms)</th>
-							<th style="width:13%">delay (s)</th>
-							<th style="width:13%">runtime (s)</th>
-						</tr>
-					</thead>
 					<tbody>
 
 						<tr id="npmChannelParametersC1" class="tr_clone">
 							<td>
-							<button type="button" name="toggleActive" class="btn btn-default btn-sm toggleActive" value="o1">
+							<button type="button" name="toggleActive" data-toggle="tooltip" title="Click to toogle channel" class="btn btn-default btn-sm toggleActive" value="o1">
 								1
 							</button></td>
 							<td>
-							<input class="form-control input-sm" name="paramPktCount" value="100" size="5">
+							<input class="form-control input-sm" name="paramPktCount" placeholder="packetcount" data-toggle="tooltip" title="Amount of packets" size="5">
 							</td>
 							<td>
-							<input class="form-control input-sm" name="paramPktSize" value="200" size="5">
+							<select class="selectpicker form-control input-sm"  name="paramMode" data-toggle="tooltip" data-html="true" title="Mode for packetsize:<br/>- constant<br/>- discrete uniformed<br/>- exponential distributed">
+								<option value="constant">constant</option>
+								<option value="uniformed">uniformed</option>
+								<option value="exponential">exponential</option>
+							</select>
+							</td>
+						‚<td>
+							<input class="form-control input-sm" name="paramPktSize" data-toggle="tooltip" title="Packetsize in byte" placeholder="Packetsize">
 							</td>
 							<td>
-							<select class="form-control" name="paramMode">
+							<select class="form-control input-sm" name="paramMode">
 								<option value="reliable" selected>reliable</option>
 								<option value="retransmit">max restransmissions</option>
 								<option value="timeout">max timeout</option>
@@ -194,6 +190,11 @@
 							<td>
 							<input class="form-control input-sm" name="paramRuntime" value="30" size="4">
 							</td>
+							<td>
+							<p class="text-nowrap">
+								<span id="npmChannelParametersClone" onclick="parametersRowCopy();" class="glyphicon glyphicon-plus glGreen" aria-hidden="true"></span>
+								<span id="npmChannelParametersRemove" onclick="parametersRowDelte();" class="glyphicon glyphicon-minus glRed" aria-hidden="true"></span>
+							</p></td>
 						</tr>
 					</tbody>
 				</table>
@@ -222,14 +223,34 @@
 			<div class="footer text-center">
 				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
 			</div>
+
+			<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel">Modal title</h4>
+						</div>
+						<div class="modal-body">
+							...
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">
+								Close
+							</button>
+							<button type="button" class="btn btn-primary">
+								Save changes
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<!-- /container -->
 		<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
-		<script type='text/javascript' src='http://code.jquery.com/jquery-2.1.3.min.js'></script>
-		<script type='text/javascript' src="dist/npmc.js"></script>
-		<script type='text/javascript' src="dist/npm.js"></script>
-
 		<script type="text/javascript"
 		src="https://www.google.com/jsapi?autoload={
 		'modules':[{
@@ -238,12 +259,17 @@
 		'packages':['corechart']
 		}]
 		}"></script>
+		<script type='text/javascript' src="dist/npmc.js"></script>
+		<script type='text/javascript' src="dist/npm.js"></script>
 
 		<script type="text/javascript">
 			jQuery(document).ready(function($) {
+
+				//$('[data-toggle="tooltip"]').tooltip();
+				$('[data-toggle="tooltip"]').tooltip();
+
 				// for ( i = 1; i < 5; i++) {
-				// cloneFirstParametersRow();
-				// }
+				// cloneFirstParametersRow();// }
 			});
 
 			$(window).resize(function() {

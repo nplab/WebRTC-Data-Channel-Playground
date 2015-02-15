@@ -73,6 +73,7 @@ var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
 var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 
 var activeChannelCount = -1;
+var refreshCounter = 0;
 var channels = {};
 var channelStats = [];
 var channelStatsCounter = 0;
@@ -90,6 +91,24 @@ var signalingID;
 var freshSignalingID = generateSignalingID();
 var signalingIDRef = dbRef.child("npmIDs");
 var t_startNewPackage = 0;
+
+
+
+
+// Google Chart
+var chartOptions = {
+	title : 'DC Performance',
+	legend : {
+		position : 'bottom'
+	},
+	animation : {
+		duration : 1000,
+		easing : 'out'
+	}
+};
+var chartData;
+
+var chart = new google.visualization.LineChart(document.getElementById('channelChart'));
 
 // clean firebase ref
 signalingIDRef.child(freshSignalingID).remove();
@@ -326,9 +345,11 @@ function parseParameters() {
 		parameters[$(this).find('button[name="toggleActive"]').val()] = {
 			active : $(this).find('button[name="toggleActive"]').hasClass("btn-success"),
 			label : $(this).find('button[name="toggleActive"]').val(),
-			pktSize : parseInt($(this).find('input[name="paramPktSize"]').val()),
+			pktSizeMode : 'c',
+			pktSizeParam : parseInt($(this).find('input[name="paramPktSize"]').val()),
 			pktCount : parseInt($(this).find('input[name="paramPktCount"]').val()),
-			sleep : parseInt($(this).find('input[name="paramSleep"]').val()),
+			sleepMode : 'c',
+			sleepParam: parseInt($(this).find('input[name="paramSleep"]').val()),
 			reliableMode : $(this).find('select[name="paramMode"]').val(),
 			reliableParam : parseInt($(this).find('input[name="paramModeValue"]').val()),
 			runtime : parseInt(($(this).find('input[name="paramRuntime"]').val() * 1000)),
@@ -338,6 +359,14 @@ function parseParameters() {
 	});
 
 	console.log(parameters);
+}
+
+function randomUniform(min,max)  {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomExponential() {
+	
 }
 
 // run npm - read parameters and create datachannels
@@ -416,6 +445,20 @@ function npmSend(label) {
 
 	//updateChannelState();
 };
+
+// reset npm for next benchmark
+function npmReset() {
+	for (var label in channels) {
+
+		if (channels.hasOwnProperty(label)) {
+			if (label != 'init') {
+				delete label;
+			}
+		}
+	}
+
+	console.log('npmReset');
+}
 
 // bind the channel events
 function bindEvents(channel) {
@@ -589,23 +632,9 @@ function statsDrawChart() {
 	if (channelStats.length < 2) {
 		return;
 	}
-	var data = google.visualization.arrayToDataTable(channelStats);
 
-	var options = {
-		title : 'DC Performance',
-		//curveType: 'function',
-		legend : {
-			position : 'bottom'
-		},
-		animation : {
-			duration : 1000,
-			easing : 'in'
-		}
-	};
-
-	var chart = new google.visualization.LineChart(document.getElementById('channelChart'));
-
-	chart.draw(data, options);
+	chartData = google.visualization.arrayToDataTable(channelStats);
+	chart.draw(chartData, chartOptions);
 }
 
 /*
