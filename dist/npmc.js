@@ -39,8 +39,11 @@ var npmcSettings = {
  * SETTINGS SECTION END
  */
 
-var npmcDcCounter = 1;
+var npmcDcCounter = 0;
 var npmcStatisticsTimerActive = false;
+
+parametersRowAddSamples();
+
 
 // button toggle used to activate and deactivate channels
 $('#npmChannelParameters').on('click', 'button[name="toggleActive"]', function(event){
@@ -85,17 +88,40 @@ $('#signalingID').change(function(){
 
 
 // clone the first row from dc parameters and append it after the last row
-function cloneFirstParametersRow() {
+function npmParametersRowAdd() {
 	npmcDcCounter++;
-	var cloneRow = $('#npmChannelParameters > tbody > tr.tr_clone').clone();
-	cloneRow.removeClass('tr_clone');
-	cloneRow.prop('id','npmChannelParametersC'+npmcDcCounter);
+	var cloneRow = $('.npmChannelParametersBlank').clone();
+	cloneRow.removeClass('npmChannelParametersBlank');
+	cloneRow.show();
 	cloneRow.find('[name=toggleActive]').val('o'+npmcDcCounter);
 	cloneRow.find('[name=toggleActive]').html(npmcDcCounter);
-	cloneRow.find('[name=paramSleep]').val(cloneRow.find('[name=paramSleep]').val()*npmcDcCounter);
 	$('#npmChannelParameters tr').last().after(cloneRow);
 	
-	return true;
+	return cloneRow;
+}
+
+// remove specific row
+function parametersRowDelete(element) {
+	$(element).closest('tr').remove();
+	
+}
+
+// create sample data
+function parametersRowAddSamples() {
+	var first = npmParametersRowAdd();
+	first.find('[name=paramPktCount]').val('1000');
+	first.find('[name=paramPktSize]').val('1024');
+	first.find('[name=paramInterval]').val('10');
+	first.find('[name=paramDelay]').val('5');
+	first.find('[name=paramRuntime]').val('30');
+
+	var second = npmParametersRowAdd();
+	
+	second.find('[name=paramPktCount]').val('1000');
+	second.find('[name=paramPktSize]').val('u:1024:2048');
+	second.find('[name=paramInterval]').val('e:10');
+	second.find('[name=paramDelay]').val('5');
+	second.find('[name=paramRuntime]').val('30');
 }
 
 // update the PeerConnectionStatus Table

@@ -696,20 +696,20 @@ function handlePingEcho(message) {
 /*
  * Save the channel settings to webstorage
  */
-function saveChannelSettings() {
+function npmChannelSettingsSave() {
 	$('#npmChannelParameters > tbody > tr > td > input').each(function() {
 		$(this).attr('value', $(this).val());
 	});
 
-	//var channelSettingsHTML = $("#npmChannelParameters").html();
-	localStorage.setItem('npmChannelSettings', $("#npmChannelParameters").html());
+	//var channelSettingsHTML = $("#npmChannelParameters tbody").html();
+	localStorage.setItem('npmChannelSettings', $("#npmChannelParameters tbody").html());
 	localStorage.setItem('localIceFilter', $('#localIceFilter').val());
 }
 
 /*
  * load channel settings from webstorage
  */
-function loadChannelSetting() {
+function npmChannelSettingsLoad() {
 
 	var channelSettingsHTML = localStorage.getItem('npmChannelSettings');
 	var localIceFilter = localStorage.getItem('localIceFilter');
@@ -719,11 +719,20 @@ function loadChannelSetting() {
 	}
 
 	if (channelSettingsHTML) {
-		$("#npmChannelParameters").html(channelSettingsHTML);
+		$("#npmChannelParameters tbody").html(channelSettingsHTML);
 	}
 
 	if (!localIceFilter && !channelSettingsHTML) {
 		alert('Sorry - No saved settings available!');
 	}
+}
+
+function npmChannelSettingsEditorShow() {
+	$('#npmChannelParameters > tbody > tr > td > input').each(function() {
+		$(this).attr('value', $(this).val());
+	});
+	alert('test');
+	
+	$('#settingsEditorTextarea').val($("#npmChannelParameters tbody").html());
 }
 
