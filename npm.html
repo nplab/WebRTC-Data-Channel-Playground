@@ -150,9 +150,10 @@
 				</div>
 			</div>
 			<div class="npmControl" id="npmChannelParametersContainer">
-				<h3>Netperfmeter Control - <button class="btn btn-success btn-xs " onclick="npmParametersRowAdd();">
-						<span class="glyphicon glyphicon-plus" aria-hidden="false"></span> add Channel</button>
-						</h3>
+				<h3>Netperfmeter Control -
+				<button class="btn btn-success btn-xs " onclick="npmParametersRowAdd();">
+					<span class="glyphicon glyphicon-plus" aria-hidden="false"></span> add Channel
+				</button></h3>
 				<div class="table-responsive">
 					<table class="table table-condensed" style="min-width: 640px;" id="npmChannelParameters">
 						<thead>
@@ -194,10 +195,12 @@
 								<input type="text" class="form-control input-sm" name="paramRuntime" size="4" placeholder="runtime">
 								</td>
 								<td>
-								<p class="text-nowrap">
-									<span onclick="parametersRowCopy();" title="Clone row" class="glyphicon glyphicon-plus glGreen" aria-hidden="true"></span>
-									<span onclick="parametersRowDelete(this);" title="Remove row" class="glyphicon glyphicon-minus glRed" aria-hidden="true"></span>
-								</p></td>
+								<button type="button" onclick="parametersRowCopy(this);" title="copy channel" class="btn btn-default btn-sm">
+									<span style="color:#316EA2;" class="glyphicon glyphicon-copy" aria-hidden="true">
+								</button>
+								<button type="button" onclick="parametersRowDelete(this);" title="remove channel" class="btn btn-default btn-sm">
+									<span style="color:#D2403E;" class="glyphicon glyphicon-remove" aria-hidden="true">
+								</button></td>
 							</tr>
 						</tbody>
 					</table>
@@ -247,7 +250,7 @@
 							<button type="button" class="btn btn-primary">
 								Save
 							</button>
-							
+
 						</div>
 					</div>
 				</div>
@@ -273,7 +276,7 @@
 				$('[data-toggle="popover"]').popover({
 					placement : 'top',
 					html : 'true',
-					trigger: 'hover',
+					trigger : 'hover',
 				})
 
 				// for ( i = 1; i < 5; i++) {

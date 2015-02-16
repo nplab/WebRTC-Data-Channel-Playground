@@ -58,26 +58,6 @@ table#npmChannelParameters td,table#npmChannelParameters th, table#npmChannelPar
 	text-align:center;
 }
 
-.glRed {
-	color:#A74444;
-	padding: 4px;
-	border-radius: 2px;
-}
-
-.glRed:hover {
-	background-color:#F2DEDE;
-}
-
-.glGreen {
-	color:#3E753F;
-	padding: 4px;
-	border-radius: 2px;
-}
-
-.glGreen:hover {
-	background-color: #E0F0D9;
-}
-
 #npmChannelParameters th span.glyphicon {
 	cursor: pointer;
 }

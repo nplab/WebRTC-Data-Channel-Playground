@@ -103,7 +103,14 @@ function npmParametersRowAdd() {
 // remove specific row
 function parametersRowDelete(element) {
 	$(element).closest('tr').remove();
-	
+}
+
+function parametersRowCopy(element) {
+	npmcDcCounter++;
+	var cloneRow = $(element).closest('tr').clone();
+	cloneRow.find('[name=toggleActive]').val('o'+npmcDcCounter);
+	cloneRow.find('[name=toggleActive]').html(npmcDcCounter);
+	$('#npmChannelParameters tr').last().after(cloneRow);
 }
 
 // create sample data
