@@ -339,35 +339,59 @@ function closeDataChannel(label) {
 	channels[label].channel.close();
 }
 
+function validateParameters() {
+	$('#npmChannelParameters > tbody > tr input').each(function() {
+		alert($(this).attr('name'));
+	});
+}
+
+
 // read parameters from table and save in parameters object
 function parseParameters() {
 	$('#npmChannelParameters > tbody > tr').each(function() {
 		parameters[$(this).find('button[name="toggleActive"]').val()] = {
 			active : $(this).find('button[name="toggleActive"]').hasClass("btn-success"),
 			label : $(this).find('button[name="toggleActive"]').val(),
-			pktSizeMode : 'c',
-			pktSizeParam : parseInt($(this).find('input[name="paramPktSize"]').val()),
+			pktSize : $(this).find('input[name="paramPktSize"]').val(),
 			pktCount : parseInt($(this).find('input[name="paramPktCount"]').val()),
-			sleepMode : 'c',
-			sleepParam: parseInt($(this).find('input[name="paramSleep"]').val()),
-			reliableMode : $(this).find('select[name="paramMode"]').val(),
-			reliableParam : parseInt($(this).find('input[name="paramModeValue"]').val()),
+			sendInterval: $(this).find('input[name="paramInterval"]').val(),
+			sendMode : $(this).find('input[name="paramMode"]').val(),
 			runtime : parseInt(($(this).find('input[name="paramRuntime"]').val() * 1000)),
 			delay : parseInt(($(this).find('input[name="paramDelay"]').val() * 1000))
 		};
-
 	});
 
 	console.log(parameters);
 }
 
+/*
+ * generate a random uniformed integer between min and max
+ */
 function randomUniform(min,max)  {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function randomExponential() {
-	
+function testRandomUniform(min,max,runs) {
+	var sum = 0;
+	for(i=0;i<runs;i++) {
+		sum += randomUniform(min,max);
+	}
+	return sum/runs;
 }
+
+function randomExponential(expectation) {
+	return Math.round(Math.abs(Math.log(Math.random())/(1/expectation)));
+}
+
+function testRandomExponential(expectation,runs) {
+	var sum = 0;
+	for(i=0;i<runs;i++) {
+		num = randomExponential(expectation);
+		sum += num;
+		console.log(num);
+	}
+	return sum/runs;
+} 
 
 // run npm - read parameters and create datachannels
 function npmStart() {
@@ -660,6 +684,7 @@ function bytesToSize(bytes) {
 	return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
 }
 
+
 /*
  * Send a message to peer with local timestamp
  */
@@ -696,7 +721,7 @@ function handlePingEcho(message) {
 /*
  * Save the channel settings to webstorage
  */
-function npmChannelSettingsSave() {
+function channelSettingsSave() {
 	$('#npmChannelParameters > tbody > tr > td > input').each(function() {
 		$(this).attr('value', $(this).val());
 	});
@@ -704,12 +729,14 @@ function npmChannelSettingsSave() {
 	//var channelSettingsHTML = $("#npmChannelParameters tbody").html();
 	localStorage.setItem('npmChannelSettings', $("#npmChannelParameters tbody").html());
 	localStorage.setItem('localIceFilter', $('#localIceFilter').val());
+	
+	console.log('settings saved');
 }
 
 /*
  * load channel settings from webstorage
  */
-function npmChannelSettingsLoad() {
+function channelSettingsLoad() {
 
 	var channelSettingsHTML = localStorage.getItem('npmChannelSettings');
 	var localIceFilter = localStorage.getItem('localIceFilter');
@@ -725,14 +752,24 @@ function npmChannelSettingsLoad() {
 	if (!localIceFilter && !channelSettingsHTML) {
 		alert('Sorry - No saved settings available!');
 	}
+	
+	console.log('settings loaded');
 }
-
-function npmChannelSettingsEditorShow() {
+/*
+ * Show settings editor
+ */
+function channelSettingsEditorShow() {
 	$('#npmChannelParameters > tbody > tr > td > input').each(function() {
 		$(this).attr('value', $(this).val());
 	});
-	alert('test');
 	
 	$('#settingsEditorTextarea').val($("#npmChannelParameters tbody").html());
 }
 
+/*
+ * Save settings from editor
+ */
+function channelSettingsEditorApply() {
+	$("#npmChannelParameters tbody").html($('#channelSettingsEditorTextarea').val());
+	console.log('settings applied');
+}

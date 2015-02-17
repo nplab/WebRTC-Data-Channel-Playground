@@ -88,14 +88,14 @@ $('#signalingID').change(function(){
 
 
 // clone the first row from dc parameters and append it after the last row
-function npmParametersRowAdd() {
+function parametersRowAdd() {
 	npmcDcCounter++;
 	var cloneRow = $('.npmChannelParametersBlank').clone();
 	cloneRow.removeClass('npmChannelParametersBlank');
 	cloneRow.show();
 	cloneRow.find('[name=toggleActive]').val('o'+npmcDcCounter);
 	cloneRow.find('[name=toggleActive]').html(npmcDcCounter);
-	$('#npmChannelParameters tr').last().after(cloneRow);
+	$('#npmChannelParameters tbody').append(cloneRow);
 	
 	return cloneRow;
 }
@@ -110,19 +110,19 @@ function parametersRowCopy(element) {
 	var cloneRow = $(element).closest('tr').clone();
 	cloneRow.find('[name=toggleActive]').val('o'+npmcDcCounter);
 	cloneRow.find('[name=toggleActive]').html(npmcDcCounter);
-	$('#npmChannelParameters tr').last().after(cloneRow);
+	$('#npmChannelParameters tbody').append(cloneRow);
 }
 
 // create sample data
 function parametersRowAddSamples() {
-	var first = npmParametersRowAdd();
+	var first = parametersRowAdd();
 	first.find('[name=paramPktCount]').val('1000');
 	first.find('[name=paramPktSize]').val('1024');
 	first.find('[name=paramInterval]').val('10');
 	first.find('[name=paramDelay]').val('5');
 	first.find('[name=paramRuntime]').val('30');
 
-	var second = npmParametersRowAdd();
+	var second = parametersRowAdd();
 	
 	second.find('[name=paramPktCount]').val('1000');
 	second.find('[name=paramPktSize]').val('u:1024:2048');
