@@ -223,7 +223,7 @@ function connect() {
 
 	if (role === "offerer") {
 
-		createDataChannel('init');
+		channelCreate('init');
 		// create the offer SDP
 		pc.createOffer(function(offer) {
 			pc.setLocalDescription(offer);
@@ -284,23 +284,24 @@ function connect() {
 }
 
 //create new datachannel
-function createDataChannel(label) {
+function channelCreate(label) {
 	// set options for datachannel
 	var dataChannelOptions;
 	if ( typeof parameters[label] != 'undefined') {
-		switch(parameters[label].reliableMode) {
-		case "reliable":
+		var sendModeArray = parameters[label].sendMode.split(':');
+		switch(sendModeArray[0]) {
+		case "":
 			dataChannelOptions = {
 			};
 			break;
-		case "restransmit":
+		case "rt":
 			dataChannelOptions = {
-				maxRetransmits : parameters[label].reliableParam
+				maxRetransmits : sendModeArray[1],
 			};
 			break;
 		case "timeout":
 			dataChannelOptions = {
-				maxPacketLifeTime : parameters[label].reliableParam
+				maxPacketLifeTime : sendModeArray[1],
 			};
 			break;
 		}
@@ -340,9 +341,50 @@ function closeDataChannel(label) {
 }
 
 function validateParameters() {
+	var inputValid = true;
 	$('#npmChannelParameters > tbody > tr input').each(function() {
-		alert($(this).attr('name'));
+		$(this).removeClass('has-error');
+		
+		switch ($(this).attr('name')) {	
+			// gt 0
+			case 'paramPktCount':
+			case 'paramRuntime':
+			case 'paramDelay':
+				var pattern = /^(\d+)$/g;
+				var string	= $(this).val();
+				if(!string.match(pattern)) {
+					$(this).addClass('has-error');
+					console.log('validation error');
+					inputValid = false;
+				}
+				break;
+				
+			// pattern: number || const:number || exp:number || uniform:number:number
+			case 'paramInterval':
+			case 'paramPktSize':
+			
+				var pattern = /^(\d+|const:\d+|exp:\d+|uniform:\d+:\d+)$/g;
+				var string	= $(this).val();
+				if(!string.match(pattern)) {
+					$(this).addClass('has-error');
+					console.log('validation error');
+					inputValid = false;
+				}
+				break;
+				
+			case 'paramMode':
+				var pattern = /^(rt:\d+|to:\d+)$/g;
+				var string	= $(this).val();
+				if(string.length > 0 && !string.match(pattern)) {
+					$(this).addClass('has-error');
+					console.log('validation error');
+					inputValid = false;
+				}
+				break;
+		}
 	});
+	
+	return inputValid;
 }
 
 
@@ -371,7 +413,10 @@ function randomUniform(min,max)  {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function testRandomUniform(min,max,runs) {
+/*
+ * test random unform
+ */
+function randomUniformTest(min,max,runs) {
 	var sum = 0;
 	for(i=0;i<runs;i++) {
 		sum += randomUniform(min,max);
@@ -379,11 +424,17 @@ function testRandomUniform(min,max,runs) {
 	return sum/runs;
 }
 
+/*
+ * generate a random exponential integer
+ */
 function randomExponential(expectation) {
 	return Math.round(Math.abs(Math.log(Math.random())/(1/expectation)));
 }
 
-function testRandomExponential(expectation,runs) {
+/*
+ * test random exponential
+ */
+function randomExponentialTest(expectation,runs) {
 	var sum = 0;
 	for(i=0;i<runs;i++) {
 		num = randomExponential(expectation);
@@ -391,10 +442,38 @@ function testRandomExponential(expectation,runs) {
 		console.log(num);
 	}
 	return sum/runs;
+}
+
+function randomWrapper(funcstring) {
+	var paramArray = funcstring.split(':');
+	
+	if(paramArray.length == 1) {
+		return parseInt(funcstring);
+	} else {
+		switch(paramArray[0]) {
+			case 'const':
+				return parseInt(paramArray[1]);
+				break;
+			
+			case 'exp':
+				return randomExponential(parseInt(paramArray[1]));
+				break;
+				
+			case 'uniform':
+				return randomUniform(parseInt(paramArray[1]),parseInt(paramArray[2]));
+				break;
+			default:
+				throw "random function unknown!";
+		}
+	}
 } 
 
 // run npm - read parameters and create datachannels
 function npmStart() {
+	
+	if(!validateParameters()) {
+		return;
+	}
 	parseParameters();
 
 	//channels[init].channel.send(parameters);
@@ -407,7 +486,7 @@ function npmStart() {
 		if (parameters.hasOwnProperty(label)) {
 			if (parameters[label].active == true) {
 				npmChannelLabels.push(label);
-				createDataChannel(label);
+				channelCreate(label);
 			}
 		}
 	}
@@ -434,7 +513,7 @@ function npmSend(label) {
 	try {
 		channels[label].statistics.t_end = new Date().getTime();
 		var runtime = (channels[label].statistics.t_end - channels[label].statistics.t_start);
-		var message = generateByteString(parameters[label].pktSize);
+		var message = generateByteString(randomWrapper(parameters[label].pktSize));
 
 		if (runtime <= parameters[label].runtime) {
 
@@ -449,7 +528,7 @@ function npmSend(label) {
 			if (channels[label].statistics.tx_pkts < parameters[label].pktCount) {
 				var schedulerObject = {
 					type : 'npmSendTrigger',
-					sleep : parameters[label].sleep,
+					sleep : randomWrapper(parameters[label].sendInterval),
 					data : label
 				};
 				scheduler.postMessage(schedulerObject);
@@ -473,13 +552,22 @@ function npmSend(label) {
 // reset npm for next benchmark
 function npmReset() {
 	for (var label in channels) {
-
 		if (channels.hasOwnProperty(label)) {
 			if (label != 'init') {
-				delete label;
-			}
+				delete channels[label];
+			}	
 		}
 	}
+	
+	for (var label in parameters) {
+		if (parameters.hasOwnProperty(label)) {
+			if (label != 'init') {
+				delete parameters[label];
+			}	
+		}
+	}
+	
+	channelStats.length = 0;
 
 	console.log('npmReset');
 }
@@ -611,6 +699,7 @@ function handleJsonMessage(message) {
 }
 
 function statsCollectInit(messageObject) {
+	$('#channelChart').show();
 	channelStats.push(messageObject.data);
 	console.log(channelStats);
 	setTimeout(statsCollect, 500);
@@ -763,7 +852,7 @@ function channelSettingsEditorShow() {
 		$(this).attr('value', $(this).val());
 	});
 	
-	$('#settingsEditorTextarea').val($("#npmChannelParameters tbody").html());
+	$('#channelSettingsEditorTextarea').val($("#npmChannelParameters tbody").html());
 }
 
 /*

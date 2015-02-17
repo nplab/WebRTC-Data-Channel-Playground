@@ -125,8 +125,9 @@ function parametersRowAddSamples() {
 	var second = parametersRowAdd();
 	
 	second.find('[name=paramPktCount]').val('1000');
-	second.find('[name=paramPktSize]').val('u:1024:2048');
-	second.find('[name=paramInterval]').val('e:10');
+	second.find('[name=paramPktSize]').val('uniform:1024:2048');
+	second.find('[name=paramMode]').val('rt:10');
+	second.find('[name=paramInterval]').val('exp:10');
 	second.find('[name=paramDelay]').val('5');
 	second.find('[name=paramRuntime]').val('30');
 }

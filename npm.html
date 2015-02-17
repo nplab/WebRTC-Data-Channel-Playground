@@ -82,9 +82,7 @@
 						<span class="glyphicon glyphicon-time" aria-hidden="true"></span> ping Peer<span class="rtt"></span>
 					</button>
 
-					<button class="btn btn-success btn-block btn-sm " id="npmRun" disabled="disabled" onclick="npmStart()">
-						<span class="glyphicon glyphicon-play" aria-hidden="true"></span> run NPM
-					</button>
+					
 					<h4>Settings</h4>
 					<div class="btn-group btn-group-justified" role="group" aria-label="...">
 						<div class="btn-group" role="group">
@@ -160,21 +158,21 @@
 			</div>
 			<div class="npmControl" id="npmChannelParametersContainer">
 				<h3>Netperfmeter Control</h3>
-				
+
 				<div class="table-responsive">
 					<table class="table table-condensed" style="min-width: 640px;" id="npmChannelParameters">
 						<thead>
 							<tr>
 								<th style="width: 7%;"><span aria-hidden="true" data-toggle="popover" data-content="Activate or deactivate the datachannel">active</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Amount of packets to sent">num packets</span></th>
-								<th style="width: 14%;"><span aria-hidden="true"  data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>10</kbd> - constant<br/><kbd>e:10</kbd> - exponential distribution<br/><kbd>u:0:10</kbd> - uniformed distribution">msg-size</span></th>
+								<th style="width: 14%;"><span aria-hidden="true"  data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>const:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uniform:0:10</kbd> - uniformed distribution">msg-size</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Send-mode<br/><kbd>[blank]</kbd> - reliable<br/><kbd>rt:10</kbd> - try max. 10 retransmissions<br/><kbd>to:10</kbd> - timeout after 10 seconds">send mode</span></th>
-								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Interval between each sent packet in ms<br/>set to 0 to send as much as possible<br/><kbd>10</kbd> - constant<br/><kbd>e:10</kbd> - exponential distribution<br/><kbd>u:0:10</kbd> - uniformed distribution">send interval</span></th>
+								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Interval between each sent packet in ms<br/>set to 0 to send as much as possible<br/><kbd>const:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uniform:0:10</kbd> - uniformed distribution">send interval</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Start-delay in seconds">start delay</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Channel-runtime in seconds">runtime</span></th>
 								<th style="width: 9%;"><span aria-hidden="true" data-toggle="popover" data-content="Remove or clone channel-settings">actions</span></th>
 							</tr>
-							
+
 							<!-- NPM Channel Dummy -->
 							<tr class="npmChannelParametersBlank" style="display:none;">
 								<td>
@@ -182,11 +180,11 @@
 									1
 								</button></td>
 								<td>
-								<input type="number" min="1" class="form-control input-sm" name="paramPktCount" placeholder="num packets" size="5">
+								<input type="text" class="form-control input-sm" name="paramPktCount" placeholder="num packets" size="5">
 								</td>
 
 								<td>
-								<input type="number" min="1" class="form-control input-sm" name="paramPktSize" size="4" placeholder="packet-size">
+								<input type="text" class="form-control input-sm" name="paramPktSize" size="4" placeholder="packet-size">
 								</td>
 
 								<td>
@@ -196,10 +194,10 @@
 								<input type="text" class="form-control input-sm" name="paramInterval" size="4" placeholder="send-interval">
 								</td>
 								<td>
-								<input type="number" class="form-control input-sm" name="paramDelay" size="4" placeholder="start-delay">
+								<input type="text" class="form-control input-sm" name="paramDelay" size="4" placeholder="start-delay">
 								</td>
 								<td>
-								<input type="number" class="form-control input-sm" name="paramRuntime" size="4" placeholder="runtime">
+								<input type="text" class="form-control input-sm" name="paramRuntime" size="4" placeholder="runtime">
 								</td>
 								<td>
 								<button type="button" onclick="parametersRowCopy(this);" title="copy channel" class="btn btn-default btn-sm">
@@ -210,21 +208,18 @@
 								</button></td>
 							</tr>
 						</thead>
-						<tfoot>
-							<tr>
-								<td colspan="8">
-									<button class="btn btn-success btn-xs " onclick="parametersRowAdd();">
-					<span class="glyphicon glyphicon-plus" aria-hidden="false"></span> add Channel
-				</button>
-								</td>
-							</tr>
-						</tfoot>
+
 						<tbody>
-							
+
 						</tbody>
 					</table>
 				</div>
-
+				<button class="btn btn-primary btn-sm " onclick="parametersRowAdd();">
+					<span class="glyphicon glyphicon-plus" aria-hidden="false"></span> add Channel
+				</button>
+				<button class="btn btn-success btn-sm " id="npmRun" disabled="disabled" onclick="npmStart()">
+						<span class="glyphicon glyphicon-play" aria-hidden="true"></span> run NPM
+					</button>
 			</div>
 			<div id="dcStatusContainer">
 				<h3>DC-Status</h3>
@@ -244,7 +239,7 @@
 				</table>
 			</div>
 
-			<div id="channelChart" style="width: 100%; height: 500px"></div>
+			<div id="channelChart" style="width: 100%; height: 500px; display:none;"></div>
 
 			<div class="footer text-center">
 				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
@@ -258,7 +253,9 @@
 								<span aria-hidden="true">&times;</span>
 							</button>
 							<h4 class="modal-title">Settings Editor</h4>
-							<p>Copy or paste settings here</p>
+							<p>
+								Copy or paste settings here
+							</p>
 						</div>
 						<div class="modal-body">
 							<textarea class="form-control" id="channelSettingsEditorTextarea" rows="15"></textarea>

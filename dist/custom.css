@@ -61,3 +61,8 @@ table#npmChannelParameters td,table#npmChannelParameters th, table#npmChannelPar
 #npmChannelParameters th span.glyphicon {
 	cursor: pointer;
 }
+
+input.has-error {
+	border: 1px solid #a94442;
+	background-color:#F2DEDE;
+}
