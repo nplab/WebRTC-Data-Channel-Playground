@@ -85,17 +85,26 @@
 					<button class="btn btn-success btn-block btn-sm " id="npmRun" disabled="disabled" onclick="npmStart()">
 						<span class="glyphicon glyphicon-play" aria-hidden="true"></span> run NPM
 					</button>
+					<h4>Settings</h4>
+					<div class="btn-group btn-group-justified" role="group" aria-label="...">
+						<div class="btn-group" role="group">
+							<button class="btn btn-primary btn-sm " id="npmLoadSettings" onclick="npmChannelSettingsLoad()">
+								<span class="glyphicon glyphicon-floppy-open" aria-hidden="false"></span> load
+							</button>
+						</div>
+						<div class="btn-group" role="group">
 
-					<button class="btn btn-primary btn-block btn-sm " id="npmLoadSettings" onclick="npmChannelSettingsLoad()">
-						<span class="glyphicon glyphicon-floppy-open" aria-hidden="false"></span> load settings
-					</button>
+							<button class="btn btn-primary btn-sm " id="npmSaveSettings" onclick="npmChannelSettingsSave()">
+								<span class="glyphicon glyphicon-floppy-save" aria-hidden="false"></span> save
+							</button>
+						</div>
+						<div class="btn-group" role="group">
 
-					<button class="btn btn-primary btn-block btn-sm " id="npmSaveSettings" onclick="npmChannelSettingsSave()">
-						<span class="glyphicon glyphicon-floppy-save" aria-hidden="false"></span> save settings
-					</button>
-					<button class="btn btn-primary btn-block btn-sm " id="npmEditSettings" onclick="npmChannelSettingsEditorShow();" data-toggle="modal" data-target="#settingsModal">
-						<span class="glyphicon glyphicon-floppy-save" aria-hidden="false"></span> edit settings
-					</button>
+							<button class="btn btn-primary btn-sm " id="npmEditSettings" onclick="npmChannelSettingsEditorShow();" data-toggle="modal" data-target="#settingsModal">
+								<span class="glyphicon glyphicon-pencil" aria-hidden="false"></span> edit
+							</button>
+						</div>
+					</div>
 
 				</div>
 
@@ -160,15 +169,13 @@
 							<tr>
 								<th style="width: 7%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Activate or deactivate the datachannel"></span></th>
 								<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Amount of packets to sent"></span></th>
-								<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>10</kbd> - constant<br/><kbd>e:10</kbd> - exponential distribution<br/><kbd>u:0:10</kbd> - uniformed distribution"></span></th>
+								<th style="width: 14%;">msg-size distribution<span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>10</kbd> - constant<br/><kbd>e:10</kbd> - exponential distribution<br/><kbd>u:0:10</kbd> - uniformed distribution"></span></th>
 								<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Send-mode<br/><kbd>[blank]</kbd> - reliable<br/><kbd>rt:10</kbd> - try max. 10 retransmissions<br/><kbd>to:10</kbd> - timeout after 10 seconds"></span></th>
 								<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Interval between each sent packet in ms<br/>set to 0 to send as much as possible<br/><kbd>10</kbd> - constant<br/><kbd>e:10</kbd> - exponential distribution<br/><kbd>u:0:10</kbd> - uniformed distribution"></span></th>
 								<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Start-delay in seconds"></span></th>
 								<th style="width: 14%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Channel-runtime in seconds"></span></th>
 								<th style="width: 9%;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="popover" data-content="Remove or clone channel-settings"></span></th>
 							</tr>
-						</thead>
-						<tbody>
 							<tr class="npmChannelParametersBlank" style="display:none;">
 								<td>
 								<button type="button" name="toggleActive" class="btn btn-success btn-sm toggleActive" value="o2">
@@ -202,6 +209,9 @@
 									<span style="color:#D2403E;" class="glyphicon glyphicon-remove" aria-hidden="true">
 								</button></td>
 							</tr>
+						</thead>
+						<tbody>
+							
 						</tbody>
 					</table>
 				</div>
@@ -231,14 +241,14 @@
 				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
 			</div>
 
-			<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 								<span aria-hidden="true">&times;</span>
 							</button>
-							<h4 class="modal-title" id="myModalLabel">Settings Editor</h4>
+							<h4 class="modal-title">Settings Editor</h4>
 						</div>
 						<div class="modal-body">
 							<textarea class="form-control" id="settingsEditorTextarea" rows="10"></textarea>

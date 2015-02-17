@@ -34,7 +34,7 @@
  */
 
 var options = {
-	iceOfferAll : true,
+	iceOfferAll : false,
 };
 
 // ICE, STUN, TURN Servers

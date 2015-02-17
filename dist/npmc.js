@@ -131,6 +131,12 @@ function parametersRowAddSamples() {
 	second.find('[name=paramRuntime]').val('30');
 }
 
+function parametersValidate() {
+	$('#npmChannelParameters body tr input').not('.npmChannelParametersBlank').each(function(){
+		alert($(this).attr('name'));
+	});
+}
+
 // update the PeerConnectionStatus Table
 function updatePeerConnectionStatus(event) {
 	$('#signalingState').html(pc.signalingState);
