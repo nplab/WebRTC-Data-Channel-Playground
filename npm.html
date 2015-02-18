@@ -74,11 +74,11 @@
 
 					<input type="text" class="form-control input-sm" placeholder="peer-id - blank for offerer" id="signalingID">
 
-					<button class="btn btn-success btn-block btn-sm " id="npmConnect" onclick="connect()">
+					<button class="btn btn-success btn-block btn-sm " id="npmConnect" onclick="npmConnect()">
 						<span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> connect
 					</button>
 
-					<button class="btn btn-primary btn-block btn-sm " disabled="disabled" id="npmcPing" onclick="ping()">
+					<button class="btn btn-primary btn-block btn-sm " disabled="disabled" id="npmcPing" onclick="msgSendPing()">
 						<span class="glyphicon glyphicon-time" aria-hidden="true"></span> ping Peer<span class="rtt"></span>
 					</button>
 
@@ -284,7 +284,6 @@
 		'packages':['corechart']
 		}]
 		}"></script>
-		<script type='text/javascript' src="dist/npmc.js"></script>
 		<script type='text/javascript' src="dist/npm.js"></script>
 
 		<script type="text/javascript">
