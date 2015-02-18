@@ -34,7 +34,9 @@
  */
 
 var options = {
-	iceOfferAll : false,
+	iceOfferAll 				: false,
+	statsCollectInterval 		: 500,
+	statsGraphRefreshInterval	: 1000,
 };
 
 // ICE, STUN, TURN Servers
@@ -92,9 +94,6 @@ var freshSignalingID = generateSignalingID();
 var signalingIDRef = dbRef.child("npmIDs");
 var t_startNewPackage = 0;
 
-
-
-
 // Google Chart
 var chartOptions = {
 	title : 'DC Performance',
@@ -102,7 +101,7 @@ var chartOptions = {
 		position : 'bottom'
 	},
 	animation : {
-		duration : 1000,
+		duration : Math.round(options.statsGraphRefreshInterval/2),
 		easing : 'out'
 	}
 };
@@ -116,7 +115,7 @@ $('#signalingID').val(location.hash.substring(1));
 
 prepareRole();
 
-function prepareRole() {
+function npmPrepareRole() {
 	// role offerer
 	if ($('#signalingID').val() != '') {
 
@@ -213,7 +212,7 @@ pc.oniceconnectionstatechange = function(event) {
 };
 
 // establish connection to remote peer via webrtc
-function connect() {
+function npmConnect() {
 
 	// disable inputs
 	$('#npmConnect').prop('disabled', true);
@@ -335,12 +334,12 @@ function channelCreate(label) {
 	console.log("createDataChannel - label:" + newChannel.label + ', id:' + newChannel.id);
 }
 
-function closeDataChannel(label) {
+function channelClose(label) {
 	console.log('closeDataChannel - channel:' + label);
 	channels[label].channel.close();
 }
 
-function validateParameters() {
+function parametersValidate() {
 	var inputValid = true;
 	$('#npmChannelParameters > tbody > tr input').each(function() {
 		$(this).removeClass('has-error');
@@ -389,7 +388,7 @@ function validateParameters() {
 
 
 // read parameters from table and save in parameters object
-function parseParameters() {
+function parametersParse() {
 	$('#npmChannelParameters > tbody > tr').each(function() {
 		parameters[$(this).find('button[name="toggleActive"]').val()] = {
 			active : $(this).find('button[name="toggleActive"]').hasClass("btn-success"),
@@ -658,19 +657,10 @@ scheduler.onmessage = function(e) {
 	}
 };
 
-function handleDataMessage(e) {
-	rxDataLength = e.data.toString().length;
-
-	var label = e.currentTarget.label;
-	if (channels[label].statistics.t_start == 0) {
-		channels[label].statistics.t_start = new Date().getTime();
-	}
-	channels[label].statistics.t_end = new Date().getTime();
-	channels[label].statistics.rx_bytes += rxDataLength;
-	channels[label].statistics.rx_pkts++;
-}
-
-function handleJsonMessage(message) {
+/*
+ * handle incoming json messages on init channel and deliver to specific function
+ */
+function msgHandleJson(message) {
 	var messageObject = JSON.parse(message);
 	var tempChannelLabel = messageObject.label;
 
@@ -689,6 +679,8 @@ function handleJsonMessage(message) {
 	case 'timestampEcho':
 		handlePingEcho(messageObject);
 		break;
+		
+	// trigger to collect statistics
 	case 'collectStats':
 		statsCollectInit(messageObject);
 		break;
@@ -698,11 +690,60 @@ function handleJsonMessage(message) {
 	}
 }
 
+/*
+ * handle data message
+ */
+function msgHandleData(e) {
+	rxDataLength = e.data.toString().length;
+
+	var label = e.currentTarget.label;
+	if (channels[label].statistics.t_start == 0) {
+		channels[label].statistics.t_start = new Date().getTime();
+	}
+	channels[label].statistics.t_end = new Date().getTime();
+	channels[label].statistics.rx_bytes += rxDataLength;
+	channels[label].statistics.rx_pkts++;
+}
+
+/*
+ * Echo received timestamp to peer
+ */
+function msgHandlePing(message) {
+	var timestampEcho = message;
+	timestampEcho.type = 'timestampEcho';
+	channels.init.channel.send(JSON.stringify(timestampEcho));
+	console.log('handlePing - echo received timestamp to peer: ' + timestampEcho.timestamp);
+}
+
+/*
+ * evaluate received Echo
+ */
+function msgHandlePingEcho(message) {
+	var date = new Date();
+	var t_delta = date.getTime() - message.timestamp;
+	$('#npmcPing .rtt').html(' - RTT: ' + t_delta + ' ms');
+	console.log('handlePingEcho - received echoed timestamp from peer - RTT: ' + t_delta);
+}
+
+/*
+ * Send a message to peer with local timestamp
+ */
+function msgSendPing() {
+	var date = new Date();
+	timestampMessage = {
+		type : 'timestamp',
+		timestamp : date.getTime(),
+	};
+	channels.init.channel.send(JSON.stringify(timestampMessage));
+	console.log('ping - sending timestamp to peer: ' + timestampMessage.timestamp);
+}
+
+
 function statsCollectInit(messageObject) {
 	$('#channelChart').show();
 	channelStats.push(messageObject.data);
 	console.log(channelStats);
-	setTimeout(statsCollect, 500);
+	setTimeout(statsCollect, 100);
 }
 
 function statsCollect() {
@@ -733,7 +774,7 @@ function statsCollect() {
 	channelStats.push(tempStatsArray);
 
 	if (activeChannels > 0) {
-		setTimeout(statsCollect, 1000);
+		setTimeout(statsCollect, 100);
 	} else {
 		console.log('statsCollect - no active channels left!');
 		statsDrawChart();
@@ -775,36 +816,22 @@ function bytesToSize(bytes) {
 
 
 /*
- * Send a message to peer with local timestamp
+ * Apply settings from editor
  */
-function ping() {
-	var date = new Date();
-	timestampMessage = {
-		type : 'timestamp',
-		timestamp : date.getTime(),
-	};
-	channels.init.channel.send(JSON.stringify(timestampMessage));
-	console.log('ping - sending timestamp to peer: ' + timestampMessage.timestamp);
+function channelSettingsEditorApply() {
+	$("#npmChannelParameters tbody").html($('#channelSettingsEditorTextarea').val());
+	console.log('settings applied');
 }
 
 /*
- * Echo received timestamp to peer
+ * Show settings editor
  */
-function handlePing(message) {
-	var timestampEcho = message;
-	timestampEcho.type = 'timestampEcho';
-	channels.init.channel.send(JSON.stringify(timestampEcho));
-	console.log('handlePing - echo received timestamp to peer: ' + timestampEcho.timestamp);
-}
-
-/*
- * evaluate received Echo
- */
-function handlePingEcho(message) {
-	var date = new Date();
-	var t_delta = date.getTime() - message.timestamp;
-	$('#npmcPing .rtt').html(' - RTT: ' + t_delta + ' ms');
-	console.log('handlePingEcho - received echoed timestamp from peer - RTT: ' + t_delta);
+function channelSettingsEditorShow() {
+	$('#npmChannelParameters > tbody > tr > td > input').each(function() {
+		$(this).attr('value', $(this).val());
+	});
+	
+	$('#channelSettingsEditorTextarea').val($("#npmChannelParameters tbody").html());
 }
 
 /*
@@ -844,21 +871,6 @@ function channelSettingsLoad() {
 	
 	console.log('settings loaded');
 }
-/*
- * Show settings editor
- */
-function channelSettingsEditorShow() {
-	$('#npmChannelParameters > tbody > tr > td > input').each(function() {
-		$(this).attr('value', $(this).val());
-	});
-	
-	$('#channelSettingsEditorTextarea').val($("#npmChannelParameters tbody").html());
-}
 
-/*
- * Save settings from editor
- */
-function channelSettingsEditorApply() {
-	$("#npmChannelParameters tbody").html($('#channelSettingsEditorTextarea').val());
-	console.log('settings applied');
-}
+
+

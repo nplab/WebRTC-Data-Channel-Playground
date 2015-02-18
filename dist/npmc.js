@@ -32,7 +32,7 @@
 
 var npmcSettings = {
 	// refresh rate for the status tables in ms
-	statusRefreshRate	: 1000,
+	statusRefreshRate	: 500,
 };
 
 /*
