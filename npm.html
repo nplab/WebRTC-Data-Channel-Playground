@@ -165,7 +165,7 @@
 							<tr>
 								<th style="width: 7%;"><span aria-hidden="true" data-toggle="popover" data-content="Activate or deactivate the datachannel">active</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Amount of packets to sent">num packets</span></th>
-								<th style="width: 14%;"><span aria-hidden="true"  data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>const:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uniform:0:10</kbd> - uniformed distribution">msg-size</span></th>
+								<th style="width: 14%;"><span aria-hidden="true"  data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>const:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uniform:0:10</kbd> - uniformed distribution">msg size</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Send-mode<br/><kbd>[blank]</kbd> - reliable<br/><kbd>rt:10</kbd> - try max. 10 retransmissions<br/><kbd>to:10</kbd> - timeout after 10 seconds">send mode</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Interval between each sent packet in ms<br/>set to 0 to send as much as possible<br/><kbd>const:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uniform:0:10</kbd> - uniformed distribution">send interval</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Start-delay in seconds">start delay</span></th>
@@ -293,7 +293,7 @@
 					placement : 'top',
 					html : 'true',
 					trigger : 'hover',
-				})
+				});
 			});
 
 			$(window).resize(function() {

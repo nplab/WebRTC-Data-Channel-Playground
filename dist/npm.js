@@ -25,34 +25,36 @@
  *
  */
 
-/*
- BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
- */
 
 /*
  * SETTINGS BEGIN
  */
 
 var npmSettings = {
-	iceOfferAll 				: false,
-	statsCollectInterval 		: 500,
-	statsGraphRefreshInterval	: 1000,
-	statsTableRefreshInterval	: 500,
+	iceOfferAll 				: false,		// ask for each offered ICE-Candidate
+	statsCollectInterval 		: 500,			// interval to collect statistics (ms)
+	statsGraphRefreshInterval	: 1000,			// interval to refresh graph (ms)
+	statsTableRefreshInterval	: 1000,			// interval to refresh statistics table (ms)
 };
 
-var npmcSettings = {
-	// refresh rate for the status tables in ms
-	statusRefreshRate	: 500,
+// Google Chart
+var chartOptions = {
+	title : 'Datachannel-Performance',
+	hAxis : {
+		title: 'Runtime',
+		format:'#,# s',
+	},
+	vAxis: {
+          title: 'Rate',
+    },
+	legend : {
+		position : 'bottom'
+	},
+	animation : {
+		duration : Math.round(npmSettings.statsGraphRefreshInterval/2),
+		easing : 'out'
+	}
 };
-
-/*
- * SETTINGS SECTION END
- */
-
-var npmcDcCounter = 0;
-var npmcStatisticsTimerActive = false;
-
-parametersRowAddSamples();
 
 // ICE, STUN, TURN Servers
 var iceServer = {
@@ -72,31 +74,37 @@ var iceServer = {
 // constraints on the offer SDP.
 var sdpConstraints = {
 	'mandatory' : {
-		'OfferToReceiveAudio' : false,
-		'OfferToReceiveVideo' : false
+		'offerToReceiveAudio' : false,
+		'offerToReceiveVideo' : false
 	}
 };
-
-// Reference to Firebase APP
-var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
 
 /*
 * SETTINGS END
 */
 
+// Reference to Firebase APP
+var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
+
+
+
 // shims - wrappers for webkit and mozilla connections
-var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
-var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
+var PeerConnection 		= window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+var IceCandidate 		= window.mozRTCIceCandidate || window.RTCIceCandidate;
+var SessionDescription 	= window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 
 var activeChannelCount = -1;
 var refreshCounter = 0;
 var channels = {};
 var channelStats = [];
 var channelStatsCounter = 0;
+var chart = new google.visualization.LineChart(document.getElementById('channelChart'));
+var chartData;
 var dcCounter = 0;
 var labelButtonToggle = false;
 var localIceCandidates = [];
+var npmcDcCounter = 0;
+var npmcStatisticsTimerActive = false;
 var offerer = false;
 var parameters = {};
 var pc = new PeerConnection(iceServer);
@@ -109,33 +117,14 @@ var freshSignalingID = generateSignalingID();
 var signalingIDRef = dbRef.child("npmIDs");
 var t_startNewPackage = 0;
 
-// Google Chart
-var chartOptions = {
-	title : 'Datachannel-Performance',
-	legend : {
-		position : 'bottom'
-	},
-	animation : {
-		duration : Math.round(npmSettings.statsGraphRefreshInterval/2),
-		easing : 'out'
-	}
-};
-var chartData;
-
-var chart = new google.visualization.LineChart(document.getElementById('channelChart'));
-
 // clean firebase ref
 signalingIDRef.child(freshSignalingID).remove();
 $('#signalingID').val(location.hash.substring(1));
 
 npmPrepareRole();
+// add example settings
+parametersRowAddSamples();
 
-
-
-// generate a unique-ish string for storage in firebase
-function generateSignalingID() {
-	return (Math.random() * 10000 + 10000 | 0).toString();
-}
 
 // wrapper to send data to FireBase
 function firebaseSend(signalingID, key, data) {
@@ -157,13 +146,6 @@ function firebaseReceive(signalingID, type, cb) {
 // generic error handler
 function errorHandler(err) {
 	console.error(err);
-}
-
-// find and return an IPv4 Address from a given string
-function extractIpFromString(string) {
-	var pattern = '(?:25[0-5]|2[0-4][0-9]|1?[0-9][0-9]{1,2}|[0-9]){1,}(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}|0)){3}';
-	var match = string.match(pattern);
-	return match[0];
 }
 
 // handle local ice candidates
@@ -249,7 +231,7 @@ function npmConnect() {
 
 				// send it to FireBase
 				firebaseSend(signalingID, "answer", JSON.stringify(answer));
-			}, errorHandler, sdpConstraints);
+			}, errorHandler);
 		});
 		console.log('connect - role answerer');
 	}
@@ -398,6 +380,7 @@ function npmReset() {
 	}
 	
 	channelStats.length = 0;
+	statsDrawChart();
 
 	console.log('npmReset');
 }
@@ -490,18 +473,42 @@ function parametersRowAddSamples() {
 	var first = parametersRowAdd();
 	first.find('[name=paramPktCount]').val('1000');
 	first.find('[name=paramPktSize]').val('1024');
+	first.find('[name=paramMode]').val('');
 	first.find('[name=paramInterval]').val('10');
-	first.find('[name=paramDelay]').val('5');
+	first.find('[name=paramDelay]').val('2');
 	first.find('[name=paramRuntime]').val('30');
 
 	var second = parametersRowAdd();
-	
 	second.find('[name=paramPktCount]').val('1000');
-	second.find('[name=paramPktSize]').val('uniform:1024:2048');
-	second.find('[name=paramMode]').val('rt:10');
-	second.find('[name=paramInterval]').val('exp:10');
-	second.find('[name=paramDelay]').val('5');
+	second.find('[name=paramPktSize]').val('uniform:512:1536');
+	second.find('[name=paramMode]').val('rt:2');
+	second.find('[name=paramInterval]').val('uniform:5:15');
+	second.find('[name=paramDelay]').val('2');
 	second.find('[name=paramRuntime]').val('30');
+	
+	var third = parametersRowAdd();
+	third.find('[name=paramPktCount]').val('2000');
+	third.find('[name=paramPktSize]').val('exp:1024');
+	third.find('[name=paramMode]').val('to:2');
+	third.find('[name=paramInterval]').val('exp:10');
+	third.find('[name=paramDelay]').val('2');
+	third.find('[name=paramRuntime]').val('30');
+	
+	var third = parametersRowAdd();
+	third.find('[name=paramPktCount]').val('2000');
+	third.find('[name=paramPktSize]').val('const:1024');
+	third.find('[name=paramMode]').val('to:2');
+	third.find('[name=paramInterval]').val('exp:10');
+	third.find('[name=paramDelay]').val('20');
+	third.find('[name=paramRuntime]').val('30');
+	
+	var third = parametersRowAdd();
+	third.find('[name=paramPktCount]').val('2000');
+	third.find('[name=paramPktSize]').val('const:2048');
+	third.find('[name=paramMode]').val('to:2');
+	third.find('[name=paramInterval]').val('uniform:0:5');
+	third.find('[name=paramDelay]').val('20');
+	third.find('[name=paramRuntime]').val('30');
 }
 
 function parametersValidate() {
@@ -806,7 +813,7 @@ function statsCollectInit(messageObject) {
 	$('#channelChart').show();
 	channelStats.push(messageObject.data);
 	console.log(channelStats);
-	setTimeout(statsCollect, 100);
+	setTimeout(statsCollect, npmSettings.statsCollectInterval);
 }
 
 function statsCollect() {
@@ -837,7 +844,7 @@ function statsCollect() {
 	channelStats.push(tempStatsArray);
 
 	if (activeChannels > 0) {
-		setTimeout(statsCollect, 100);
+		setTimeout(statsCollect, npmSettings.statsCollectInterval);
 	} else {
 		console.log('statsCollect - no active channels left!');
 		statsDrawChart();
@@ -928,28 +935,6 @@ function statsChannelStatusUpdate(event) {
 	return true;
 }
 
-/*
- * generate a string with given length (byte)
- */
-
-function generateByteString(length) {
-	var str = new Array(length + 1).join('x');
-	return str;
-}
-
-/*
- * conver sizes
- * http://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
- */
-
-function bytesToSize(bytes) {
-	if (bytes == 0)
-		return '0 Byte';
-	var k = 1000;
-	var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-	var i = Math.floor(Math.log(bytes) / Math.log(k));
-	return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-}
 
 
 /*
@@ -1009,6 +994,43 @@ function channelSettingsLoad() {
 	console.log('settings loaded');
 }
 
+// generate a unique-ish string for storage in firebase
+function generateSignalingID() {
+	return (Math.random() * 10000 + 10000 | 0).toString();
+}
+
+
+// find and return an IPv4 Address from a given string
+function extractIpFromString(string) {
+	var pattern = '(?:25[0-5]|2[0-4][0-9]|1?[0-9][0-9]{1,2}|[0-9]){1,}(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}|0)){3}';
+	var match = string.match(pattern);
+	return match[0];
+}
+
+/*
+ * generate a string with given length (byte)
+ */
+
+function generateByteString(length) {
+	var str = new Array(length + 1).join('x');
+	return str;
+}
+
+/*
+ * conver sizes
+ * http://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+ */
+
+function bytesToSize(bytes) {
+	if (bytes == 0)
+		return '0 Byte';
+	var k = 1000;
+	var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+	var i = Math.floor(Math.log(bytes) / Math.log(k));
+	return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+}
+
+
 // button toggle used to activate and deactivate channels
 $('#npmChannelParameters').on('click', 'button[name="toggleActive"]', function(event){
 	$(this).toggleClass('btn-default btn-success');
@@ -1047,7 +1069,7 @@ $('#npmChannelParameters').on('change', 'select[name=paramMode]', function(event
 
 // after chaning the signaling ID value - prepare role
 $('#signalingID').change(function(){
-	prepareRole();
+	npmPrepareRole();
 });
 
 
