@@ -480,33 +480,33 @@ function parametersRowAddSamples() {
 
 	var second = parametersRowAdd();
 	second.find('[name=paramPktCount]').val('1000');
-	second.find('[name=paramPktSize]').val('uniform:512:1536');
-	second.find('[name=paramMode]').val('rt:2');
-	second.find('[name=paramInterval]').val('uniform:5:15');
+	second.find('[name=paramPktSize]').val('uni:512:1536');
+	second.find('[name=paramMode]').val('ret:2');
+	second.find('[name=paramInterval]').val('uni:5:15');
 	second.find('[name=paramDelay]').val('2');
 	second.find('[name=paramRuntime]').val('30');
 	
 	var third = parametersRowAdd();
 	third.find('[name=paramPktCount]').val('2000');
 	third.find('[name=paramPktSize]').val('exp:1024');
-	third.find('[name=paramMode]').val('to:2');
+	third.find('[name=paramMode]').val('lft:2');
 	third.find('[name=paramInterval]').val('exp:10');
 	third.find('[name=paramDelay]').val('2');
 	third.find('[name=paramRuntime]').val('30');
 	
 	var third = parametersRowAdd();
 	third.find('[name=paramPktCount]').val('2000');
-	third.find('[name=paramPktSize]').val('const:1024');
-	third.find('[name=paramMode]').val('to:2');
+	third.find('[name=paramPktSize]').val('con:1024');
+	third.find('[name=paramMode]').val('ret:2');
 	third.find('[name=paramInterval]').val('exp:10');
 	third.find('[name=paramDelay]').val('20');
 	third.find('[name=paramRuntime]').val('30');
 	
 	var third = parametersRowAdd();
 	third.find('[name=paramPktCount]').val('2000');
-	third.find('[name=paramPktSize]').val('const:2048');
-	third.find('[name=paramMode]').val('to:2');
-	third.find('[name=paramInterval]').val('uniform:0:5');
+	third.find('[name=paramPktSize]').val('con:2048');
+	third.find('[name=paramMode]').val('lft:2');
+	third.find('[name=paramInterval]').val('uni:0:5');
 	third.find('[name=paramDelay]').val('20');
 	third.find('[name=paramRuntime]').val('30');
 }
@@ -534,7 +534,7 @@ function parametersValidate() {
 			case 'paramInterval':
 			case 'paramPktSize':
 			
-				var pattern = /^(\d+|const:\d+|exp:\d+|uniform:\d+:\d+)$/g;
+				var pattern = /^(\d+|con:\d+|exp:\d+|uni:\d+:\d+)$/g;
 				var string	= $(this).val();
 				if(!string.match(pattern)) {
 					$(this).addClass('has-error');
@@ -544,7 +544,7 @@ function parametersValidate() {
 				break;
 				
 			case 'paramMode':
-				var pattern = /^(rt:\d+|to:\d+)$/g;
+				var pattern = /^(ret:\d+|lft:\d+)$/g;
 				var string	= $(this).val();
 				if(string.length > 0 && !string.match(pattern)) {
 					$(this).addClass('has-error');
@@ -622,7 +622,7 @@ function randomWrapper(funcstring) {
 		return parseInt(funcstring);
 	} else {
 		switch(paramArray[0]) {
-			case 'const':
+			case 'con':
 				return parseInt(paramArray[1]);
 				break;
 			
@@ -630,7 +630,7 @@ function randomWrapper(funcstring) {
 				return randomExponential(parseInt(paramArray[1]));
 				break;
 				
-			case 'uniform':
+			case 'uni':
 				return randomUniform(parseInt(paramArray[1]),parseInt(paramArray[2]));
 				break;
 			default:
@@ -830,7 +830,7 @@ function statsCollect() {
 		if (channels[label].channel.readyState == 'open') {
 			activeChannels++;
 
-			tempRxRate = (channels[label].statistics.rx_bytes - channels[label].statistics.rx_bytes_last) / (tempTime - channels[label].statistics.t_last) * 1000;
+			tempRxRate = Math.round((channels[label].statistics.rx_bytes - channels[label].statistics.rx_bytes_last) / (tempTime - channels[label].statistics.t_last) * 1000);
 			tempStatsArray.push(tempRxRate);
 
 			channels[label].statistics.rx_bytes_last = channels[label].statistics.rx_bytes;

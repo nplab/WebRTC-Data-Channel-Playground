@@ -20,7 +20,7 @@
 
 		<!-- JAVSCRIPT Section -->
 
-		<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+		<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -165,9 +165,9 @@
 							<tr>
 								<th style="width: 7%;"><span aria-hidden="true" data-toggle="popover" data-content="Activate or deactivate the datachannel">active</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Amount of packets to sent">num packets</span></th>
-								<th style="width: 14%;"><span aria-hidden="true"  data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>const:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uniform:0:10</kbd> - uniformed distribution">msg size</span></th>
-								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Send-mode<br/><kbd>[blank]</kbd> - reliable<br/><kbd>rt:10</kbd> - try max. 10 retransmissions<br/><kbd>to:10</kbd> - timeout after 10 seconds">send mode</span></th>
-								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Interval between each sent packet in ms<br/>set to 0 to send as much as possible<br/><kbd>const:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uniform:0:10</kbd> - uniformed distribution">send interval</span></th>
+								<th style="width: 14%;"><span aria-hidden="true"  data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>con:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uni:0:10</kbd> - uniformed distribution">msg size</span></th>
+								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Send-mode<br/><kbd>[blank]</kbd> - reliable<br/><kbd>ret:10</kbd> - try max. 10 retransmissions<br/><kbd>lft:10</kbd> - timeout after 10 seconds">send mode</span></th>
+								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Interval between each sent packet in ms<br/>set to 0 to send as much as possible<br/><kbd>con:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uni:0:10</kbd> - uniformed distribution">send interval</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Start-delay in seconds">start delay</span></th>
 								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Channel-runtime in seconds">runtime</span></th>
 								<th style="width: 9%;"><span aria-hidden="true" data-toggle="popover" data-content="Remove or clone channel-settings">actions</span></th>
@@ -221,7 +221,7 @@
 						<span class="glyphicon glyphicon-play" aria-hidden="true"></span> run NPM
 					</button>
 			</div>
-			<div id="dcStatusContainer">
+			<div id="dcStatusContainer" class="hidden">
 				<h3>DC-Status</h3>
 				<table class="table table-condensed" id="dcStatus">
 					<thead>
@@ -238,8 +238,11 @@
 					<tbody></tbody>
 				</table>
 			</div>
-
-			<div id="channelChart" style="width: 100%; height: 500px; display:none;"></div>
+			<div id="channelChartContainer" class="hidden">
+				<h3>Datarate</h3>
+				<div id="channelChart" style="width: 100%; height: 500px;"></div>
+			</div>
+			
 
 			<div class="footer text-center">
 				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
