@@ -192,6 +192,8 @@ function npmConnect() {
 	$('#signalingID').prop('disabled', true);
 	$('#localIceFilter').prop('disabled', true);
 	$('#npmLoadSettings').prop('disabled', true);
+	
+	$('#dcStatusContainer').removeClass('hidden');
 
 	if (role === "offerer") {
 
@@ -810,7 +812,7 @@ function msgSendPing() {
 
 
 function statsCollectInit(messageObject) {
-	$('#channelChart').show();
+	$('#channelChartContainer').removeClass('hidden');
 	channelStats.push(messageObject.data);
 	console.log(channelStats);
 	setTimeout(statsCollect, npmSettings.statsCollectInterval);

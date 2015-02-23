@@ -66,3 +66,7 @@ input.has-error {
 	border: 1px solid #a94442;
 	background-color:#F2DEDE;
 }
+
+table#testlist td, table#npmChannelParameters td{
+	white-space: nowrap;
+}
