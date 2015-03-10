@@ -394,7 +394,7 @@ function createRemoteOnIceCandidate(i)
         }
         else
         {
-            local_pc[i].addIceCandidate(new RTCIceCandidate(ev.candidate),
+            local_pc[i].addIceCandidate(new IceCandidate(ev.candidate),
             function()
             {
                 logToTextArea("(" +i + ". Local PC) ICE Candidate: " + extractIpFromString(ev.candidate.candidate));
@@ -453,7 +453,7 @@ function createLocalOnIceCandidate(i)
         }
         else
         {
-            remote_pc[i].addIceCandidate(new RTCIceCandidate(ev.candidate),
+            remote_pc[i].addIceCandidate(new IceCandidate(ev.candidate),
             function()
             {
                 logToTextArea("(" +i + ". RemotePC) ICE Candidate: " + extractIpFromString(ev.candidate.candidate));
@@ -483,6 +483,14 @@ function createLocalOnNegotiationNeeded(i)
 }
 
 /**
+ * Errorhandler for answer and offer creation
+ */
+function errorhandler (err)
+{
+    logToTextArea("Generic Error: " + err);
+};
+
+/**
  * Create offer for given PeerConnection
  * @param {Objec} index
  */
@@ -500,15 +508,9 @@ function createOfferAnswer(i)
             remote_pc[i].setLocalDescription(description);
             local_pc[i].setRemoteDescription(description);
             //logToTextArea("RemoteDescription: " + br + description.sdp);
-        }, errorHandler, constraints);
-    }, errorHandler, constraints);
+        }, errorhandler, constraints);
+    }, errorhandler, constraints);
 
-
-
-    var errorHandler = function (err)
-    {
-        logToTextArea("createOfferAnswer Error: " + err);
-    };
     var constraints =
     {
         mandatory:
