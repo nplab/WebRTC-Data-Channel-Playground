@@ -50,7 +50,7 @@ var br = "&#13;&#10;";
 var peerConnectionMode, dataChannelMode, messsageMode;
 
 //Declare variables
-var local_dc, local_dc2, remote_dc, remote_dc2, local_pc, remote_pc, pcOptions, dataChannelOptions;
+var local_dc, local_dc2, remote_dc, remote_dc2, local_pc, remote_pc, messageCount, pcOptions, dataChannelOptions;
 
 // Local ID
 var id = "testing";
@@ -143,7 +143,7 @@ function updateRadioBoxes()
         inputMessageCountMax.prop('placeholder', 'max');
         messsageMode = 'nuni';
     }
-    else if(typeDataChannel[3].prop('checked'))
+    else if(typeMessageCount[3].prop('checked'))
     {
         inputMessageCountMax.prop('disabled', true);
         inputMessageCountMax.prop('placeholder', '');
@@ -187,14 +187,14 @@ function randomNonUniform(min, max)
 
 function randomString(length)
 {
-    var text="";
+    var randString="";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     for(var i = 0; i < length; i++)
     {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
+        randString += possible.charAt(Math.floor(Math.random() * possible.length));
     }
-    return text;
+    return randString;
 }
 
 /**
@@ -205,11 +205,6 @@ function randomString(length)
 function randomExponential(expectation)
 {
     return Math.round(Math.abs(Math.log(Math.random()) / (1 / expectation)));
-}
-
-function createControlChannel()
-{
-
 }
 
 /**
@@ -227,6 +222,8 @@ function startTest()
     remote_dc2 = null;
     remote_pc = null;
     dataChannelOptions = null;
+
+    messageCount = null;
 
     local_dc2 = [];
     remote_dc2 = [];
@@ -264,74 +261,7 @@ function startTest()
             break;
         }
     }
-
-    switch(messsageMode)
-    {
-        case 'con':
-        {
-            var _messageMode = inputMessageCount.val();
-            console.log("MM Con: " + _dataChannelsPerPC);
-            break;
-        }
-        case 'uni':
-        {
-            var _messageMode = randomUniform(inputMessageCount.val(), inputMessageCountMax.val());
-            console.log("MM Uni: " + _dataChannelsPerPC);
-            break;
-        }
-        case 'nuni':
-        {
-            var _messageMode = randomNonUniform(inputMessageCount.val(), inputMessageCountMax.val());
-            console.log("MM NUni: " + _dataChannelsPerPC);
-            break;
-        }
-        case 'exp':
-        {
-            var _messageMode = randomExponential(inputMessageCount.val());
-            console.log("MM Exp: " + _dataChannelsPerPC);
-            break;
-        }
-        default:
-        {
-            var _dataChannelsPerPC = inputMessageCount.val();
-            console.log("MM Def: " + _dataChannelsPerPC);
-            break;
-        }
-    }
-
-    switch(dataChannelMode)
-    {
-        case 'con':
-        {
-            var _dataChannelsPerPC = inputDataChannel.val();
-            console.log("DC Con: " + _dataChannelsPerPC);
-            break;
-        }
-        case 'uni':
-        {
-            var _dataChannelsPerPC = randomUniform(inputDataChannel.val(), inputDataChannelMax.val());
-            console.log("DC Uni: " + _dataChannelsPerPC);
-            break;
-        }
-        case 'nuni':
-        {
-            var _dataChannelsPerPC = randomNonUniform(inputDataChannel.val(), inputDataChannelMax.val());
-            console.log("DC NUni: " + _dataChannelsPerPC);
-            break;
-        }
-        case 'exp':
-        {
-            var _dataChannelsPerPC = randomExponential(inputDataChannel.val());
-            console.log("DC Exp: " + _dataChannelsPerPC);
-            break;
-        }
-        default:
-        {
-            var _dataChannelsPerPC = inputDataChannel.val();
-            console.log("DC Def: " + _dataChannelsPerPC);
-            break;
-        }
-    }
+    logToTextArea("Creating " + _peerConnections + " Peer Connections");
 
     var _DtlsSrtpKeyAgreement = inputDtlsSrtpKeyAgreement.is(':checked');
 
@@ -374,8 +304,79 @@ function startTest()
         logToTextArea(i + ". PeerConections created");
     };
 
+
+    switch(messsageMode)
+    {
+        case 'con':
+        {
+            messageCount = inputMessageCount.val();
+            console.log("MM Con: " + messageCount);
+            break;
+        }
+        case 'uni':
+        {
+            messageCount = randomUniform(inputMessageCount.val(), inputMessageCountMax.val());
+            console.log("MM Uni: " + messageCount);
+            break;
+        }
+        case 'nuni':
+        {
+            messageCount = randomNonUniform(inputMessageCount.val(), inputMessageCountMax.val());
+            console.log("MM NUni: " + messageCount);
+            break;
+        }
+        case 'exp':
+        {
+            messageCount = randomExponential(inputMessageCount.val());
+            console.log("MM Exp: " + messageCount);
+            break;
+        }
+        default:
+        {
+            messageCount = inputMessageCount.val();
+            console.log("MM Def: " + messageCount);
+            break;
+        }
+    }
+    logToTextArea("Sending " + messageCount + " Messages");
+
+
     for (var i= 0; i < _peerConnections; i++)
     {
+        switch(dataChannelMode)
+        {
+            case 'con':
+            {
+                var _dataChannelsPerPC = inputDataChannel.val();
+                console.log("DC Con: " + _dataChannelsPerPC);
+                break;
+            }
+            case 'uni':
+            {
+                var _dataChannelsPerPC = randomUniform(inputDataChannel.val(), inputDataChannelMax.val());
+                console.log("DC Uni: " + _dataChannelsPerPC);
+                break;
+            }
+            case 'nuni':
+            {
+                var _dataChannelsPerPC = randomNonUniform(inputDataChannel.val(), inputDataChannelMax.val());
+                console.log("DC NUni: " + _dataChannelsPerPC);
+                break;
+            }
+            case 'exp':
+            {
+                var _dataChannelsPerPC = randomExponential(inputDataChannel.val());
+                console.log("DC Exp: " + _dataChannelsPerPC);
+                break;
+            }
+            default:
+            {
+                var _dataChannelsPerPC = inputDataChannel.val();
+                console.log("DC Def: " + _dataChannelsPerPC);
+                break;
+            }
+        }
+        logToTextArea("Creating " + _dataChannelsPerPC + " Data Channels for " + i +  ". Peer Connection");
         for(var j=0; j < _dataChannelsPerPC; j++)
         {
             remote_dc[i][j] = remote_pc[i].createDataChannel("remote_pc_" + i + "_remote_dc_" + j);
@@ -390,6 +391,42 @@ function startTest()
     createRemoteConnections(_peerConnections, _dataChannelsPerPC);
 }
 
+/**
+ * sendMessages over all dataChannels
+ * @param {int} messageCount
+ * @param {int} index
+ * @param {int} index
+ * @param {int} local/remote (0/1)
+ */
+function sendMessages(messageCount, i, j, k)
+{
+    if(k == 0)
+    {
+        local_dc[i][j].send(randomString(100));
+    }
+    else if(k == 1)
+    {
+        remote_dc[i][j].send(randomString(100));
+    }
+}
+
+/**
+ * sendMessages over all dataChannels
+ * @param {int} messageCount
+ * @param {int} index
+ * @param {int} local/remote (0/1)
+ */
+function sendMessages2(messageCount, i, j)
+{
+    if(j == 0)
+    {
+        local_dc2[i].send(randomString(100));
+    }
+    else if(j == 1)
+    {
+        remote_dc2[i].send(randomString(100));
+    }
+}
 
 /**
  * Bind events to given peer connection
@@ -428,7 +465,8 @@ function bindDC2Events(i, j)
     {
         local_dc2[i].onopen = function ()
         {
-            local_dc2[i].send("Hi Local!");
+            //local_dc2[i].send("Hi Local!");
+            sendMessages2(messageCount, i, 0);
         };
         local_dc2[i].onmessage = function (e)
         {
@@ -445,7 +483,8 @@ function bindDC2Events(i, j)
     {
         remote_dc2[i].onopen = function ()
         {
-            remote_dc2[i].send("Hi Remote!");
+            //remote_dc2[i].send("Hi Remote!");
+            sendMessages2(messageCount, i, 1);
         };
         remote_dc2[i].onmessage = function (e)
         {
@@ -471,7 +510,8 @@ function bindDCEvents (i, j)
     remote_dc[i][j].onopen = function ()
     {
         logToTextArea(i + ". PC " + j + ". Local DC opened");
-        remote_dc[i][j].send("Hi Local!");
+        //remote_dc[i][j].send("Hi Local!");
+        sendMessages(messageCount, i, j, 1);
     };
     remote_dc[i][j].onclose = function ()
     {
@@ -492,7 +532,8 @@ function bindDCEvents (i, j)
     local_dc[i][j].onopen = function ()
     {
         logToTextArea(i + ". PC " + j + ". Local DC opened");
-        local_dc[i][j].send("Hi Remote!");
+        //local_dc[i][j].send("Hi Remote!");
+        sendMessages(messageCount, i, j, 0);
     };
     local_dc[i][j].onclose = function ()
     {
@@ -616,12 +657,18 @@ function createLocalOnNegotiationNeeded(i)
 }
 
 /**
- * Errorhandler for answer and offer creation
+ * Generic errorHandler
  */
-function errorhandler (err)
+function errorHandler (err)
 {
     logToTextArea("Generic Error: " + err);
-};
+}
+/**
+ * Generic successHandler
+ */
+function successHandler ()
+{
+}
 
 /**
  * Create offer for given PeerConnection
@@ -632,17 +679,17 @@ function createOfferAnswer(i)
     logToTextArea("Creating offer for " + i + ". LocalPeerConnection");
     local_pc[i].createOffer(function (description)
     {
-        local_pc[i].setLocalDescription(description);
-        remote_pc[i].setRemoteDescription(description);
+        local_pc[i].setLocalDescription(description, successHandler, errorHandler);
+        remote_pc[i].setRemoteDescription(description, successHandler, errorHandler);
         //logToTextArea("LocalDescription: " + br + description.sdp);
 
         remote_pc[i].createAnswer(function (description)
         {
-            remote_pc[i].setLocalDescription(description);
-            local_pc[i].setRemoteDescription(description);
+            remote_pc[i].setLocalDescription(description, successHandler, errorHandler);
+            local_pc[i].setRemoteDescription(description, successHandler, errorHandler);
             //logToTextArea("RemoteDescription: " + br + description.sdp);
-        }, errorhandler, constraints);
-    }, errorhandler, constraints);
+        }, errorHandler, constraints);
+    }, errorHandler, constraints);
 
     var constraints =
     {
