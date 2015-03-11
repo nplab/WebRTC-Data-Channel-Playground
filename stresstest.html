@@ -57,80 +57,97 @@
 
         </nav>
         <div class="container">
-            <div id='left_pane' style='float: left;'>
-                <div id='left_pane_left' style='float:left;'>
-                    <form id='formTestConditions' onsubmit='return false;' onclick="updateRadioBoxes()">
-                        <b>Peer Connections</b>
-                        <br>
-                        <br>
-                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsConstant' checked> <label>Constant</label><br>
-                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsUniformRandom'> <label>Uniform Random</label><br>
-                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsNonUniformRandom'> <label>Non Uniform Random</label><br>
-                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsExponential'> <label>Exponential</label><br>
-                        <br>
-                        <input required id='inputPeerConnections' type='number' placeholder='Peer Connections'/>
-                        <input required id='inputPeerConnectionsMax' type='number' disabled/>
-                        <br>
-                        <br>
-                        <b>Data Channels per Peer Connections</b>
-                        <br>
-                        <br>
-                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelConstant' checked> <label>Constant</label><br>
-                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelUniformRandom'> <label>Uniform Random</label><br>
-                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelNonUniformRandom'> <label>Non Uniform Random</label><br>
-                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelExponential'> <label>Exponential</label><br>
-                        <br>
-                        <input required id='inputDataChannel' type='number' placeholder='Data Channel per PC' />
-                        <input required id='inputDataChannelMax' type='number' disabled />
-                        <br>
-                        <br>
-                        <b>Messages per Data Channel</b>
-                        <br>
-                        <br>
-                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountConstant' checked> <label>Constant</label><br>
-                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountUniformRandom'> <label>Uniform Random</label><br>
-                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountNonUniformRandom'> <label>Non Uniform Random</label><br>
-                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountExponential'> <label>Exponential</label><br>
-                        <br>
-                        <input required id='inputMessageCount' type='number' placeholder='Message Count'/>
-                        <input required id='inputMessageCountMax' type='number' disabled/>
-                        <br>
-                        <br>
-                        <b>Chars per Message</b>
-                        <br>
-                        <br>
-                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsConstant' checked> <label>Constant</label><br>
-                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsUniformRandom'> <label>Uniform Random</label><br>
-                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsNonUniformRandom'> <label>Non Uniform Random</label><br>
-                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsExponential'> <label>Exponential</label><br>
-                        <br>
-                        <input required id='inputMessageChars' type='number' placeholder='Chars per message'/>
-                        <input required id='inputMessageCharsMax' type='number' disabled/>
-                        <br>
-                        <br>
-                        <b>Peer Connection Settings</b>
-                        <br>
-                        <br>
-                        <input id='inputDtlsSrtpKeyAgreement' type='checkbox' checked>
-                        <label>DtlsSrtpKeyAgreement</label>
-                        <br>
-                        <br>
-                        <b>Data Channel Settings</b>
-                        <br>
-                        <br>
-                        <input required id='inputMaxRetransmitTime' type='number' min='1' max='10000' value='5000' />
-                        <label>Maximum Retransmit Time</label>
-                        <br>
-                        <input id='inputOrdered' type='checkbox' checked/>
-                        <label>Ordered</label>
-                        <br>
-                        <br>
-                        <button class="btn btn-success btn-block btn-sm " type='submit' id='buttonStartTest' onclick='startTest();'>Start Test</button>
-                    </form>
+            <div class='row' onclick="updateForm();">
+                <div class='col-xs-3'>
+                    <b>Peer Connections</b>
+                    <br>
+                    <br>
+                    <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsConstant' checked> <label>Constant</label><br>
+                    <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsUniformRandom'> <label>Uniform Random</label><br>
+                    <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsNonUniformRandom'> <label>Non Uniform Random</label><br>
+                    <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsExponential'> <label>Exponential</label><br>
+                    <br>
+                    <input required id='inputPeerConnections' type='number' placeholder='Peer Connections'/>
+                    <input required id='inputPeerConnectionsMax' type='number' disabled/>
+                    <br>
+                    <br>
+                    <b>Data Channels per Peer Connections</b>
+                    <br>
+                    <br>
+                    <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelConstant' checked> <label>Constant</label><br>
+                    <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelUniformRandom'> <label>Uniform Random</label><br>
+                    <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelNonUniformRandom'> <label>Non Uniform Random</label><br>
+                    <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelExponential'> <label>Exponential</label><br>
+                    <br>
+                    <input required id='inputDataChannel' type='number' placeholder='Data Channel per PC' />
+                    <input required id='inputDataChannelMax' type='number' disabled />
+                </div>
+                    <div class='col-sm-3'>
+                    <b>Messages per Data Channel</b>
+                    <br>
+                    <br>
+                    <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountConstant' checked> <label>Constant</label><br>
+                    <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountUniformRandom'> <label>Uniform Random</label><br>
+                    <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountNonUniformRandom'> <label>Non Uniform Random</label><br>
+                    <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountExponential'> <label>Exponential</label><br>
+                    <br>
+                    <input required id='inputMessageCount' type='number' placeholder='Message Count'/>
+                    <input required id='inputMessageCountMax' type='number' disabled/>
+                    <br>
+                    <br>
+                    <b>Chars per Message</b>
+                    <br>
+                    <br>
+                    <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsConstant' checked> <label>Constant</label><br>
+                    <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsUniformRandom'> <label>Uniform Random</label><br>
+                    <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsNonUniformRandom'> <label>Non Uniform Random</label><br>
+                    <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsExponential'> <label>Exponential</label><br>
+                    <br>
+                    <input required id='inputMessageChars' type='number' placeholder='Chars per message'/>
+                    <input required id='inputMessageCharsMax' type='number' disabled/>
+                </div>
+                <div class='col-sm-3'>
+                    <b>Peer Connection Settings</b>
+                    <br>
+                    <br>
+                    <input id='inputDtlsSrtpKeyAgreement' type='checkbox' checked>
+                    <label>DtlsSrtpKeyAgreement</label>
+                    <br>
+                    <br>
+                    <b>Data Channel Settings</b>
+                    <br>
+                    <br>
+                    <input required id='inputMaxRetransmitTime' type='number' min='1' max='10000' value='5000' />
+                    <label>Maximum Retransmit Time</label>
+                    <br>
+                    <input id='inputOrdered' type='checkbox' checked/>
+                    <label>Ordered</label>
+                    <br>
+                    <br>
+                    <button class="btn btn-success btn-block btn-sm " type='submit' id='buttonStartTest' onclick='startTest();'>Start Test</button>
                 </div>
             </div>
-            <div id='right_pane' style='float: right;'>
-                <textarea disabled id='textareaTestResults' cols='100' rows='52' style='resize: none;'>Test Results will appear here</textarea>
+            <div class='row'>
+                <div class='col-sm-5'>
+                    <table class="table table-condensed">
+                    <tr>
+                        <th>Name</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <td>Messages</td>
+                        <td id='tdSendMessages'> </td>
+                        <td id='tdRecievedMessages'> </td>
+                    </tr>
+                    <tr>
+                        <td>Data Channels</td>
+                        <td id='tdChannelsCreated'> </td>
+                        <td id='tdChannelsOpened'> </td>
+                    </tr>
+                    </table>
+                 <p class="text-center"><button onclick="updateStatistics();" class="btn btn-primary btn-sm">Update Statistics</button></p>
+                </div>
             </div>
         </div>
         <div class="footer text-center">

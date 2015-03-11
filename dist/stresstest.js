@@ -49,13 +49,37 @@ var inputOrdered = $('#inputOrdered');
 var inputMessageToSend = $('#inputMessageToSend');
 var inputMessageQuantity = $('#inputMessageQuantity');
 var buttonStartTest = $('#buttonStartTest');
+
+var tdSendMessages = $('#tdSendMessages');
+var tdRecievedMessages = $('#tdRecievedMessages');
+
+var tdChannelsCreated = $('#tdChannelsCreated');
+var tdChannelsOpened = $('#tdChannelsOpened');
+
 //DOM Elements end
 var br = "&#13;&#10;";
 
-var peerConnectionMode, dataChannelMode, messsageMode, messageCharMode;
-
 //Declare variables
-var local_dc, local_dc2, remote_dc, remote_dc2, local_pc, remote_pc, messageCount, peerConnections, dataChannelsPerPC, pcOptions, dataChannelOptions;
+var local_dc,
+    local_dc2,
+    remote_dc,
+    remote_dc2,
+    local_pc,
+    remote_pc,
+    messageCount,
+    peerConnections,
+    dataChannelsPerPC,
+    messagesRecieved,
+    pcOptions,
+    dataChannelOptions,
+    peerConnectionMode,
+    dataChannelMode,
+    messsageMode,
+    messageCharMode,
+    messagesSend,
+    messagesRecieved,
+    channelsCreated,
+    channelsOpened;
 
 // Local ID
 var id = "testing";
@@ -181,6 +205,15 @@ function updateRadioBoxes()
     }
 }
 
+
+function updateStatistics()
+{
+    tdRecievedMessages.text("Recieved " + messagesRecieved);
+    tdSendMessages.text("Send " + messagesSend);
+    tdChannelsCreated.text("Created " + channelsCreated);
+    tdChannelsOpened.text("Opened " + (channelsOpened / 2));
+
+}
 /**
  * extract IP from given string
  * @param {string} string   String that the IP is going to be extracted from
@@ -243,7 +276,6 @@ function randomExponential(expectation)
 function startTest()
 {
     textareaTestResults.text("");
-    logToTextArea('Test started');
     // Everything back to start
     local_dc = null;
     local_dc2 = null;
@@ -259,6 +291,12 @@ function startTest()
     messageCount = null;
     peerConnections = null;
     dataChannelsPerPC = null;
+
+    messagesRecieved = 0;
+    messagesSend = 0;
+
+    channelsCreated = 0;
+    channelsOpened = 0;
 
     switch(peerConnectionMode)
     {
@@ -294,7 +332,6 @@ function startTest()
             break;
         }
     }
-    logToTextArea("Creating " + peerConnections + " Peer Connections");
 
     var _DtlsSrtpKeyAgreement = inputDtlsSrtpKeyAgreement.is(':checked');
 
@@ -334,7 +371,6 @@ function startTest()
         local_pc[i] = new PeerConnection(pcConfiguration, pcOptions);
         remote_pc[i] = new PeerConnection(pcConfiguration, pcOptions);
         bindPCEvents(i);
-        logToTextArea(i + ". PeerConections created");
     };
 
 
@@ -371,7 +407,6 @@ function startTest()
             break;
         }
     }
-    logToTextArea("Sending " + messageCount + " Messages");
 
 
     for (var i= 0; i < peerConnections; i++)
@@ -409,13 +444,12 @@ function startTest()
                 break;
             }
         }
-        logToTextArea("Creating " + dataChannelsPerPC + " Data Channels for " + i +  ". Peer Connection");
         for(var j=0; j < dataChannelsPerPC; j++)
         {
             remote_dc[i][j] = remote_pc[i].createDataChannel("remote_pc_" + i + "_remote_dc_" + j);
-            logToTextArea("remote_pc_" + i + "_remote_dc_" + j + " created");
+            channelsCreated++;
             local_dc[i][j] = local_pc[i].createDataChannel("local_pc_" + i + "_local_dc_" + j, { reliable: true});
-            logToTextArea("local_pc_" + i + "_local_dc_" + j + " created");
+            channelsCreated++;
             bindDCEvents(i, j);
         }
         createOfferAnswer(i);
@@ -466,6 +500,7 @@ function sendMessages(messageCount, i, j, k)
                     break;
                 }
             }
+            messagesSend++;
             local_dc[i][j].send(randomString(_stringLength));
         }
     }
@@ -501,6 +536,7 @@ function sendMessages(messageCount, i, j, k)
                     break;
                 }
             }
+            messagesSend++;
             remote_dc[i][j].send(randomString(_stringLength));
         }
     }
@@ -547,6 +583,7 @@ function sendMessages2(messageCount, i, j)
                     break;
                 }
             }
+            messagesSend++;
             local_dc2[i].send(randomString(_stringLength));
         }
     }
@@ -582,6 +619,7 @@ function sendMessages2(messageCount, i, j)
                     break;
                 }
             }
+            messagesSend++;
             remote_dc2[i].send(randomString(_stringLength));
         }
     }
@@ -624,36 +662,30 @@ function bindDC2Events(i, j)
     {
         local_dc2[i].onopen = function ()
         {
-            //local_dc2[i].send("Hi Local!");
+            channelsOpened++;
             sendMessages2(messageCount, i, 0);
         };
         local_dc2[i].onmessage = function (e)
         {
-            var msg = e.data;
-            console.log("Message recieved: " + msg);
-            logToTextArea(i + ". PC " + j + ". Local DC Message (from Remote) recieved: " + msg);
+            messagesRecieved++;
         };
         local_dc2[i].onError = function (e)
         {
-            console.log("Datachannel Error: " + err);
         };
     }
     else if(j == 1)
     {
         remote_dc2[i].onopen = function ()
         {
-            //remote_dc2[i].send("Hi Remote!");
+            channelsOpened++;
             sendMessages2(messageCount, i, 1);
         };
         remote_dc2[i].onmessage = function (e)
         {
-            var msg = e.data;
-            console.log("Message recieved: " + msg);
-            logToTextArea(i + ". PC " + j + ". Remote DC Message (from Remote) recieved: " + msg);
+            messagesRecieved++;
         };
         remote_dc2[i].onError = function (e)
         {
-            console.log("Datachannel Error: " + err);
         };
     }
     else { return null; }
@@ -668,20 +700,16 @@ function bindDCEvents (i, j)
 {
     remote_dc[i][j].onopen = function ()
     {
-        logToTextArea(i + ". PC " + j + ". Local DC opened");
-        //remote_dc[i][j].send("Hi Local!");
+        channelsOpened++;
         sendMessages(messageCount, i, j, 1);
     };
     remote_dc[i][j].onclose = function ()
     {
         console.log("Channel closed");
-        logToTextArea(i + ". PC " + j + " Remote DC closed!");
     };
     remote_dc[i][j].onmessage = function (e)
     {
-        var msg = e.data;
-        console.log("Message recieved: " + msg);
-        logToTextArea(i + ". PC " + j + ". DC Message recieved: " + msg);
+        messagesRecieved++;
     };
     remote_dc[i][j].onError = function (e)
     {
@@ -690,20 +718,16 @@ function bindDCEvents (i, j)
     //---------
     local_dc[i][j].onopen = function ()
     {
-        logToTextArea(i + ". PC " + j + ". Local DC opened");
-        //local_dc[i][j].send("Hi Remote!");
+        channelsOpened++;
         sendMessages(messageCount, i, j, 0);
     };
     local_dc[i][j].onclose = function ()
     {
         console.log("Channel closed");
-        logToTextArea(i + ". PC " + j + " Local DC closed!");
     };
     local_dc[i][j].onmessage = function (e)
     {
-        var msg = e.data;
-        console.log("Message recieved: " + msg);
-        logToTextArea(i + ". PC " + j + ". DC Message recieved: " + msg);
+        messagesRecieved++;
     };
     local_dc[i][j].onError = function (e)
     {
@@ -718,27 +742,22 @@ function bindDCEvents (i, j)
  */
 function createRemoteOnIceCandidate(i)
 {
-    logToTextArea("Creating onIceCandidate for " + i + ". RemotePeerConnection");
     remote_pc[i].onicecandidate = function (ev)
     {
         if(!ev.candidate)
         {
-            logToTextArea("(" + i + ". RemotePC) All ICE Candidates got");
         }
         else
         {
             local_pc[i].addIceCandidate(new IceCandidate(ev.candidate),
             function()
             {
-                logToTextArea("(" +i + ". Local PC) ICE Candidate: " + extractIpFromString(ev.candidate.candidate));
             },
             function(err)
             {
-               console.log("Error while adding Ice Candidate: " + err.toString());
             });
         }
     };
-    logToTextArea("onIceCandidate for " + i + ". PeerConnection created");
 }
 
 /**
@@ -747,13 +766,11 @@ function createRemoteOnIceCandidate(i)
  */
 function createRemoteOnNegotiationNeeded(i)
 {
-    logToTextArea("Creating onNegotiationNeeded for " + i + ". RemotePeerConnection");
     remote_pc[i].onnegotiationneeded = function()
     {
         console.log("Remote Neogation Needed");
         //createAnswer(i);
     };
-    logToTextArea("onNegotiationNeeded for " + i + ". RemotePeerConnection created");
 }
 
 /**
@@ -777,27 +794,22 @@ function createRemoteConnections(peerConnections, dataChannelsPerPC)
  */
 function createLocalOnIceCandidate(i)
 {
-    logToTextArea("Creating onIceCandidate for " + i + ". LocalPeerConnection");
     local_pc[i].onicecandidate = function (ev)
     {
         if(!ev.candidate)
         {
-            logToTextArea("(" + i + ". Local PC) All ICE Candidates got");
         }
         else
         {
             remote_pc[i].addIceCandidate(new IceCandidate(ev.candidate),
             function()
             {
-                logToTextArea("(" +i + ". RemotePC) ICE Candidate: " + extractIpFromString(ev.candidate.candidate));
             },
             function(err)
             {
-               console.log("Error while adding Remote Ice Candidate: " + err.toString());
             });
         }
     };
-    logToTextArea("onIceCandidate for " + i + ". LocalPeerConnection created");
 }
 
 /**
@@ -806,13 +818,11 @@ function createLocalOnIceCandidate(i)
  */
 function createLocalOnNegotiationNeeded(i)
 {
-    logToTextArea("Creating onNegotiationNeeded for " + i + ". LocalPeerConnection");
     local_pc[i].onnegotiationneeded = function()
     {
         console.log("Local Neogation Needed");
         createOfferAnswer(i);
     };
-    logToTextArea("onNegotiationNeeded for " + i + ". LocalPeerConnection created");
 }
 
 /**
@@ -820,7 +830,6 @@ function createLocalOnNegotiationNeeded(i)
  */
 function errorHandler (err)
 {
-    logToTextArea("Generic Error: " + err);
 }
 /**
  * Generic successHandler
@@ -835,18 +844,15 @@ function successHandler ()
  */
 function createOfferAnswer(i)
 {
-    logToTextArea("Creating offer for " + i + ". LocalPeerConnection");
     local_pc[i].createOffer(function (description)
     {
         local_pc[i].setLocalDescription(description, successHandler, errorHandler);
         remote_pc[i].setRemoteDescription(description, successHandler, errorHandler);
-        //logToTextArea("LocalDescription: " + br + description.sdp);
 
         remote_pc[i].createAnswer(function (description)
         {
             remote_pc[i].setLocalDescription(description, successHandler, errorHandler);
             local_pc[i].setRemoteDescription(description, successHandler, errorHandler);
-            //logToTextArea("RemoteDescription: " + br + description.sdp);
         }, errorHandler, constraints);
     }, errorHandler, constraints);
 
@@ -858,7 +864,6 @@ function createOfferAnswer(i)
             OfferToReceiveVideo: false
         }
     };
-    logToTextArea("offer for " + i + ". PeerConnection created");
 }
 
 /**
@@ -879,9 +884,3 @@ function createLocalConnections(peerConnections, dataChannelsPerPC)
  * Add a message to the textareaTestResults
  * @param {int} msg
  */
-function logToTextArea(msg)
-{
-    var now = (window.performance.now() / 1000).toFixed(3);
-    textareaTestResults.append(now + " " +msg + "&#13;&#10");
-    textareaTestResults.scrollTop(textareaTestResults[0].scrollHeight);
-}
