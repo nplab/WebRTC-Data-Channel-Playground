@@ -5,13 +5,6 @@
 var IceCandidate        = window.mozRTCIceCandidate || window.RTCIceCandidate;
 var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
 var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
-var GET_USER_MEDIA = navigator.getUserMedia ? "getUserMedia" :
-                     navigator.mozGetUserMedia ? "mozGetUserMedia" :
-                     navigator.webkitGetUserMedia ? "webkitGetUserMedia" : "getUserMedia";
-var v = document.createElement("video");
-var SRC_OBJECT = 'srcObject' in v ? "srcObject" :
-                 'mozSrcObject' in v ? "mozSrcObject" :
-                 'webkitSrcObject' in v ? "webkitSrcObject" : "srcObject";
 
 //DOM Elements
 var textareaTestResults = $('#textareaTestResults');
@@ -62,7 +55,7 @@ var br = "&#13;&#10;";
 var peerConnectionMode, dataChannelMode, messsageMode, messageCharMode;
 
 //Declare variables
-var local_dc, local_dc2, remote_dc, remote_dc2, local_pc, remote_pc, messageCount, pcOptions, dataChannelOptions;
+var local_dc, local_dc2, remote_dc, remote_dc2, local_pc, remote_pc, messageCount, peerConnections, dataChannelsPerPC, pcOptions, dataChannelOptions;
 
 // Local ID
 var id = "testing";
@@ -166,25 +159,25 @@ function updateRadioBoxes()
     {
         inputMessageCharsMax.prop('disabled', true);
         inputMessageCharsMax.prop('placeholder', '');
-        messsageCharMode = 'con';
+        messageCharMode = 'con';
     }
     else if(typeMessageChars[1].prop('checked'))
     {
         inputMessageCharsMax.prop('disabled', false);
         inputMessageCharsMax.prop('placeholder', 'max');
-        messsageCharMode = 'uni';
+        messageCharMode = 'uni';
     }
     else if(typeMessageChars[2].prop('checked'))
     {
         inputMessageCharsMax.prop('disabled', false);
         inputMessageCharsMax.prop('placeholder', 'max');
-        messsageCharMode = 'nuni';
+        messageCharMode = 'nuni';
     }
     else if(typeMessageChars[3].prop('checked'))
     {
         inputMessageCharsMax.prop('disabled', true);
         inputMessageCharsMax.prop('placeholder', '');
-        messsageCharMode = 'exp';
+        messageCharMode = 'exp';
     }
 }
 
@@ -260,45 +253,48 @@ function startTest()
     remote_pc = null;
     dataChannelOptions = null;
 
-    messageCount = null;
-
     local_dc2 = [];
     remote_dc2 = [];
 
+    messageCount = null;
+    peerConnections = null;
+    dataChannelsPerPC = null;
+
     switch(peerConnectionMode)
     {
+
         case 'con':
         {
-            var _peerConnections = inputPeerConnections.val();
-            console.log("PC Con: " + _peerConnections);
+            peerConnections = inputPeerConnections.val();
+            console.log("PC Con: " + peerConnections);
             break;
         }
         case 'uni':
         {
-            var _peerConnections = randomUniform(inputPeerConnections.val(), inputPeerConnectionsMax.val());
-            console.log("PC Uni: " + _peerConnections);
+            peerConnections = randomUniform(inputPeerConnections.val(), inputPeerConnectionsMax.val());
+            console.log("PC Uni: " + peerConnections);
             break;
         }
         case 'nuni':
         {
-            var _peerConnections = randomNonUniform(inputPeerConnections.val(), inputPeerConnectionsMax.val());
-            console.log("PC NUni: " + _peerConnections);
+            peerConnections = randomNonUniform(inputPeerConnections.val(), inputPeerConnectionsMax.val());
+            console.log("PC NUni: " + peerConnections);
             break;
         }
         case 'exp':
         {
-            var _peerConnections = randomExponential(inputPeerConnections.val());
-            console.log("PC Exp: " + _peerConnections);
+            peerConnections = randomExponential(inputPeerConnections.val());
+            console.log("PC Exp: " + peerConnections);
             break;
         }
         default:
         {
-            var _peerConnections = inputPeerConnections.val();
-            console.log("PC Def: " + _peerConnections);
+            peerConnections = inputPeerConnections.val();
+            console.log("PC Def: " + peerConnections);
             break;
         }
     }
-    logToTextArea("Creating " + _peerConnections + " Peer Connections");
+    logToTextArea("Creating " + peerConnections + " Peer Connections");
 
     var _DtlsSrtpKeyAgreement = inputDtlsSrtpKeyAgreement.is(':checked');
 
@@ -319,21 +315,21 @@ function startTest()
         maxRetransmitTime: _maxRetransmitTime,
     };
 
-    local_pc = new Array(_peerConnections);
-    local_dc = new Array(_peerConnections);
-    for(var i = 0; i < _peerConnections; i++)
+    local_pc = new Array(peerConnections);
+    local_dc = new Array(peerConnections);
+    for(var i = 0; i < peerConnections; i++)
     {
-        local_dc[i] = new Array(_dataChannelsPerPC);
+        local_dc[i] = new Array(dataChannelsPerPC);
     }
 
-    remote_pc = new Array(_peerConnections);
-    remote_dc = new Array(_peerConnections);
-    for(var i = 0; i < _peerConnections; i++)
+    remote_pc = new Array(peerConnections);
+    remote_dc = new Array(peerConnections);
+    for(var i = 0; i < peerConnections; i++)
     {
-        remote_dc[i] = new Array(_dataChannelsPerPC);
+        remote_dc[i] = new Array(dataChannelsPerPC);
     }
 
-    for (var i=0; i < _peerConnections; i++)
+    for (var i=0; i < peerConnections; i++)
     {
         local_pc[i] = new PeerConnection(pcConfiguration, pcOptions);
         remote_pc[i] = new PeerConnection(pcConfiguration, pcOptions);
@@ -378,43 +374,43 @@ function startTest()
     logToTextArea("Sending " + messageCount + " Messages");
 
 
-    for (var i= 0; i < _peerConnections; i++)
+    for (var i= 0; i < peerConnections; i++)
     {
         switch(dataChannelMode)
         {
             case 'con':
             {
-                var _dataChannelsPerPC = inputDataChannel.val();
-                console.log("DC Con: " + _dataChannelsPerPC);
+                dataChannelsPerPC = inputDataChannel.val();
+                console.log("DC Con: " + dataChannelsPerPC);
                 break;
             }
             case 'uni':
             {
-                var _dataChannelsPerPC = randomUniform(inputDataChannel.val(), inputDataChannelMax.val());
-                console.log("DC Uni: " + _dataChannelsPerPC);
+                dataChannelsPerPC = randomUniform(inputDataChannel.val(), inputDataChannelMax.val());
+                console.log("DC Uni: " + dataChannelsPerPC);
                 break;
             }
             case 'nuni':
             {
-                var _dataChannelsPerPC = randomNonUniform(inputDataChannel.val(), inputDataChannelMax.val());
-                console.log("DC NUni: " + _dataChannelsPerPC);
+                dataChannelsPerPC = randomNonUniform(inputDataChannel.val(), inputDataChannelMax.val());
+                console.log("DC NUni: " + dataChannelsPerPC);
                 break;
             }
             case 'exp':
             {
-                var _dataChannelsPerPC = randomExponential(inputDataChannel.val());
-                console.log("DC Exp: " + _dataChannelsPerPC);
+                dataChannelsPerPC = randomExponential(inputDataChannel.val());
+                console.log("DC Exp: " + dataChannelsPerPC);
                 break;
             }
             default:
             {
-                var _dataChannelsPerPC = inputDataChannel.val();
-                console.log("DC Def: " + _dataChannelsPerPC);
+                dataChannelsPerPC = inputDataChannel.val();
+                console.log("DC Def: " + dataChannelsPerPC);
                 break;
             }
         }
-        logToTextArea("Creating " + _dataChannelsPerPC + " Data Channels for " + i +  ". Peer Connection");
-        for(var j=0; j < _dataChannelsPerPC; j++)
+        logToTextArea("Creating " + dataChannelsPerPC + " Data Channels for " + i +  ". Peer Connection");
+        for(var j=0; j < dataChannelsPerPC; j++)
         {
             remote_dc[i][j] = remote_pc[i].createDataChannel("remote_pc_" + i + "_remote_dc_" + j);
             logToTextArea("remote_pc_" + i + "_remote_dc_" + j + " created");
@@ -424,8 +420,8 @@ function startTest()
         }
         createOfferAnswer(i);
     }
-    createLocalConnections(_peerConnections, _dataChannelsPerPC);
-    createRemoteConnections(_peerConnections, _dataChannelsPerPC);
+    createLocalConnections(peerConnections, dataChannelsPerPC);
+    createRemoteConnections(peerConnections, dataChannelsPerPC);
 }
 
 /**
