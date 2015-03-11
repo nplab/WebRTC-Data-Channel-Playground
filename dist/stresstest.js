@@ -16,6 +16,7 @@ var SRC_OBJECT = 'srcObject' in v ? "srcObject" :
 //DOM Elements
 var textareaTestResults = $('#textareaTestResults');
 var formTestConditions = $('#formTestConditions');
+
 var typePeerConnection = new Array(4);
 typePeerConnection[0] = $('#typePeerConnectionsConstant');
 typePeerConnection[1] = $('#typePeerConnectionsUniformRandom');
@@ -23,6 +24,7 @@ typePeerConnection[2] = $('#typePeerConnectionsNonUniformRandom');
 typePeerConnection[3] = $('#typePeerConnectionsExponential');
 var inputPeerConnections = $('#inputPeerConnections');
 var inputPeerConnectionsMax = $('#inputPeerConnectionsMax');
+
 var typeDataChannel = new Array(4);
 typeDataChannel[0] = $('#typeDataChannelConstant');
 typeDataChannel[1] = $('#typeDataChannelUniformRandom');
@@ -30,6 +32,7 @@ typeDataChannel[2] = $('#typeDataChannelNonUniformRandom');
 typeDataChannel[3] = $('#typeDataChannelExponential');
 var inputDataChannel = $('#inputDataChannel');
 var inputDataChannelMax = $('#inputDataChannelMax');
+
 var typeMessageCount = new Array(4);
 typeMessageCount[0] = $('#typeMessageCountConstant');
 typeMessageCount[1] = $('#typeMessageCountUniformRandom');
@@ -37,6 +40,15 @@ typeMessageCount[2] = $('#typeMessageCountNonUniformRandom');
 typeMessageCount[3] = $('#typeMessageCountExponential');
 var inputMessageCount = $('#inputMessageCount');
 var inputMessageCountMax = $('#inputMessageCountMax');
+
+var typeMessageChars = new Array(4);
+typeMessageChars[0] = $('#typeMessageCharsConstant');
+typeMessageChars[1] = $('#typeMessageCharsUniformRandom');
+typeMessageChars[2] = $('#typeMessageCharsNonUniformRandom');
+typeMessageChars[3] = $('#typeMessageCharsExponential');
+var inputMessageChars = $('#inputMessageChars');
+var inputMessageCharsMax = $('#inputMessageCharsMax');
+
 var inputDtlsSrtpKeyAgreement = $('#inputDtlsSrtpKeyAgreement');
 var inputRtpDataChannels = $('#inputRtpDataChannels');
 var inputMaxRetransmitTime = $('#inputMaxRetransmitTime');
@@ -47,7 +59,7 @@ var buttonStartTest = $('#buttonStartTest');
 //DOM Elements end
 var br = "&#13;&#10;";
 
-var peerConnectionMode, dataChannelMode, messsageMode;
+var peerConnectionMode, dataChannelMode, messsageMode, messageCharMode;
 
 //Declare variables
 var local_dc, local_dc2, remote_dc, remote_dc2, local_pc, remote_pc, messageCount, pcOptions, dataChannelOptions;
@@ -148,6 +160,31 @@ function updateRadioBoxes()
         inputMessageCountMax.prop('disabled', true);
         inputMessageCountMax.prop('placeholder', '');
         messsageMode = 'exp';
+    }
+
+    if(typeMessageChars[0].prop('checked'))
+    {
+        inputMessageCharsMax.prop('disabled', true);
+        inputMessageCharsMax.prop('placeholder', '');
+        messsageCharMode = 'con';
+    }
+    else if(typeMessageChars[1].prop('checked'))
+    {
+        inputMessageCharsMax.prop('disabled', false);
+        inputMessageCharsMax.prop('placeholder', 'max');
+        messsageCharMode = 'uni';
+    }
+    else if(typeMessageChars[2].prop('checked'))
+    {
+        inputMessageCharsMax.prop('disabled', false);
+        inputMessageCharsMax.prop('placeholder', 'max');
+        messsageCharMode = 'nuni';
+    }
+    else if(typeMessageChars[3].prop('checked'))
+    {
+        inputMessageCharsMax.prop('disabled', true);
+        inputMessageCharsMax.prop('placeholder', '');
+        messsageCharMode = 'exp';
     }
 }
 
@@ -392,7 +429,7 @@ function startTest()
 }
 
 /**
- * sendMessages over all dataChannels
+ * sendMessages over given dataChannel
  * @param {int} messageCount
  * @param {int} index
  * @param {int} index
@@ -400,42 +437,156 @@ function startTest()
  */
 function sendMessages(messageCount, i, j, k)
 {
+    var _stringLength;
     if(k == 0)
     {
         for(var m = 0; m < messageCount; m++)
         {
-            local_dc[i][j].send(randomString(100));
+            switch(messageCharMode)
+            {
+                case 'con':
+                {
+                    _stringLength = inputMessageChars.val();
+                    break;
+                }
+                case 'uni':
+                {
+                    _stringLength = randomUniform(inputMessageChars.val(), inputMessageCharsMax.val());
+                    break;
+                }
+                case 'nuni':
+                {
+                    _stringLength = randomNonUniform(inputMessageChars.val(), inputMessageCharsMax.val());
+                    break;
+                }
+                case 'exp':
+                {
+                    _stringLength = randomExponential(inputMessageChars.val());
+                    break;
+                }
+                default:
+                {
+                    _stringLength = inputMessageChars.val();
+                    break;
+                }
+            }
+            local_dc[i][j].send(randomString(_stringLength));
         }
     }
     else if(k == 1)
     {
         for(var m = 0; m < messageCount; m++)
         {
-            remote_dc[i][j].send(randomString(100));
+            switch(messageCharMode)
+            {
+                case 'con':
+                {
+                    _stringLength = inputMessageChars.val();
+                    break;
+                }
+                case 'uni':
+                {
+                    _stringLength = randomUniform(inputMessageChars.val(), inputMessageCharsMax.val());
+                    break;
+                }
+                case 'nuni':
+                {
+                    _stringLength = randomNonUniform(inputMessageChars.val(), inputMessageCharsMax.val());
+                    break;
+                }
+                case 'exp':
+                {
+                    _stringLength = randomExponential(inputMessageChars.val());
+                    break;
+                }
+                default:
+                {
+                    _stringLength = inputMessageChars.val();
+                    break;
+                }
+            }
+            remote_dc[i][j].send(randomString(_stringLength));
         }
     }
 }
 
 /**
- * sendMessages over all dataChannels
+ * sendMessages over given dataChannel
  * @param {int} messageCount
  * @param {int} index
  * @param {int} local/remote (0/1)
  */
 function sendMessages2(messageCount, i, j)
 {
+    var _stringLength;
     if(j == 0)
     {
         for(var m = 0; m < messageCount; m++)
         {
-            local_dc2[i].send(randomString(100));
+            switch(messageCharMode)
+            {
+                case 'con':
+                {
+                    _stringLength = inputMessageChars.val();
+                    break;
+                }
+                case 'uni':
+                {
+                    _stringLength = randomUniform(inputMessageChars.val(), inputMessageCharsMax.val());
+                    break;
+                }
+                case 'nuni':
+                {
+                    _stringLength = randomNonUniform(inputMessageChars.val(), inputMessageCharsMax.val());
+                    break;
+                }
+                case 'exp':
+                {
+                    _stringLength = randomExponential(inputMessageChars.val());
+                    break;
+                }
+                default:
+                {
+                    _stringLength = inputMessageChars.val();
+                    break;
+                }
+            }
+            local_dc2[i].send(randomString(_stringLength));
         }
     }
     else if(j == 1)
     {
         for(var m = 0; m < messageCount; m++)
         {
-            remote_dc2[i].send(randomString(100));
+            switch(messageCharMode)
+            {
+                case 'con':
+                {
+                    _stringLength = inputMessageChars.val();
+                    break;
+                }
+                case 'uni':
+                {
+                    _stringLength = randomUniform(inputMessageChars.val(), inputMessageCharsMax.val());
+                    break;
+                }
+                case 'nuni':
+                {
+                    _stringLength = randomNonUniform(inputMessageChars.val(), inputMessageCharsMax.val());
+                    break;
+                }
+                case 'exp':
+                {
+                    _stringLength = randomExponential(inputMessageChars.val());
+                    break;
+                }
+                default:
+                {
+                    _stringLength = inputMessageChars.val();
+                    break;
+                }
+            }
+            remote_dc2[i].send(randomString(_stringLength));
         }
     }
 }

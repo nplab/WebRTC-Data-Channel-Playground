@@ -57,7 +57,7 @@
             <div id='left_pane' style='float: left;'>
                 <div id='left_pane_left' style='float:left;'>
                     <form id='formTestConditions' onsubmit='return false;' onclick="updateRadioBoxes()">
-                        <b>General Settings</b>
+                        <b>Peer Connections</b>
                         <br>
                         <br>
                         <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsConstant' checked> <label>Constant</label><br>
@@ -69,6 +69,9 @@
                         <input required id='inputPeerConnectionsMax' type='number' disabled/>
                         <br>
                         <br>
+                        <b>Data Channels per Peer Connections</b>
+                        <br>
+                        <br>
                         <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelConstant' checked> <label>Constant</label><br>
                         <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelUniformRandom'> <label>Uniform Random</label><br>
                         <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelNonUniformRandom'> <label>Non Uniform Random</label><br>
@@ -78,6 +81,9 @@
                         <input required id='inputDataChannelMax' type='number' disabled />
                         <br>
                         <br>
+                        <b>Messages per Data Channel</b>
+                        <br>
+                        <br>
                         <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountConstant' checked> <label>Constant</label><br>
                         <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountUniformRandom'> <label>Uniform Random</label><br>
                         <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountNonUniformRandom'> <label>Non Uniform Random</label><br>
@@ -85,6 +91,18 @@
                         <br>
                         <input required id='inputMessageCount' type='number' placeholder='Message Count'/>
                         <input required id='inputMessageCountMax' type='number' disabled/>
+                        <br>
+                        <br>
+                        <b>Chars per Message</b>
+                        <br>
+                        <br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsConstant' checked> <label>Constant</label><br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsUniformRandom'> <label>Uniform Random</label><br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsNonUniformRandom'> <label>Non Uniform Random</label><br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsExponential'> <label>Exponential</label><br>
+                        <br>
+                        <input required id='inputMessageChars' type='number' placeholder='Chars per message'/>
+                        <input required id='inputMessageCharsMax' type='number' disabled/>
                         <br>
                         <br>
                         <b>Peer Connection Settings</b>
@@ -109,7 +127,7 @@
                 </div>
             </div>
             <div id='right_pane' style='float: right;'>
-                <textarea disabled id='textareaTestResults' cols='100' rows='38' style='resize: none;'>Test Results will appear here</textarea>
+                <textarea disabled id='textareaTestResults' cols='100' rows='52' style='resize: none;'>Test Results will appear here</textarea>
             </div>
         </div>
         <div class="footer text-center">
