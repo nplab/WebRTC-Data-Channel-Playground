@@ -163,15 +163,14 @@ function randomExponential(expectation)
     return Math.round(Math.abs(Math.log(Math.random()) / (1 / expectation)));
 }
 
-/**
- * Start the test
- */
-
 function createControlChannel()
 {
 
 }
 
+/**
+ * Start the test
+ */
 function startTest()
 {
     textareaTestResults.text("");
@@ -347,6 +346,7 @@ function bindDCEvents (i, j)
     };
     remote_dc[i][j].onmessage = function (e)
     {
+        //FIXME onMessage is not getting triggered
         var msg = e.data;
         console.log("Message recieved: " + msg);
         logToTextArea(i + ". PC " + j + ". DC Message recieved: " + msg);
@@ -368,6 +368,7 @@ function bindDCEvents (i, j)
     };
     local_dc[i][j].onmessage = function (e)
     {
+        //FIXME onMessage is not getting triggered
         var msg = e.data;
         console.log("Message recieved: " + msg);
         logToTextArea(i + ". PC " + j + ". DC Message recieved: " + msg);
