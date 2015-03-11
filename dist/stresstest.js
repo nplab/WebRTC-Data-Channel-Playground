@@ -16,20 +16,27 @@ var SRC_OBJECT = 'srcObject' in v ? "srcObject" :
 //DOM Elements
 var textareaTestResults = $('#textareaTestResults');
 var formTestConditions = $('#formTestConditions');
-var typePeerConnectionButtons = new Array(4);
-typePeerConnectionButtons[0] = $('#typePeerConnectionsConstant');
-typePeerConnectionButtons[1] = $('#typePeerConnectionsUniformRandom');
-typePeerConnectionButtons[2] = $('#typePeerConnectionsNonUniformRandom');
-typePeerConnectionButtons[3] = $('#typePeerConnectionsExponential');
+var typePeerConnection = new Array(4);
+typePeerConnection[0] = $('#typePeerConnectionsConstant');
+typePeerConnection[1] = $('#typePeerConnectionsUniformRandom');
+typePeerConnection[2] = $('#typePeerConnectionsNonUniformRandom');
+typePeerConnection[3] = $('#typePeerConnectionsExponential');
 var inputPeerConnections = $('#inputPeerConnections');
 var inputPeerConnectionsMax = $('#inputPeerConnectionsMax');
-var typeDataChannelButtons = new Array(4);
-typeDataChannelButtons[0] = $('#typeDataChannelConstant');
-typeDataChannelButtons[1] = $('#typeDataChannelUniformRandom');
-typeDataChannelButtons[2] = $('#typeDataChannelNonUniformRandom');
-typeDataChannelButtons[3] = $('#typeDataChannelExponential');
+var typeDataChannel = new Array(4);
+typeDataChannel[0] = $('#typeDataChannelConstant');
+typeDataChannel[1] = $('#typeDataChannelUniformRandom');
+typeDataChannel[2] = $('#typeDataChannelNonUniformRandom');
+typeDataChannel[3] = $('#typeDataChannelExponential');
 var inputDataChannel = $('#inputDataChannel');
 var inputDataChannelMax = $('#inputDataChannelMax');
+var typeMessageCount = new Array(4);
+typeMessageCount[0] = $('#typeMessageCountConstant');
+typeMessageCount[1] = $('#typeMessageCountUniformRandom');
+typeMessageCount[2] = $('#typeMessageCountNonUniformRandom');
+typeMessageCount[3] = $('#typeMessageCountExponential');
+var inputMessageCount = $('#inputMessageCount');
+var inputMessageCountMax = $('#inputMessageCountMax');
 var inputDtlsSrtpKeyAgreement = $('#inputDtlsSrtpKeyAgreement');
 var inputRtpDataChannels = $('#inputRtpDataChannels');
 var inputMaxRetransmitTime = $('#inputMaxRetransmitTime');
@@ -40,10 +47,10 @@ var buttonStartTest = $('#buttonStartTest');
 //DOM Elements end
 var br = "&#13;&#10;";
 
-var peerConnectionMode, dataChannelMode;
+var peerConnectionMode, dataChannelMode, messsageMode;
 
 //Declare variables
-var local_dc, local_pc, remote_dc, remote_pc, pcOptions, dataChannelOptions;
+var local_dc, local_dc2, remote_dc, remote_dc2, local_pc, remote_pc, pcOptions, dataChannelOptions;
 
 // Local ID
 var id = "testing";
@@ -68,61 +75,86 @@ function updateForm()
 
 function updateRadioBoxes()
 {
-    if(typePeerConnectionButtons[0].prop('checked'))
+    if(typePeerConnection[0].prop('checked'))
     {
         inputPeerConnectionsMax.prop('disabled', true);
         inputPeerConnectionsMax.prop('placeholder', '');
         peerConnectionMode = 'con';
     }
-    else if(typePeerConnectionButtons[1].prop('checked'))
+    else if(typePeerConnection[1].prop('checked'))
     {
         inputPeerConnectionsMax.prop('disabled', false);
         inputPeerConnectionsMax.prop('placeholder', 'max');
         peerConnectionMode = 'uni';
     }
-    else if(typePeerConnectionButtons[2].prop('checked'))
+    else if(typePeerConnection[2].prop('checked'))
     {
         inputPeerConnectionsMax.prop('disabled', false);
         inputPeerConnectionsMax.prop('placeholder', 'max');
         peerConnectionMode = 'nuni';
     }
-    else if(typePeerConnectionButtons[3].prop('checked'))
+    else if(typePeerConnection[3].prop('checked'))
     {
         inputPeerConnectionsMax.prop('disabled', true);
         inputPeerConnectionsMax.prop('placeholder', '');
         peerConnectionMode = 'exp';
     }
 
-    if(typeDataChannelButtons[0].prop('checked'))
+    if(typeDataChannel[0].prop('checked'))
     {
         inputDataChannelMax.prop('disabled', true);
         inputDataChannelMax.prop('placeholder', '');
         dataChannelMode = 'con';
     }
-    else if(typeDataChannelButtons[1].prop('checked'))
+    else if(typeDataChannel[1].prop('checked'))
     {
         inputDataChannelMax.prop('disabled', false);
         inputDataChannelMax.prop('placeholder', 'max');
         dataChannelMode = 'uni';
     }
-    else if(typeDataChannelButtons[2].prop('checked'))
+    else if(typeDataChannel[2].prop('checked'))
     {
         inputDataChannelMax.prop('disabled', false);
         inputDataChannelMax.prop('placeholder', 'max');
         dataChannelMode = 'nuni';
     }
-    else if(typeDataChannelButtons[3].prop('checked'))
+    else if(typeDataChannel[3].prop('checked'))
     {
         inputDataChannelMax.prop('disabled', true);
         inputDataChannelMax.prop('placeholder', '');
         dataChannelMode = 'exp';
     }
+
+    if(typeMessageCount[0].prop('checked'))
+    {
+        inputMessageCountMax.prop('disabled', true);
+        inputMessageCountMax.prop('placeholder', '');
+        messsageMode = 'con';
+    }
+    else if(typeMessageCount[1].prop('checked'))
+    {
+        inputMessageCountMax.prop('disabled', false);
+        inputMessageCountMax.prop('placeholder', 'max');
+        messsageMode = 'uni';
+    }
+    else if(typeMessageCount[2].prop('checked'))
+    {
+        inputMessageCountMax.prop('disabled', false);
+        inputMessageCountMax.prop('placeholder', 'max');
+        messsageMode = 'nuni';
+    }
+    else if(typeDataChannel[3].prop('checked'))
+    {
+        inputMessageCountMax.prop('disabled', true);
+        inputMessageCountMax.prop('placeholder', '');
+        messsageMode = 'exp';
+    }
 }
 
 /**
  * extract IP from given string
- * @param {object} string   String that the IP is going to be extracted from
- * @return {object} int     extracted IP
+ * @param {string} string   String that the IP is going to be extracted from
+ * @return {int} int     extracted IP
  */
 function extractIpFromString(string)
 {
@@ -133,9 +165,9 @@ function extractIpFromString(string)
 
 /**
  * returns an random uniform number between min and max
- * @param {object} min      Minimum number
- * @param {object} max      Maximum number
- * @return {object}
+ * @param {int} min      Minimum number
+ * @param {int} max      Maximum number
+ * @return {int}
  */
 function randomUniform(min, max)
 {
@@ -144,19 +176,31 @@ function randomUniform(min, max)
 
 /**
  * returns an random non uniform number between min and max
- * @param {object} min      Minimum number
- * @param {object} max      Maximum number
- * @return {object}
+ * @param {int} min      Minimum number
+ * @param {int} max      Maximum number
+ * @return {int}
  */
 function randomNonUniform(min, max)
 {
      return Math.round((Math.random() * (max - min + 1)) + min);
 }
 
+function randomString(length)
+{
+    var text="";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for(var i = 0; i < length; i++)
+    {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
+
 /**
  * returns an random exponential number
- * @param {object} int
- * @return {object} int     Returns the random exponential number
+ * @param {int} int
+ * @return {int} int     Returns the random exponential number
  */
 function randomExponential(expectation)
 {
@@ -177,10 +221,15 @@ function startTest()
     logToTextArea('Test started');
     // Everything back to start
     local_dc = null;
+    local_dc2 = null;
     local_pc = null;
     remote_dc = null;
+    remote_dc2 = null;
     remote_pc = null;
     dataChannelOptions = null;
+
+    local_dc2 = [];
+    remote_dc2 = [];
 
     switch(peerConnectionMode)
     {
@@ -212,6 +261,40 @@ function startTest()
         {
             var _peerConnections = inputPeerConnections.val();
             console.log("PC Def: " + _peerConnections);
+            break;
+        }
+    }
+
+    switch(messsageMode)
+    {
+        case 'con':
+        {
+            var _messageMode = inputMessageCount.val();
+            console.log("MM Con: " + _dataChannelsPerPC);
+            break;
+        }
+        case 'uni':
+        {
+            var _messageMode = randomUniform(inputMessageCount.val(), inputMessageCountMax.val());
+            console.log("MM Uni: " + _dataChannelsPerPC);
+            break;
+        }
+        case 'nuni':
+        {
+            var _messageMode = randomNonUniform(inputMessageCount.val(), inputMessageCountMax.val());
+            console.log("MM NUni: " + _dataChannelsPerPC);
+            break;
+        }
+        case 'exp':
+        {
+            var _messageMode = randomExponential(inputMessageCount.val());
+            console.log("MM Exp: " + _dataChannelsPerPC);
+            break;
+        }
+        default:
+        {
+            var _dataChannelsPerPC = inputMessageCount.val();
+            console.log("MM Def: " + _dataChannelsPerPC);
             break;
         }
     }
@@ -303,7 +386,6 @@ function startTest()
         }
         createOfferAnswer(i);
     }
-
     createLocalConnections(_peerConnections, _dataChannelsPerPC);
     createRemoteConnections(_peerConnections, _dataChannelsPerPC);
 }
@@ -317,20 +399,72 @@ function bindPCEvents(i)
     local_pc[i].oniceconnectionstatechange =
     function()
     {
-        //console.log(i + ". LocalPC Connection State: " + local_pc[i].iceConnectionState);
+        console.log(i + ". LocalPC Connection State: " + local_pc[i].iceConnectionState);
     };
     remote_pc[i].oniceconnectionstatechange =
     function()
     {
-        //console.log(i + ". RemotePC Connection State: " + remote_pc[i].iceConnectionState);
+        console.log(i + ". RemotePC Connection State: " + remote_pc[i].iceConnectionState);
+    };
+    remote_pc[i].ondatachannel = function (evt)
+    {
+        bindDC2Events((remote_dc2.push(evt.channel) - 1), 1);
+    };
+    local_pc[i].ondatachannel = function (evt)
+    {
+        bindDC2Events((local_dc2.push(evt.channel) - 1), 0);
     };
 }
 
 
 /**
  * Bind events to given data channel
- * @param {object} index
- * @param {object} index
+ * @param {int} index
+ * @param {int} local/remote (0/1)
+ */
+function bindDC2Events(i, j)
+{
+    if(j == 0)
+    {
+        local_dc2[i].onopen = function ()
+        {
+            local_dc2[i].send("Hi Local!");
+        };
+        local_dc2[i].onmessage = function (e)
+        {
+            var msg = e.data;
+            console.log("Message recieved: " + msg);
+            logToTextArea(i + ". PC " + j + ". Local DC Message (from Remote) recieved: " + msg);
+        };
+        local_dc2[i].onError = function (e)
+        {
+            console.log("Datachannel Error: " + err);
+        };
+    }
+    else if(j == 1)
+    {
+        remote_dc2[i].onopen = function ()
+        {
+            remote_dc2[i].send("Hi Remote!");
+        };
+        remote_dc2[i].onmessage = function (e)
+        {
+            var msg = e.data;
+            console.log("Message recieved: " + msg);
+            logToTextArea(i + ". PC " + j + ". Remote DC Message (from Local) recieved: " + msg);
+        };
+        remote_dc2[i].onError = function (e)
+        {
+            console.log("Datachannel Error: " + err);
+        };
+    }
+    else { return null; }
+}
+
+/**
+ * Bind events to given data channel
+ * @param {int} index
+ * @param {int} index
  */
 function bindDCEvents (i, j)
 {
@@ -346,7 +480,6 @@ function bindDCEvents (i, j)
     };
     remote_dc[i][j].onmessage = function (e)
     {
-        //FIXME onMessage is not getting triggered
         var msg = e.data;
         console.log("Message recieved: " + msg);
         logToTextArea(i + ". PC " + j + ". DC Message recieved: " + msg);
@@ -368,7 +501,6 @@ function bindDCEvents (i, j)
     };
     local_dc[i][j].onmessage = function (e)
     {
-        //FIXME onMessage is not getting triggered
         var msg = e.data;
         console.log("Message recieved: " + msg);
         logToTextArea(i + ". PC " + j + ". DC Message recieved: " + msg);
@@ -382,7 +514,7 @@ function bindDCEvents (i, j)
 
 /**
  * Create IceCandidate Event Handler for given PeerConnection
- * @param {Object} index
+ * @param {int} index
  */
 function createRemoteOnIceCandidate(i)
 {
@@ -426,8 +558,8 @@ function createRemoteOnNegotiationNeeded(i)
 
 /**
  * Create remote DataChannels, PeerConnections, IceCandidate Handler
- * @param {Object} peerConnections
- * @param {Object} dataChannelsPerlocalPeerConnection
+ * @param {int} peerConnections
+ * @param {int} dataChannelsPerlocalPeerConnection
  */
 function createRemoteConnections(peerConnections, dataChannelsPerPC)
 {
@@ -441,7 +573,7 @@ function createRemoteConnections(peerConnections, dataChannelsPerPC)
 
 /**
  * Create IceCandidate Event Handler for given PeerConnection
- * @param {Object} index
+ * @param {int} index
  */
 function createLocalOnIceCandidate(i)
 {
@@ -525,8 +657,8 @@ function createOfferAnswer(i)
 
 /**
  * Create local DataChannels, PeerConnections, IceCandidate Handler and Offers
- * @param {Object} peerConnections
- * @param {Object} dataChannelsPerlocalPeerConnection
+ * @param {int} peerConnections
+ * @param {int} dataChannelsPerlocalPeerConnection
  */
 function createLocalConnections(peerConnections, dataChannelsPerPC)
 {
@@ -539,7 +671,7 @@ function createLocalConnections(peerConnections, dataChannelsPerPC)
 
 /**
  * Add a message to the textareaTestResults
- * @param {Object} msg
+ * @param {int} msg
  */
 function logToTextArea(msg)
 {

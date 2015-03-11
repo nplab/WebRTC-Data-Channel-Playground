@@ -74,8 +74,17 @@
                         <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelNonUniformRandom'> <label>Non Uniform Random</label><br>
                         <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelExponential'> <label>Exponential</label><br>
                         <br>
-                        <input required id='inputDataChannel' type='number' maxlength='6' placeholder='Data Channel per PC' />
-                        <input required id='inputDataChannelMax' type='number' maxlength='6' disabled />
+                        <input required id='inputDataChannel' type='number' placeholder='Data Channel per PC' />
+                        <input required id='inputDataChannelMax' type='number' disabled />
+                        <br>
+                        <br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountConstant' checked> <label>Constant</label><br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountUniformRandom'> <label>Uniform Random</label><br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountNonUniformRandom'> <label>Non Uniform Random</label><br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountExponential'> <label>Exponential</label><br>
+                        <br>
+                        <input required id='inputMessageCount' type='number' placeholder='Message Count'/>
+                        <input required id='inputMessageCountMax' type='number' disabled/>
                         <br>
                         <br>
                         <b>Peer Connection Settings</b>
@@ -88,7 +97,7 @@
                         <b>Data Channel Settings</b>
                         <br>
                         <br>
-                        <input required id='inputMaxRetransmitTime' type='number' min='1' max='10000' maxlength='6' value='5000' />
+                        <input required id='inputMaxRetransmitTime' type='number' min='1' max='10000' value='5000' />
                         <label>Maximum Retransmit Time</label>
                         <br>
                         <input id='inputOrdered' type='checkbox' checked/>
@@ -100,7 +109,7 @@
                 </div>
             </div>
             <div id='right_pane' style='float: right;'>
-                <textarea disabled id='textareaTestResults' cols='100' rows='20' style='resize: none;'></textarea>
+                <textarea disabled id='textareaTestResults' cols='100' rows='20' style='resize: none;'>Test Results will appear here</textarea>
             </div>
         </div>
         <div class="footer text-center">
