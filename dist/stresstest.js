@@ -402,11 +402,17 @@ function sendMessages(messageCount, i, j, k)
 {
     if(k == 0)
     {
-        local_dc[i][j].send(randomString(100));
+        for(var m = 0; m < messageCount; m++)
+        {
+            local_dc[i][j].send(randomString(100));
+        }
     }
     else if(k == 1)
     {
-        remote_dc[i][j].send(randomString(100));
+        for(var m = 0; m < messageCount; m++)
+        {
+            remote_dc[i][j].send(randomString(100));
+        }
     }
 }
 
@@ -420,11 +426,17 @@ function sendMessages2(messageCount, i, j)
 {
     if(j == 0)
     {
-        local_dc2[i].send(randomString(100));
+        for(var m = 0; m < messageCount; m++)
+        {
+            local_dc2[i].send(randomString(100));
+        }
     }
     else if(j == 1)
     {
-        remote_dc2[i].send(randomString(100));
+        for(var m = 0; m < messageCount; m++)
+        {
+            remote_dc2[i].send(randomString(100));
+        }
     }
 }
 
@@ -490,7 +502,7 @@ function bindDC2Events(i, j)
         {
             var msg = e.data;
             console.log("Message recieved: " + msg);
-            logToTextArea(i + ". PC " + j + ". Remote DC Message (from Local) recieved: " + msg);
+            logToTextArea(i + ". PC " + j + ". Remote DC Message (from Remote) recieved: " + msg);
         };
         remote_dc2[i].onError = function (e)
         {
