@@ -76,7 +76,7 @@ var local_dc,
     dataChannelMode,
     messsageMode,
     messageCharMode,
-    messagesSend,
+    messagesSent,
     messagesRecieved,
     channelsCreated,
     channelsOpened;
@@ -208,10 +208,10 @@ function updateRadioBoxes()
 
 function updateStatistics()
 {
-    tdRecievedMessages.text("Recieved " + messagesRecieved);
-    tdSendMessages.text("Send " + messagesSend);
-    tdChannelsCreated.text("Created " + channelsCreated);
-    tdChannelsOpened.text("Opened " + (channelsOpened / 2));
+    tdRecievedMessages.text("recieved " + messagesRecieved);
+    tdSendMessages.text("sent " + messagesSent);
+    tdChannelsCreated.text("created " + channelsCreated);
+    tdChannelsOpened.text("opened " + (channelsOpened / 2));
 
 }
 /**
@@ -275,7 +275,7 @@ function randomExponential(expectation)
  */
 function startTest()
 {
-    textareaTestResults.text("");
+    console.log("Test started!");
     // Everything back to start
     local_dc = null;
     local_dc2 = null;
@@ -293,7 +293,7 @@ function startTest()
     dataChannelsPerPC = null;
 
     messagesRecieved = 0;
-    messagesSend = 0;
+    messagesSent = 0;
 
     channelsCreated = 0;
     channelsOpened = 0;
@@ -456,6 +456,7 @@ function startTest()
     }
     createLocalConnections(peerConnections, dataChannelsPerPC);
     createRemoteConnections(peerConnections, dataChannelsPerPC);
+    console.log("Test finished!");
 }
 
 /**
@@ -500,7 +501,7 @@ function sendMessages(messageCount, i, j, k)
                     break;
                 }
             }
-            messagesSend++;
+            messagesSent++;
             local_dc[i][j].send(randomString(_stringLength));
         }
     }
@@ -536,7 +537,7 @@ function sendMessages(messageCount, i, j, k)
                     break;
                 }
             }
-            messagesSend++;
+            messagesSent++;
             remote_dc[i][j].send(randomString(_stringLength));
         }
     }
@@ -583,7 +584,7 @@ function sendMessages2(messageCount, i, j)
                     break;
                 }
             }
-            messagesSend++;
+            messagesSent++;
             local_dc2[i].send(randomString(_stringLength));
         }
     }
@@ -619,7 +620,7 @@ function sendMessages2(messageCount, i, j)
                     break;
                 }
             }
-            messagesSend++;
+            messagesSent++;
             remote_dc2[i].send(randomString(_stringLength));
         }
     }
@@ -879,8 +880,3 @@ function createLocalConnections(peerConnections, dataChannelsPerPC)
         //createLocalOnNegotiationNeeded(i);
     };
 }
-
-/**
- * Add a message to the textareaTestResults
- * @param {int} msg
- */
