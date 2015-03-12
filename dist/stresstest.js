@@ -52,9 +52,15 @@ var buttonStartTest = $('#buttonStartTest');
 
 var tdSendMessages = $('#tdSendMessages');
 var tdRecievedMessages = $('#tdRecievedMessages');
+var tdPercentMessages = $('#tdPercentMessages');
 
 var tdChannelsCreated = $('#tdChannelsCreated');
 var tdChannelsOpened = $('#tdChannelsOpened');
+var tdChannelsPercent = $('#tdChannelsPercent');
+
+var tdPCCreated = $('#tdPCCreated');
+var tdPCEtablished = $('#tdPCEtablished');
+var tdPCPercent = $('#tdPCPercent');
 
 //DOM Elements end
 var br = "&#13;&#10;";
@@ -79,7 +85,9 @@ var local_dc,
     messagesSent,
     messagesRecieved,
     channelsCreated,
-    channelsOpened;
+    channelsOpened,
+    peerConnectionsCreated,
+    peerConnectionsEtablished;
 
 // Local ID
 var id = "testing";
@@ -205,13 +213,20 @@ function updateRadioBoxes()
     }
 }
 
-
 function updateStatistics()
 {
     tdRecievedMessages.text("recieved " + messagesRecieved);
     tdSendMessages.text("sent " + messagesSent);
+
     tdChannelsCreated.text("created " + channelsCreated);
-    tdChannelsOpened.text("opened " + (channelsOpened / 2));
+    tdChannelsOpened.text("opened " + channelsOpened);
+
+    tdPCCreated.text('created ' + peerConnectionsCreated);
+    tdPCEtablished.text('connected ' + peerConnectionsEtablished);
+
+    tdPercentMessages.text(((messagesRecieved / messagesSent) * 100).toFixed(3));
+    tdChannelsPercent.text(((channelsOpened / channelsCreated) * 100).toFixed(3));
+    tdPCPercent.text(((peerConnectionsEtablished / peerConnectionsCreated) * 100).toFixed(3));
 
 }
 /**
@@ -298,6 +313,9 @@ function startTest()
     channelsCreated = 0;
     channelsOpened = 0;
 
+    peerConnectionsCreated = 0;
+    peerConnectionsEtablished = 0;
+
     switch(peerConnectionMode)
     {
 
@@ -342,14 +360,14 @@ function startTest()
     {
         optional:
         [
-            {DtlsSrtpKeyAgreement: _DtlsSrtpKeyAgreement}
+            //{DtlsSrtpKeyAgreement: _DtlsSrtpKeyAgreement}
         ]
     };
 
     var dataChannelOptionds =
     {
-        ordered: _ordered,
-        maxRetransmitTime: _maxRetransmitTime,
+        //ordered: _ordered,
+        //maxRetransmitTime: _maxRetransmitTime,
     };
 
     local_pc = new Array(peerConnections);
@@ -369,7 +387,9 @@ function startTest()
     for (var i=0; i < peerConnections; i++)
     {
         local_pc[i] = new PeerConnection(pcConfiguration, pcOptions);
+        peerConnectionsCreated++;
         remote_pc[i] = new PeerConnection(pcConfiguration, pcOptions);
+        peerConnectionsCreated++;
         bindPCEvents(i);
     };
 
@@ -635,19 +655,30 @@ function bindPCEvents(i)
     function()
     {
         console.log(i + ". LocalPC Connection State: " + local_pc[i].iceConnectionState);
+        //(local_pc[i].iceConnectionState == 'completed') ||
+        if((local_pc[i].iceConnectionState == 'connected') && (local_pc[i].iceGatheringState == 'complete'))
+        {
+            peerConnectionsEtablished++;
+        }
     };
     remote_pc[i].oniceconnectionstatechange =
     function()
     {
         console.log(i + ". RemotePC Connection State: " + remote_pc[i].iceConnectionState);
+        if((remote_pc[i].iceConnectionState == 'connected') && (remote_pc[i].iceGatheringState == 'complete'))
+        {
+            peerConnectionsEtablished++;
+        }
     };
     remote_pc[i].ondatachannel = function (evt)
     {
         bindDC2Events((remote_dc2.push(evt.channel) - 1), 1);
+        channelsCreated++;
     };
     local_pc[i].ondatachannel = function (evt)
     {
         bindDC2Events((local_dc2.push(evt.channel) - 1), 0);
+        channelsCreated++;
     };
 }
 

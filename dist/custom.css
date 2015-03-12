@@ -47,11 +47,6 @@ span.dcStatus-connecting, span.dcStatus-closing {
 	color:#337ab7;
 }
 
-table#stresstestStatistics td, table#stresstestStatistics th
-{
-    font-weight: bolder;
-}
-
 table#npmChannelParameters td,table#npmChannelParameters th, table#npmChannelParameters input {
 	text-align:center;
 	vertical-align:middle;
@@ -74,4 +69,9 @@ input.has-error {
 
 table#testlist td, table#npmChannelParameters td{
 	white-space: nowrap;
+}
+
+.row
+{
+    margin-top: 10px;
 }
