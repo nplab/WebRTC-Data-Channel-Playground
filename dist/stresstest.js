@@ -87,7 +87,8 @@ var local_dc,
     channelsCreated,
     channelsOpened,
     peerConnectionsCreated,
-    peerConnectionsEtablished;
+    peerConnectionsEtablished,
+    updateTimer;
 
 // Local ID
 var id = "testing";
@@ -222,12 +223,22 @@ function updateStatistics()
     tdChannelsOpened.text("opened " + channelsOpened);
 
     tdPCCreated.text('created ' + peerConnectionsCreated);
-    tdPCEtablished.text('connected ' + peerConnectionsEtablished);
 
     tdPercentMessages.text(((messagesRecieved / messagesSent) * 100).toFixed(3));
     tdChannelsPercent.text(((channelsOpened / channelsCreated) * 100).toFixed(3));
-    tdPCPercent.text(((peerConnectionsEtablished / peerConnectionsCreated) * 100).toFixed(3));
 
+    if (!(channelsCreated % (peerConnectionsCreated * 2 * dataChannelsPerPC))
+        ||
+         (peerConnectionsEtablished > peerConnectionsCreated))
+    {
+        tdPCEtablished.text('connected ' + peerConnectionsCreated);
+        tdPCPercent.text('100.000');
+    }
+    else
+    {
+        tdPCEtablished.text('connected ' + peerConnectionsEtablished);
+        tdPCPercent.text(((peerConnectionsEtablished / peerConnectionsCreated) * 100).toFixed(3));
+    }
 }
 /**
  * extract IP from given string
@@ -291,6 +302,8 @@ function randomExponential(expectation)
 function startTest()
 {
     console.log("Test started!");
+    clearInterval(updateTimer);
+    updateTimer = setInterval(function() { updateStatistics(); }, 500);
     // Everything back to start
     local_dc = null;
     local_dc2 = null;
@@ -476,7 +489,6 @@ function startTest()
     }
     createLocalConnections(peerConnections, dataChannelsPerPC);
     createRemoteConnections(peerConnections, dataChannelsPerPC);
-    console.log("Test finished!");
 }
 
 /**
