@@ -12,10 +12,8 @@
         <script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
         <script type='text/javascript' src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
         <link rel="stylesheet" type="text/css" href='dist/custom.css' />
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -62,10 +60,14 @@
                     <b>Peer connections</b>
                     <br>
                     <br>
-                    <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsConstant' checked> <label>Constant</label><br>
-                    <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsUniformRandom'> <label>Uniform random</label><br>
-                    <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsNonUniformRandom'> <label>Non uniform random</label><br>
-                    <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsExponential'> <label>Exponential</label><br>
+                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsConstant' checked>
+                        <label for='typePeerConnectionsConstant'>Constant</label><br>
+                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsUniformRandom'>
+                        <label for='typePeerConnectionsUniformRandom'>Uniform random</label><br>
+                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsNonUniformRandom'>
+                        <label for='typePeerConnectionsNonUniformRandom'>Non uniform random</label><br>
+                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsExponential'>
+                        <label for='typePeerConnectionsExponential'>Exponential</label><br>
                     <br>
                     <input required id='inputPeerConnections' type='number' placeholder='Peer Connections'/>
                     <input required id='inputPeerConnectionsMax' type='number' disabled/>
@@ -74,10 +76,14 @@
                     <b>Data channels per peer connections</b>
                     <br>
                     <br>
-                    <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelConstant' checked> <label>Constant</label><br>
-                    <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelUniformRandom'> <label>Uniform random</label><br>
-                    <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelNonUniformRandom'> <label>Non uniform random</label><br>
-                    <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelExponential'> <label>Exponential</label><br>
+                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelConstant' checked>
+                        <label for='typeDataChannelConstant'>Constant</label><br>
+                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelUniformRandom'>
+                        <label for='typeDataChannelUniformRandom'>Uniform random</label><br>
+                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelNonUniformRandom'>
+                        <label for='typeDataChannelNonUniformRandom'>Non uniform random</label><br>
+                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelExponential'>
+                        <label for='typeDataChannelExponential'>Exponential</label><br>
                     <br>
                     <input required id='inputDataChannel' type='number' placeholder='Data Channel per PC' />
                     <input required id='inputDataChannelMax' type='number' disabled />
@@ -86,42 +92,50 @@
                     <b>Messages per data channel</b>
                     <br>
                     <br>
-                    <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountConstant' checked> <label>Constant</label><br>
-                    <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountUniformRandom'> <label>Uniform random</label><br>
-                    <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountNonUniformRandom'> <label>Non uniform random</label><br>
-                    <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountExponential'> <label>Exponential</label><br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountConstant' checked>
+                        <label for='typeMessageCountConstant'>Constant</label><br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountUniformRandom'>
+                        <label for='typeMessageCountUniformRandom'>Uniform random</label><br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountNonUniformRandom'>
+                        <label for='typeMessageCountNonUniformRandom'>Non uniform random</label><br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountExponential'>
+                        <label for='typeMessageCountExponential'>Exponential</label><br>
                     <br>
-                    <input required id='inputMessageCount' type='number' placeholder='Message Count'/>
-                    <input required id='inputMessageCountMax' type='number' disabled/>
+                        <input required id='inputMessageCount' type='number' placeholder='Message Count'/>
+                        <input required id='inputMessageCountMax' type='number' disabled/>
                     <br>
                     <br>
                     <b>Chars per message</b>
                     <br>
                     <br>
-                    <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsConstant' checked> <label>Constant</label><br>
-                    <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsUniformRandom'> <label>Uniform random</label><br>
-                    <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsNonUniformRandom'> <label>Non uniform random</label><br>
-                    <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsExponential'> <label>Exponential</label><br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsConstant' checked>
+                        <label for='typeMessageCharsConstant'>Constant</label><br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsUniformRandom'>
+                        <label for'typeMessageCharsUniformRandom'>Uniform random</label><br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsNonUniformRandom'>
+                        <label for='typeMessageCharsNonUniformRandom'>Non uniform random</label><br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsExponential'>
+                        <label for='typeMessageCharsExponential'>Exponential</label><br>
                     <br>
-                    <input required id='inputMessageChars' type='number' placeholder='Chars per message'/>
-                    <input required id='inputMessageCharsMax' type='number' disabled/>
+                        <input required id='inputMessageChars' type='number' placeholder='Chars per message'/>
+                        <input required id='inputMessageCharsMax' type='number' disabled/>
                 </div>
                 <div class='col-sm-3'>
                     <b>Peer connection settings</b>
                     <br>
                     <br>
-                    <input id='inputDtlsSrtpKeyAgreement' type='checkbox' checked>
-                    <label>DtlsSrtpKeyAgreement</label>
+                        <input id='inputDtlsSrtpKeyAgreement' type='checkbox' checked>
+                        <label for='inputDtlsSrtpKeyAgreement'>DtlsSrtpKeyAgreement</label>
                     <br>
                     <br>
                     <b>Data channel settings</b>
                     <br>
                     <br>
-                    <input required id='inputMaxRetransmitTime' type='number' min='1' max='10000' value='5000' />
-                    <label>Maximum retransmit time</label>
+                        <input required id='inputMaxRetransmitTime' type='number' min='1' max='10000' value='5000' />
+                        <label for='inputMaxRetransmitTime'>Maximum retransmit time</label>
                     <br>
-                    <input id='inputOrdered' type='checkbox' checked/>
-                    <label>Ordered</label>
+                        <input id='inputOrdered' type='checkbox' checked/>
+                        <label for='inputOrdered'>Ordered</label>
                     <br>
                     <br>
                     <button class="btn btn-success btn-block btn-sm " type='submit' id='buttonStartTest' onclick='startTest();'>Start test</button>
@@ -132,27 +146,31 @@
                     <table class="table table-condensed">
                     <tr>
                         <th>name</th>
-                        <th> </th>
-                        <th> </th>
+                        <th>created</th>
+                        <th>complete</th>
                         <th>%</th>
-                    </tr>
-                    <tr>
-                        <td>messages</td>
-                        <td id='tdSendMessages'> </td>
-                        <td id='tdRecievedMessages'> </td>
-                        <td id='tdPercentMessages'> </td>
-                    </tr>
-                    <tr>
-                        <td>data channels</td>
-                        <td id='tdChannelsCreated'> </td>
-                        <td id='tdChannelsOpened'> </td>
-                        <td id='tdChannelsPercent'> </td>
+                        <th> </th>
                     </tr>
                     <tr>
                         <td>peer connections</td>
                         <td id='tdPCCreated'> </td>
                         <td id='tdPCEtablished'> </td>
                         <td id='tdPCPercent'> </td>
+                        <td id='tdPCStatus'> </td>
+                    </tr>
+                    <tr>
+                        <td>data channels</td>
+                        <td id='tdChannelsCreated'> </td>
+                        <td id='tdChannelsOpened'> </td>
+                        <td id='tdChannelsPercent'> </td>
+                        <td id='tdChannelsStatus'> </td>
+                    </tr>
+                    <tr>
+                        <td>messages</td>
+                        <td id='tdSendMessages'> </td>
+                        <td id='tdRecievedMessages'> </td>
+                        <td id='tdPercentMessages'> </td>
+                        <td id='tdStatusMessages'> </td>
                     </tr>
                     </table>
                  <p class="text-center"><button onclick="updateStatistics();" class="btn btn-primary btn-sm">Update Statistics</button></p>

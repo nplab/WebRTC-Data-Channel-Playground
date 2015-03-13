@@ -53,14 +53,17 @@ var buttonStartTest = $('#buttonStartTest');
 var tdSendMessages = $('#tdSendMessages');
 var tdRecievedMessages = $('#tdRecievedMessages');
 var tdPercentMessages = $('#tdPercentMessages');
+var tdStatusMessages = $('#tdStatusMessages');
 
 var tdChannelsCreated = $('#tdChannelsCreated');
 var tdChannelsOpened = $('#tdChannelsOpened');
 var tdChannelsPercent = $('#tdChannelsPercent');
+var tdChannelsStatus = $('#tdChannelsStatus');
 
 var tdPCCreated = $('#tdPCCreated');
 var tdPCEtablished = $('#tdPCEtablished');
 var tdPCPercent = $('#tdPCPercent');
+var tdPCStatus = $('#tdPCStatus');
 
 //DOM Elements end
 var br = "&#13;&#10;";
@@ -216,29 +219,63 @@ function updateRadioBoxes()
 
 function updateStatistics()
 {
-    tdRecievedMessages.text("recieved " + messagesRecieved);
-    tdSendMessages.text("sent " + messagesSent);
+    tdRecievedMessages.text(messagesRecieved);
+    tdSendMessages.text(messagesSent);
 
-    tdChannelsCreated.text("created " + channelsCreated);
-    tdChannelsOpened.text("opened " + channelsOpened);
+    tdChannelsCreated.text(channelsCreated);
+    tdChannelsOpened.text(channelsOpened);
 
-    tdPCCreated.text('created ' + peerConnectionsCreated);
+    tdPCCreated.text(peerConnectionsCreated);
 
-    tdPercentMessages.text(((messagesRecieved / messagesSent) * 100).toFixed(3));
-    tdChannelsPercent.text(((channelsOpened / channelsCreated) * 100).toFixed(3));
+    var messagesPercent = ((messagesRecieved / messagesSent) * 100).toFixed(3);
+    var channelsPercent = ((channelsOpened / channelsCreated) * 100).toFixed(3);
+    var pcPercent;
 
     if (!(channelsCreated % (peerConnectionsCreated * 2 * dataChannelsPerPC))
-        ||
-         (peerConnectionsEtablished > peerConnectionsCreated))
+        ||(peerConnectionsEtablished > peerConnectionsCreated)
+        ||(peerConnectionsCreated / peerConnectionsEtablished) == 2)
     {
-        tdPCEtablished.text('connected ' + peerConnectionsCreated);
-        tdPCPercent.text('100.000');
+        tdPCEtablished.text(peerConnectionsCreated);
+        pcPercent = 100.000;
     }
     else
     {
-        tdPCEtablished.text('connected ' + peerConnectionsEtablished);
-        tdPCPercent.text(((peerConnectionsEtablished / peerConnectionsCreated) * 100).toFixed(3));
+        tdPCEtablished.text(peerConnectionsEtablished);
+        pcPercent = ((peerConnectionsEtablished / peerConnectionsCreated) * 100).toFixed(3);
     }
+
+
+    tdPercentMessages.text(messagesPercent);
+    tdChannelsPercent.text(channelsPercent);
+    tdPCPercent.text(pcPercent);
+
+    if(messagesPercent == 100)
+    {
+        tdStatusMessages.html("<span class='glyphicon glyphicon-ok' aria-hidden='true'style='color: green;'></span>");
+    }
+    else
+    {
+        tdStatusMessages.html("<span class='glyphicon glyphicon-remove' aria-hidden='true' style='color: red;'></span>");
+    }
+
+    if(channelsPercent == 100)
+    {
+        tdChannelsStatus.html("<span class='glyphicon glyphicon-ok' aria-hidden='true'style='color: green;'></span>");
+    }
+    else
+    {
+        tdChannelsStatus.html("<span class='glyphicon glyphicon-remove' aria-hidden='true' style='color: red;'></span>");
+    }
+
+    if(pcPercent == 100)
+    {
+        tdPCStatus.html("<span class='glyphicon glyphicon-ok' aria-hidden='true'style='color: green;'></span>");
+    }
+    else
+    {
+        tdPCStatus.html("<span class='glyphicon glyphicon-remove' aria-hidden='true' style='color: red;'></span>");
+    }
+
 }
 /**
  * extract IP from given string
