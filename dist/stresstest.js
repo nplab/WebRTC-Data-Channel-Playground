@@ -236,7 +236,7 @@ function updateStatistics()
         ||(peerConnectionsCreated / peerConnectionsEtablished) == 2)
     {
         tdPCEtablished.text(peerConnectionsCreated);
-        pcPercent = 100.000;
+        pcPercent = (100).toFixed(3);
     }
     else
     {
