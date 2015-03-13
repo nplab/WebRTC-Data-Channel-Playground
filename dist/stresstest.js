@@ -847,7 +847,6 @@ function createRemoteOnNegotiationNeeded(i)
     remote_pc[i].onnegotiationneeded = function()
     {
         console.log("Remote Neogation Needed");
-        //createAnswer(i);
     };
 }
 
@@ -861,8 +860,6 @@ function createRemoteConnections(peerConnections, dataChannelsPerPC)
     for (var i=0; i < peerConnections; i++)
     {
         createRemoteOnIceCandidate(i);
-        //createAnswer(i);
-        //createRemoteOnNegotiationNeeded(i);
     };
 }
 
@@ -879,13 +876,7 @@ function createLocalOnIceCandidate(i)
         }
         else
         {
-            remote_pc[i].addIceCandidate(new IceCandidate(ev.candidate),
-            function()
-            {
-            },
-            function(err)
-            {
-            });
+            remote_pc[i].addIceCandidate(new IceCandidate(ev.candidate), successHandler, errorHandler);
         }
     };
 }
@@ -954,6 +945,5 @@ function createLocalConnections(peerConnections, dataChannelsPerPC)
     for (var i=0; i < peerConnections; i++)
     {
         createLocalOnIceCandidate(i);
-        //createLocalOnNegotiationNeeded(i);
     };
 }
