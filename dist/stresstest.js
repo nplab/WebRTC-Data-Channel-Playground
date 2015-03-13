@@ -410,14 +410,11 @@ function startTest()
     {
         optional:
         [
-            //{DtlsSrtpKeyAgreement: _DtlsSrtpKeyAgreement}
         ]
     };
 
     var dataChannelOptionds =
     {
-        //ordered: _ordered,
-        //maxRetransmitTime: _maxRetransmitTime,
     };
 
     local_pc = new Array(peerConnections);
