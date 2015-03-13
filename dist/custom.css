@@ -70,3 +70,8 @@ input.has-error {
 table#testlist td, table#npmChannelParameters td{
 	white-space: nowrap;
 }
+
+.row
+{
+    margin-top: 10px;
+}
