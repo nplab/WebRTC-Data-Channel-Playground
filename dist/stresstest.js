@@ -130,11 +130,9 @@ function saveSetting()
         dcType, dcMin, dcMax,
         meType, meMin, meMax,
         chType, chMin, chMax;
-    //settings.push({"0":name, "1":[pcType, pcMin, pcMax], "2":[dcType, dcMin, dcMax], "3":[meType, meMin, meMax], "4":[chType, chMin, chMax]});
 
     switch(peerConnectionMode)
     {
-
         case 'con':
         {
             pcType = 0;
@@ -161,8 +159,107 @@ function saveSetting()
             break;
         }
     }
+    switch(dataChannelMode)
+    {
+         case 'con':
+        {
+            dcType = 0;
+            break;
+        }
+        case 'uni':
+        {
+            dcType = 1;
+            break;
+        }
+        case 'nuni':
+        {
+            dcType = 2;
+            break;
+        }
+        case 'exp':
+        {
+            dcType = 3;
+            break;
+        }
+        default:
+        {
+            dcType = 4;
+            break;
+        }
+    }
+    switch(messsageMode)
+    {
+         case 'con':
+        {
+            meType = 0;
+            break;
+        }
+        case 'uni':
+        {
+            meType = 1;
+            break;
+        }
+        case 'nuni':
+        {
+            meType = 2;
+            break;
+        }
+        case 'exp':
+        {
+            meType = 3;
+            break;
+        }
+        default:
+        {
+            meType = 4;
+            break;
+        }
+    }
+    switch(messageCharMode)
+    {
+         case 'con':
+        {
+            chType = 0;
+            break;
+        }
+        case 'uni':
+        {
+            chType = 1;
+            break;
+        }
+        case 'nuni':
+        {
+            chType = 2;
+            break;
+        }
+        case 'exp':
+        {
+            chType = 3;
+            break;
+        }
+        default:
+        {
+            chType = 4;
+            break;
+        }
+    }
 
+    name = inputSettings.val();
 
+    pcMin = inputPeerConnections.val();
+    pcMax = inputPeerConnectionsMax.val();
+
+    dcMin = inputDataChannel.val();
+    dcMax = inputDataChannelMax.val();
+
+    meMin = inputMessageCount.val();
+    meMax = inputMessageCountMax.val();
+
+    chMin = inputMessageChars.val();
+    chMax = inputMessageCharsMax.val();
+
+    settings.push({"0":name, "1":[pcType, pcMin, pcMax], "2":[dcType, dcMin, dcMax], "3":[meType, meMin, meMax], "4":[chType, chMin, chMax]});
+    saveSettings();
 }
 function saveSettings()
 {
@@ -194,22 +291,22 @@ function loadSetting()
         typeMessageCount[i].prop('checked', false);
         typeMessageChars[i].prop('checked', false);
     }
-    typePeerConnection[settings[settingNr][settingNr][1][0]].prop('checked', true);
-    typeDataChannel[settings[settingNr][settingNr][2][0]].prop('checked', true);
-    typeMessageCount[settings[settingNr][settingNr][3][0]].prop('checked', true);
-    typeMessageChars[settings[settingNr][settingNr][4][0]].prop('checked', true);
+    typePeerConnection[settings[settingNr][1][0]].prop('checked', true);
+    typeDataChannel[settings[settingNr][2][0]].prop('checked', true);
+    typeMessageCount[settings[settingNr][3][0]].prop('checked', true);
+    typeMessageChars[settings[settingNr][4][0]].prop('checked', true);
 
-    inputPeerConnections.val(settings[settingNr][settingNr][1][1]);
-    inputPeerConnectionsMax.val(settings[settingNr][settingNr][1][2]);
+    inputPeerConnections.val(settings[settingNr][1][1]);
+    inputPeerConnectionsMax.val(settings[settingNr][1][2]);
 
-    inputDataChannel.val(settings[settingNr][settingNr][2][1]);
-    inputDataChannelMax.val(settings[settingNr][settingNr][2][2]);
+    inputDataChannel.val(settings[settingNr][2][1]);
+    inputDataChannelMax.val(settings[settingNr][2][2]);
 
-    inputMessageCount.val(settings[settingNr][settingNr][3][1]);
-    inputMessageCountMax.val(settings[settingNr][settingNr][3][2]);
+    inputMessageCount.val(settings[settingNr][3][1]);
+    inputMessageCountMax.val(settings[settingNr][3][2]);
 
-    inputMessageChars.val(settings[settingNr][settingNr][4][1]);
-    inputMessageCharsMax.val(settings[settingNr][settingNr][4][2]);
+    inputMessageChars.val(settings[settingNr][4][1]);
+    inputMessageCharsMax.val(settings[settingNr][4][2]);
 }
 
 function loadSettings()
@@ -222,8 +319,7 @@ function loadSettings()
     catch (e)
     {
         settings = [
-                        {"0":'Standard', "1":[0,5,null], "2":[1,5,10], "3":[2,5,10], "4":[3,5,null]},
-                        {"0":'Test 2', "1":[0,5,null], "2":[1,5,10], "3":[2,5,10], "4":[3,5,null]}
+                        {"0":'Standard', "1":[0,5,null], "2":[1,5,10], "3":[2,5,10], "4":[3,5,null]}
                    ];
         settings = JSON.stringify(settings);
         settings = JSON.parse(settings);
