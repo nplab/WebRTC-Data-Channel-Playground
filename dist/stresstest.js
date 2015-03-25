@@ -125,6 +125,44 @@ Object.size = function(obj)
 
 function saveSetting()
 {
+    var name,
+        pcType, pcMin, pcMax,
+        dcType, dcMin, dcMax,
+        meType, meMin, meMax,
+        chType, chMin, chMax;
+    //settings.push({"0":name, "1":[pcType, pcMin, pcMax], "2":[dcType, dcMin, dcMax], "3":[meType, meMin, meMax], "4":[chType, chMin, chMax]});
+
+    switch(peerConnectionMode)
+    {
+
+        case 'con':
+        {
+            pcType = 0;
+            break;
+        }
+        case 'uni':
+        {
+            pcType = 1;
+            break;
+        }
+        case 'nuni':
+        {
+            pcType = 2;
+            break;
+        }
+        case 'exp':
+        {
+            pcType = 3;
+            break;
+        }
+        default:
+        {
+            pcType = 4;
+            break;
+        }
+    }
+
+
 }
 function saveSettings()
 {
@@ -134,12 +172,14 @@ function saveSettings()
 function loadSetting()
 {
     var setting = inputSettings.val();
+    var settingNr;
     var found = false;
-    for(var i = 0; i < settings.length; i++)
+    for(var i = 0; i < Object.size(settings); i++)
     {
-        if(settings[i][0] == setting[i])
+        if(settings[i][0] == setting)
         {
             found = true;
+            settingNr = i;
         }
     }
     if(!found)
@@ -154,22 +194,22 @@ function loadSetting()
         typeMessageCount[i].prop('checked', false);
         typeMessageChars[i].prop('checked', false);
     }
-    typePeerConnection[settings[setting][1][0]].prop('checked', true);
-    typeDataChannel[settings[setting][2][0]].prop('checked', true);
-    typeMessageCount[settings[setting][3][0]].prop('checked', true);
-    typeMessageChars[settings[setting][4][0]].prop('checked', true);
+    typePeerConnection[settings[settingNr][settingNr][1][0]].prop('checked', true);
+    typeDataChannel[settings[settingNr][settingNr][2][0]].prop('checked', true);
+    typeMessageCount[settings[settingNr][settingNr][3][0]].prop('checked', true);
+    typeMessageChars[settings[settingNr][settingNr][4][0]].prop('checked', true);
 
-    inputPeerConnections.val(settings[setting][1][1]);
-    inputPeerConnectionsMax.val(settings[setting][1][2]);
+    inputPeerConnections.val(settings[settingNr][settingNr][1][1]);
+    inputPeerConnectionsMax.val(settings[settingNr][settingNr][1][2]);
 
-    inputDataChannel.val(settings[setting][2][1]);
-    inputDataChannelMax.val(settings[setting][2][2]);
+    inputDataChannel.val(settings[settingNr][settingNr][2][1]);
+    inputDataChannelMax.val(settings[settingNr][settingNr][2][2]);
 
-    inputMessageCount.val(settings[setting][3][1]);
-    inputMessageCountMax.val(settings[setting][3][2]);
+    inputMessageCount.val(settings[settingNr][settingNr][3][1]);
+    inputMessageCountMax.val(settings[settingNr][settingNr][3][2]);
 
-    inputMessageChars.val(settings[setting][4][1]);
-    inputMessageCharsMax.val(settings[setting][4][2]);
+    inputMessageChars.val(settings[settingNr][settingNr][4][1]);
+    inputMessageCharsMax.val(settings[settingNr][settingNr][4][2]);
 }
 
 function loadSettings()
@@ -181,9 +221,13 @@ function loadSettings()
     }
     catch (e)
     {
-        settings = {0:['Test 1', [0,5,null], [1,5,10], [2,5,10], [3,5,null]],
-                    1:['Test 2', [0,10,null], [0,10,null], [0,10,null], [0,10,null]]};
-        //saveSettings();
+        settings = [
+                        {"0":'Standard', "1":[0,5,null], "2":[1,5,10], "3":[2,5,10], "4":[3,5,null]},
+                        {"0":'Test 2', "1":[0,5,null], "2":[1,5,10], "3":[2,5,10], "4":[3,5,null]}
+                   ];
+        settings = JSON.stringify(settings);
+        settings = JSON.parse(settings);
+        saveSettings();
     }
     for (var i=0; i < Object.size(settings); i++)
     {
