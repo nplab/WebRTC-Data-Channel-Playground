@@ -14,6 +14,7 @@
 
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
         <link rel="stylesheet" type="text/css" href='dist/custom.css' />
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -116,6 +117,13 @@
                     <h3>Data channel settings</h3>
                         <input required id='inputMaxRetransmitTime' type='number' min='1' max='10000' value='5000' />
                         <label for='inputMaxRetransmitTime'>Maximum retransmit time</label>
+                    <br>
+                    <br>
+                    <button style="display: inline;" class="btn btn-default btn-sm" id="loadSettings" onclick="loadSetting();">Load</button>
+                    <input type='text' list='datalistSettings' id='inputSettings' value=" ">
+                    <datalist id='datalistSettings' >
+                    </datalist>
+                    <button style="display: inline;" class="btn btn-default btn-sm" id="saveSettings" onclick="saveSetting();">Save</button>
                     <br>
                     <br>
                     <button class="btn btn-success btn-block btn-sm " type='submit' id='buttonStartTest' onclick='startTest();'>Start test</button>

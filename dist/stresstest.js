@@ -65,11 +65,14 @@ var tdPCEtablished = $('#tdPCEtablished');
 var tdPCPercent = $('#tdPCPercent');
 var tdPCStatus = $('#tdPCStatus');
 
+var inputSettings = $('#inputSettings');
+
 //DOM Elements end
 var br = "&#13;&#10;";
 
 //Declare variables
-var local_dc,
+var availableSettings,
+    local_dc,
     local_dc2,
     remote_dc,
     remote_dc2,
@@ -91,7 +94,8 @@ var local_dc,
     channelsOpened,
     peerConnectionsCreated,
     peerConnectionsEtablished,
-    updateTimer;
+    updateTimer,
+    settings;
 
 // Local ID
 var id = "testing";
@@ -108,6 +112,87 @@ var pcConfiguration =
         { url : 'stun:stun4.l.google.com:19302' }
     ]
 };
+
+Object.size = function(obj)
+{
+    var size = 0, key;
+    for (key in obj)
+    {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
+function saveSetting()
+{
+}
+function saveSettings()
+{
+    localStorage['stresstestSettings'] = JSON.stringify(settings);
+}
+
+function loadSetting()
+{
+    var setting = inputSettings.val();
+    var found = false;
+    for(var i = 0; i < settings.length; i++)
+    {
+        if(settings[i][0] == setting[i])
+        {
+            found = true;
+        }
+    }
+    if(!found)
+    {
+        alert("Setting not found!");
+        return;
+    }
+    for(var i = 0; i < 4; i++)
+    {
+        typePeerConnection[i].prop('checked', false);
+        typeDataChannel[i].prop('checked', false);
+        typeMessageCount[i].prop('checked', false);
+        typeMessageChars[i].prop('checked', false);
+    }
+    typePeerConnection[settings[setting][1][0]].prop('checked', true);
+    typeDataChannel[settings[setting][2][0]].prop('checked', true);
+    typeMessageCount[settings[setting][3][0]].prop('checked', true);
+    typeMessageChars[settings[setting][4][0]].prop('checked', true);
+
+    inputPeerConnections.val(settings[setting][1][1]);
+    inputPeerConnectionsMax.val(settings[setting][1][2]);
+
+    inputDataChannel.val(settings[setting][2][1]);
+    inputDataChannelMax.val(settings[setting][2][2]);
+
+    inputMessageCount.val(settings[setting][3][1]);
+    inputMessageCountMax.val(settings[setting][3][2]);
+
+    inputMessageChars.val(settings[setting][4][1]);
+    inputMessageCharsMax.val(settings[setting][4][2]);
+}
+
+function loadSettings()
+{
+    var datalistSettings = $('#datalistSettings');
+    try
+    {
+        settings = JSON.parse(localStorage['stresstestSettings']);
+    }
+    catch (e)
+    {
+        settings = {0:['Test 1', [0,5,null], [1,5,10], [2,5,10], [3,5,null]],
+                    1:['Test 2', [0,10,null], [0,10,null], [0,10,null], [0,10,null]]};
+        //saveSettings();
+    }
+    for (var i=0; i < Object.size(settings); i++)
+    {
+        datalistSettings.append("<option>" + settings[i][0] +"</option>");
+    }
+
+}
+
+
 
 function updateForm()
 {
