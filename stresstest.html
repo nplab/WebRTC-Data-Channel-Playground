@@ -14,6 +14,7 @@
 
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
         <link rel="stylesheet" type="text/css" href='dist/custom.css' />
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -22,7 +23,7 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
     </head>
-    <body>
+    <body onload="loadSettings();">
         <nav class="navbar navbar-default navbar-static-top">
             <div class="container">
                 <div class="navbar-header">
@@ -116,6 +117,16 @@
                     <h3>Data channel settings</h3>
                         <input required id='inputMaxRetransmitTime' type='number' min='1' max='10000' value='5000' />
                         <label for='inputMaxRetransmitTime'>Maximum retransmit time</label>
+                    <br>
+                    <br>
+                    <input type='text' list='datalistSettings' id='inputSettings' class='form-control'>
+                    <datalist id='datalistSettings' >
+                    </datalist>
+                    <br>
+                    <div class='text-center'>
+                        <button style="display: inline;" class="btn btn-default btn-sm" id="loadSettings" onclick="loadSetting();">Load</button>
+                        <button style="display: inline;" class="btn btn-default btn-sm" id="saveSettings" onclick="saveSetting();">Save</button>
+                    </div>
                     <br>
                     <br>
                     <button class="btn btn-success btn-block btn-sm " type='submit' id='buttonStartTest' onclick='startTest();'>Start test</button>

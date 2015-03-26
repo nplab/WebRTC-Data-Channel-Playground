@@ -65,11 +65,14 @@ var tdPCEtablished = $('#tdPCEtablished');
 var tdPCPercent = $('#tdPCPercent');
 var tdPCStatus = $('#tdPCStatus');
 
+var inputSettings = $('#inputSettings');
+
 //DOM Elements end
 var br = "&#13;&#10;";
 
 //Declare variables
-var local_dc,
+var availableSettings,
+    local_dc,
     local_dc2,
     remote_dc,
     remote_dc2,
@@ -91,7 +94,8 @@ var local_dc,
     channelsOpened,
     peerConnectionsCreated,
     peerConnectionsEtablished,
-    updateTimer;
+    updateTimer,
+    settings;
 
 // Local ID
 var id = "testing";
@@ -108,6 +112,227 @@ var pcConfiguration =
         { url : 'stun:stun4.l.google.com:19302' }
     ]
 };
+
+Object.size = function(obj)
+{
+    var size = 0, key;
+    for (key in obj)
+    {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
+function saveSetting()
+{
+    var name,
+        pcType, pcMin, pcMax,
+        dcType, dcMin, dcMax,
+        meType, meMin, meMax,
+        chType, chMin, chMax;
+
+    switch(peerConnectionMode)
+    {
+        case 'con':
+        {
+            pcType = 0;
+            break;
+        }
+        case 'uni':
+        {
+            pcType = 1;
+            break;
+        }
+        case 'nuni':
+        {
+            pcType = 2;
+            break;
+        }
+        case 'exp':
+        {
+            pcType = 3;
+            break;
+        }
+        default:
+        {
+            pcType = 4;
+            break;
+        }
+    }
+    switch(dataChannelMode)
+    {
+         case 'con':
+        {
+            dcType = 0;
+            break;
+        }
+        case 'uni':
+        {
+            dcType = 1;
+            break;
+        }
+        case 'nuni':
+        {
+            dcType = 2;
+            break;
+        }
+        case 'exp':
+        {
+            dcType = 3;
+            break;
+        }
+        default:
+        {
+            dcType = 4;
+            break;
+        }
+    }
+    switch(messsageMode)
+    {
+         case 'con':
+        {
+            meType = 0;
+            break;
+        }
+        case 'uni':
+        {
+            meType = 1;
+            break;
+        }
+        case 'nuni':
+        {
+            meType = 2;
+            break;
+        }
+        case 'exp':
+        {
+            meType = 3;
+            break;
+        }
+        default:
+        {
+            meType = 4;
+            break;
+        }
+    }
+    switch(messageCharMode)
+    {
+         case 'con':
+        {
+            chType = 0;
+            break;
+        }
+        case 'uni':
+        {
+            chType = 1;
+            break;
+        }
+        case 'nuni':
+        {
+            chType = 2;
+            break;
+        }
+        case 'exp':
+        {
+            chType = 3;
+            break;
+        }
+        default:
+        {
+            chType = 4;
+            break;
+        }
+    }
+
+    name = inputSettings.val();
+
+    pcMin = inputPeerConnections.val();
+    pcMax = inputPeerConnectionsMax.val();
+
+    dcMin = inputDataChannel.val();
+    dcMax = inputDataChannelMax.val();
+
+    meMin = inputMessageCount.val();
+    meMax = inputMessageCountMax.val();
+
+    chMin = inputMessageChars.val();
+    chMax = inputMessageCharsMax.val();
+
+    settings.push({"0":name, "1":[pcType, pcMin, pcMax], "2":[dcType, dcMin, dcMax], "3":[meType, meMin, meMax], "4":[chType, chMin, chMax]});
+    saveSettings();
+}
+function saveSettings()
+{
+    localStorage['stresstestSettings'] = JSON.stringify(settings);
+}
+
+function loadSetting()
+{
+    var setting = inputSettings.val();
+    var settingNr;
+    var found = false;
+    for(var i = 0; i < Object.size(settings); i++)
+    {
+        if(settings[i][0] == setting)
+        {
+            found = true;
+            settingNr = i;
+        }
+    }
+    if(!found)
+    {
+        alert("Setting not found!");
+        return;
+    }
+    for(var i = 0; i < 4; i++)
+    {
+        typePeerConnection[i].prop('checked', false);
+        typeDataChannel[i].prop('checked', false);
+        typeMessageCount[i].prop('checked', false);
+        typeMessageChars[i].prop('checked', false);
+    }
+    typePeerConnection[settings[settingNr][1][0]].prop('checked', true);
+    typeDataChannel[settings[settingNr][2][0]].prop('checked', true);
+    typeMessageCount[settings[settingNr][3][0]].prop('checked', true);
+    typeMessageChars[settings[settingNr][4][0]].prop('checked', true);
+
+    inputPeerConnections.val(settings[settingNr][1][1]);
+    inputPeerConnectionsMax.val(settings[settingNr][1][2]);
+
+    inputDataChannel.val(settings[settingNr][2][1]);
+    inputDataChannelMax.val(settings[settingNr][2][2]);
+
+    inputMessageCount.val(settings[settingNr][3][1]);
+    inputMessageCountMax.val(settings[settingNr][3][2]);
+
+    inputMessageChars.val(settings[settingNr][4][1]);
+    inputMessageCharsMax.val(settings[settingNr][4][2]);
+}
+
+function loadSettings()
+{
+    var datalistSettings = $('#datalistSettings');
+    try
+    {
+        settings = JSON.parse(localStorage['stresstestSettings']);
+    }
+    catch (e)
+    {
+        settings = [
+                        {"0":'Standard', "1":[0,5,null], "2":[1,5,10], "3":[2,5,10], "4":[3,5,null]}
+                   ];
+        settings = JSON.stringify(settings);
+        settings = JSON.parse(settings);
+        saveSettings();
+    }
+    for (var i=0; i < Object.size(settings); i++)
+    {
+        datalistSettings.append("<option>" + settings[i][0] +"</option>");
+    }
+
+}
+
+
 
 function updateForm()
 {
