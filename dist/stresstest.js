@@ -3,8 +3,8 @@
  * @version 0.1
  */
 var IceCandidate        = window.mozRTCIceCandidate || window.RTCIceCandidate;
-var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
+var PeerConnection      = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+var SessionDescription  = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
 
 //DOM Elements
 var textareaTestResults = $('#textareaTestResults');
