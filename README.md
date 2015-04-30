@@ -1,4 +1,4 @@
-# WebRTC-Datachannel-Testsuite
+# WebRTC Datachannel Playground
 WebRTC Datachannel Testsuite
 
 ## Demo
@@ -9,5 +9,11 @@ Netperfmeter is a perfomance meter for the WebRTC datachannels. It simultaneousl
 
 ## Browsertests
 Browsertests are used to check the implementation of WebRTC datachannels via a collection of severel tests.
+
+## Stresstest
+Stresstest to create multiple local Peer-Connections containing multiple Datachannels which are sending messages.
+
+## Gyrocolor
+If available, the clients changes the servers background color in dependence of its gyro-sensor values.
 
 
