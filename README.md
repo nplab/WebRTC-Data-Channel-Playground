@@ -1,5 +1,5 @@
 # WebRTC Datachannel Playground
-WebRTC Datachannel Testsuite
+This playground contains some testing tools for WebRTC Datachannels. Some are useful measurement tools - some are just demos.
 
 ## Demo
 http://webrtc.weinrank.net
@@ -15,5 +15,9 @@ Stresstest to create multiple local Peer-Connections containing multiple Datacha
 
 ## Gyrocolor
 If available, the clients changes the servers background color in dependence of its gyro-sensor values.
+
+## Feedback
+We like feedback! :)
+Feel free to contact us: weinrank@fh-muenster.de
 
 
