@@ -20,6 +20,7 @@ If available, the clients changes the servers background color in dependence of 
 We like feedback! :)
 Feel free to report bugs or ideas to us!
 
-Project maintainer: Felix Weinrank - weinrank@fh-muenster.de
+Project maintainer: 
+Felix Weinrank - weinrank@fh-muenster.de
 
 
