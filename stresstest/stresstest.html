@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="description" content="WebRTC-DataChannel Playground - Browsertests">
+		<meta name="author" content="Felix Weinrank">
+
+		<title>WebRTC-DataChannel Playground - Stresstest</title>
+		
+		<link rel="apple-touch-icon"  href="../common/favicon/apple-icon-180x180.png">
+		<link rel="icon" type="image/png"  href="../common/favicon/android-icon-192x192.png">
+		<link rel="manifest" href="../common/favicon/manifest.json">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="../common/favicon/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
+
+		<!-- CSS Section -->
+		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="../common/custom.css">
+		
+
+		<!-- JAVSCRIPT Section -->
+		
+		<script src="../common/jquery.min.js"></script>
+		<script src="../common/bootstrap/js/bootstrap.min.js"></script>
+		
+	</head>
+
+	<body>
+		<nav class="navbar navbar-default navbar-static-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand">WebRTC Data-Channel Testsuite</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="navbar">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="../netperfmeter/netperfmeter.html">Netperfmeter</a>
+                        </li>
+                        <li class="active">
+                           <a href="../stresstest/stresstest.html">Stresstest</a>
+                        </li>
+                        <li>
+                            <a href="../conformance-tests/conformance-tests.html">Browsertest</a>
+                        </li>
+                        <li>
+                            <a href="../gyrocolor/gyrocolor.html">Gyrocolor</a>
+                        </li>
+                    </ul>
+                </div>
+			</div>
+
+		</nav>
+		
+        <div class="container">
+            <div class='row' onclick="updateForm();">
+                <div class='col-md-4'>
+                    <h3>Peer connections</h3>
+                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsConstant' checked>
+                        <label for='typePeerConnectionsConstant'>Constant</label><br>
+                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsUniformRandom'>
+                        <label for='typePeerConnectionsUniformRandom'>Uniform random</label><br>
+                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsNonUniformRandom'>
+                        <label for='typePeerConnectionsNonUniformRandom'>Non uniform random</label><br>
+                        <input type='radio' name='typePeerConnections' class='typePeerConnections' id='typePeerConnectionsExponential'>
+                        <label for='typePeerConnectionsExponential'>Exponential</label><br>
+                    <br>
+                    <input required id='inputPeerConnections' type='number' placeholder='Peer Connections'/>
+                    <input required id='inputPeerConnectionsMax' type='number' disabled/>
+                    <br>
+                    <br>
+                    <h3>Data channels per PC</h3>
+                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelConstant' checked>
+                        <label for='typeDataChannelConstant'>Constant</label><br>
+                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelUniformRandom'>
+                        <label for='typeDataChannelUniformRandom'>Uniform random</label><br>
+                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelNonUniformRandom'>
+                        <label for='typeDataChannelNonUniformRandom'>Non uniform random</label><br>
+                        <input type='radio' name='typeDataChannel' class='typeDataChannel' id='typeDataChannelExponential'>
+                        <label for='typeDataChannelExponential'>Exponential</label><br>
+                    <br>
+                    <input required id='inputDataChannel' type='number' placeholder='Data Channel per PC' />
+                    <input required id='inputDataChannelMax' type='number' disabled />
+                </div>
+                <div class='col-md-4'>
+                    <h3>Messages per data channel</h3>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountConstant' checked>
+                        <label for='typeMessageCountConstant'>Constant</label><br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountUniformRandom'>
+                        <label for='typeMessageCountUniformRandom'>Uniform random</label><br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountNonUniformRandom'>
+                        <label for='typeMessageCountNonUniformRandom'>Non uniform random</label><br>
+                        <input type='radio' name='typeMessageCount' class='typeMessageCount' id='typeMessageCountExponential'>
+                        <label for='typeMessageCountExponential'>Exponential</label><br>
+                    <br>
+                        <input required id='inputMessageCount' type='number' placeholder='Message Count'/>
+                        <input required id='inputMessageCountMax' type='number' disabled/>
+                    <br>
+                    <br>
+                    <h3>Chars per message</h3>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsConstant' checked>
+                        <label for='typeMessageCharsConstant'>Constant</label><br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsUniformRandom'>
+                        <label for='typeMessageCharsUniformRandom'>Uniform random</label><br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsNonUniformRandom'>
+                        <label for='typeMessageCharsNonUniformRandom'>Non uniform random</label><br>
+                        <input type='radio' name='typeMessageChars' class='typeMessageChars' id='typeMessageCharsExponential'>
+                        <label for='typeMessageCharsExponential'>Exponential</label><br>
+                    <br>
+                        <input required id='inputMessageChars' type='number' placeholder='Chars per message'/>
+                        <input required id='inputMessageCharsMax' type='number' disabled/>
+                </div>
+                <div class='col-md-4'>
+                    <h3>Data channel settings</h3>
+                        <input required id='inputMaxRetransmitTime' type='number' min='1' max='10000' value='5000' />
+                        <label for='inputMaxRetransmitTime'>Maximum retransmit time</label>
+                    <br>
+                    <br>
+                    <input type='text' list='datalistSettings' id='inputSettings' class='form-control'>
+                    <datalist id='datalistSettings' >
+                    </datalist>
+                    <br>
+                    <div class='text-center'>
+                        <button style="display: inline;" class="btn btn-default btn-sm" id="loadSettings" onclick="loadSetting();">Load</button>
+                        <button style="display: inline;" class="btn btn-default btn-sm" id="saveSettings" onclick="saveSetting();">Save</button>
+                    </div>
+                    <br>
+                    <br>
+                    <button class="btn btn-success btn-block btn-sm " type='submit' id='buttonStartTest' onclick='startTest();'>Start test</button>
+                    <h3>Statistics: </h3>
+                    <table class="table table-condensed">
+                    <tr>
+                        <th>name</th>
+                        <th>created</th>
+                        <th>completed</th>
+                        <th>%</th>
+                        <th> </th>
+                    </tr>
+                    <tr>
+                        <td>peer connections</td>
+                        <td id='tdPCCreated'> </td>
+                        <td id='tdPCEtablished'> </td>
+                        <td id='tdPCPercent'> </td>
+                        <td id='tdPCStatus'> </td>
+                    </tr>
+                    <tr>
+                        <td>data channels</td>
+                        <td id='tdChannelsCreated'> </td>
+                        <td id='tdChannelsOpened'> </td>
+                        <td id='tdChannelsPercent'> </td>
+                        <td id='tdChannelsStatus'> </td>
+                    </tr>
+                    <tr>
+                        <td>messages</td>
+                        <td id='tdSendMessages'> </td>
+                        <td id='tdRecievedMessages'> </td>
+                        <td id='tdPercentMessages'> </td>
+                        <td id='tdStatusMessages'> </td>
+                    </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="footer text-center">
+                &copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
+        </div>
+        <script type='text/javascript' src='stresstest.js'></script>
+    </body>
+</html>

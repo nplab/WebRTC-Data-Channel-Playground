@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="description" content="WebRTC-DataChannel Playground - Browsertests">
+		<meta name="author" content="Felix Weinrank">
+
+		<title>WebRTC-DataChannel Playground - Browsertests</title>
+		
+		<link rel="apple-touch-icon"  href="../common/favicon/apple-icon-180x180.png">
+		<link rel="icon" type="image/png"  href="../common/favicon/android-icon-192x192.png">
+		<link rel="manifest" href="../common/favicon/manifest.json">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="../common/favicon/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
+
+		<!-- CSS Section -->
+		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="../common/custom.css">
+		
+
+		<!-- JAVSCRIPT Section -->
+		
+		<script src="../common/jquery.min.js"></script>
+		<script src="../common/bootstrap/js/bootstrap.min.js"></script>
+		
+	</head>
+
+	<body>
+		<nav class="navbar navbar-default navbar-static-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand">WebRTC Data-Channel Testsuite</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="navbar">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="../netperfmeter/netperfmeter.html">Netperfmeter</a>
+                        </li>
+                        <li>
+                           <a href="../stresstest/stresstest.html">Stresstest</a>
+                        </li>
+                        <li class="active">
+                            <a href="../conformance-tests/conformance-tests.html">Browsertest</a>
+                        </li>
+                        <li>
+                            <a href="../gyrocolor/gyrocolor.html">Gyrocolor</a>
+                        </li>
+                    </ul>
+                </div>
+			</div>
+
+		</nav>
+
+		<div class="container">
+
+			<div id="browserInformation" class="alert text-center"></div>
+			<div id="mozMode"></div>
+
+			<div id="testWrapper">
+
+				<div class="testControls text-center">
+					<button type="button" class="btn btn-success" id="btnTestStartAll">
+						<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+						start all
+						<span class="badge" id="badgeTestcount">tests</span>
+					</button>
+					<div class="btn-group" role="group" aria-label="...">
+						<button type="button" class="btn btn-success" id="btnTestStartSelected">
+							<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+							start selected
+						</button>
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+								Testgroup <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" id="testGroupSelect" role="menu">
+								<li>
+									<a href="#" data-testgroup="testDC_label">Label</a>
+								</li>
+								<li>
+									<a href="#" data-testgroup="testDC_dict">Dict</a>
+								</li>
+								<li>
+									<a href="#" data-testgroup="testDC_create">Create</a>
+								</li>
+								<li>
+									<a href="#" data-testgroup="testDC_id">Id</a>
+								</li>
+								<li>
+									<a href="#" data-testgroup="testDC_event">Event</a>
+								</li>
+								<li>
+									<a href="#" data-testgroup="testDC_send">Send</a>
+								</li>
+							</ul>
+						</div>
+						<button type="button" class="btn btn-default" id="btnTestUnselect">
+							<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+							none
+						</button>
+						<button type="button" class="btn btn-default" id="btnTestSelectOpposite">
+							<span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>
+							invert
+						</button>
+						<button type="button" class="btn btn-default" id="btnTestLoad">
+							<span class="glyphicon glyphicon-open" aria-hidden="true"></span>
+							load
+						</button>
+						<button type="button" class="btn btn-default" id="btnTestSave">
+							<span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+							save
+						</button>
+						<button type="button" class="btn btn-default" id="btnTestLoadPrevious">
+							<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+							previous
+						</button>
+					</div>
+				</div>
+				<div class="table-responsive">
+					<table id="testlist" class="table table-condensed table-striped"></table>
+				</div>
+
+			</div>
+			<div id="logWrapper">
+				<div id="logLast"></div>
+
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" id="progressbar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+						0%
+					</div>
+				</div>
+
+				<div class="text-center">
+					<div class="btn-group" role="group" aria-label="...">
+						<button type="button" class="btn btn-default" id="btnShowLog">
+							Show log
+						</button>
+						<button type="button" class="btn btn-default" id="btnShowResults">
+							Show results
+						</button>
+						<button type="button" class="btn btn-default" onclick="window.location.reload();">
+							Reload
+						</button>
+					</div>
+				</div>
+
+				<table id="logtable" class="table">
+					<thead>
+						<tr>
+							<th>time</th>
+							<th>event</th>
+						</tr>
+					</thead>
+					<tbody>
+
+					</tbody>
+				</table>
+
+				<div id="log"></div>
+				<!-- Testharness logging -->
+			</div>
+
+			<div class="footer text-center">
+				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
+			</div>
+		</div>
+		<!-- /container -->
+		
+		<!-- Syntax hightlightning -->
+		<script src="../common/highlight/highlight.pack.js"></script>
+		<link rel="stylesheet" href="../common/highlight/styles/default.css">
+		
+
+		<!-- Testharness-->
+		<script src="testharness/testharness.js" type="text/javascript"></script>
+		<script src="testharness/testharnessreport.js" type="text/javascript"></script>
+		<!-- Information and Connection -->
+		<script src="../common/jquery.cookie.js" type="text/javascript"></script>
+		<script src="datachannel_test/logging.js" type="text/javascript"></script>
+		<script src="datachannel_test/helpfunctions.js" type="text/javascript"></script>
+		<script src="datachannel_test/dctest_switcher.js" type="text/javascript"></script>
+		<script src="datachannel_test/dctest_connection.js" type="text/javascript"></script>
+		<!-- Load Tests -->
+		<script src="datachannel_test/dctest_init.js" type="text/javascript"></script>
+		<script src="datachannel_test/dctest_label.js" type="text/javascript"></script>
+		<script src="datachannel_test/dctest_datachanneldict.js" type="text/javascript"></script>
+		<script src="datachannel_test/dctest_create.js" type="text/javascript"></script>
+		<script src="datachannel_test/dctest_id.js" type="text/javascript"></script>
+		<script src="datachannel_test/dctest_event.js" type="text/javascript"></script>
+		<script src="datachannel_test/dctest_send.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			// Firefox crashes by some tests (>Nightly 36.0a doesn't crash)
+			var mozSafeMode = (!!window.mozRTCPeerConnection);
+			if ((window.mozRTCPeerConnection)) {
+				$('div#mozMode').html('<label><input type="checkbox" id="mozSafeModeChkBox" checked="true"> Mozilla Safe Mode (to avoid crashes):</label>');
+				$('#mozSafeModeChkBox').click(function() {
+					mozSafeMode = this.checked;
+					console.log("mozSafeMode " + mozSafeMode);
+				});
+			}
+
+			getBrowserInformation();
+			console.log("mozSafeMode " + mozSafeMode);
+			getMethods(window);
+			fillTestList();
+
+			$('.inspectFunction').popover({
+				html : true,
+				placement : 'auto',
+				content : function() {
+					var functionName = $(this).data('function');
+					return '<pre><code class="js">' + eval(functionName + '.toString();') + '</code></pre>';
+				}
+			});
+
+			$('.inspectFunction').on('shown.bs.popover', function() {
+				$('pre code').each(function(i, block) {
+					hljs.highlightBlock(block);
+				});
+			});
+		</script>
+	</body>
+</html>

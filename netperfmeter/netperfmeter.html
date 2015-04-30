@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="description" content="WebRTC-DataChannel Playground - Browsertests">
+		<meta name="author" content="Felix Weinrank">
+
+		<title>WebRTC-DataChannel Playground - Browsertests</title>
+		
+		<link rel="apple-touch-icon"  href="../common/favicon/apple-icon-180x180.png">
+		<link rel="icon" type="image/png"  href="../common/favicon/android-icon-192x192.png">
+		<link rel="manifest" href="../common/favicon/manifest.json">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="../common/favicon/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
+
+		<!-- CSS Section -->
+		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="../common/custom.css">
+		
+
+		<!-- JAVSCRIPT Section -->
+		
+		<script src="../common/jquery.min.js"></script>
+		<script src="../common/bootstrap/js/bootstrap.min.js"></script>
+		
+	</head>
+
+	<body>
+		<nav class="navbar navbar-default navbar-static-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand">WebRTC Data-Channel Testsuite</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="navbar">
+                    <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="../netperfmeter/netperfmeter.html">Netperfmeter</a>
+                        </li>
+                        <li>
+                           <a href="../stresstest/stresstest.html">Stresstest</a>
+                        </li>
+                        <li>
+                            <a href="../conformance-tests/conformance-tests.html">Browsertest</a>
+                        </li>
+                        <li>
+                            <a href="../gyrocolor/gyrocolor.html">Gyrocolor</a>
+                        </li>
+                    </ul>
+                </div>
+			</div>
+
+		</nav>
+
+		<div class="container">
+			<h1 id="link">Netperfmeter</h1>
+			<div class="alert alert-info text-center" role="alert">
+				<strong>role: <span id="statusRole">#</span> - signaling ID: <span id="statusSigID">#</span></strong>
+			</div>
+
+			<div class="row">
+
+				<div class="col-sm-3" id="dcControls">
+					<h3>Control</h3>
+
+					<input type="text" class="form-control input-sm" placeholder="peer-id - blank for offerer" id="signalingID">
+
+					<button class="btn btn-success btn-block btn-sm " id="npmConnect" onclick="npmConnect()">
+						<span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> connect
+					</button>
+
+					<button class="btn btn-primary btn-block btn-sm " disabled="disabled" id="npmcPing" onclick="msgSendPing()">
+						<span class="glyphicon glyphicon-time" aria-hidden="true"></span> ping Peer<span class="rtt"></span>
+					</button>
+
+					<h4>Settings</h4>
+					<div class="btn-group btn-group-justified" role="group" aria-label="...">
+						<div class="btn-group" role="group">
+							<button class="btn btn-primary btn-sm " id="npmLoadSettings" onclick="channelSettingsLoad();">
+								<span class="glyphicon glyphicon-floppy-open" aria-hidden="false"></span> load
+							</button>
+						</div>
+						<div class="btn-group" role="group">
+
+							<button class="btn btn-primary btn-sm " id="npmSaveSettings" onclick="channelSettingsSave();">
+								<span class="glyphicon glyphicon-floppy-save" aria-hidden="false"></span> save
+							</button>
+						</div>
+						<div class="btn-group" role="group">
+
+							<button class="btn btn-primary btn-sm " id="npmEditSettings" onclick="channelSettingsEditorShow();" data-toggle="modal" data-target="#settingsModal">
+								<span class="glyphicon glyphicon-pencil" aria-hidden="false"></span> edit
+							</button>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-sm-5">
+
+					<h3>PC-Status</h3>
+
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>name</th>
+								<th>status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>iceConnectionState</td>
+								<td id="iceConnectionState">none</td>
+							</tr>
+							<tr>
+								<td>iceGatheringState</td>
+								<td id="iceGatheringState">none</td>
+							</tr>
+							<tr>
+								<td>signalingState</td>
+								<td id="signalingState">none</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="col-sm-4">
+
+					<h3>ICE-Candidates</h3>
+
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>local</th>
+								<th>peer</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td id="localIceCandidates"></td>
+								<td id="peerIceCandidates"></td>
+							</tr>
+						</tbody>
+					</table>
+					<input type="text" id="localIceFilter" class="form-control input-sm" placeholder="filter offered ICE candidates">
+
+				</div>
+			</div>
+			<div class="npmControl" id="npmChannelParametersContainer">
+				<h3>Netperfmeter Control</h3>
+
+				<div class="table-responsive">
+					<table class="table table-condensed" style="min-width: 640px;" id="npmChannelParameters">
+						<thead>
+							<tr>
+								<th style="width: 7%;"><span aria-hidden="true" data-toggle="popover" data-content="Activate or deactivate the datachannel">active</span></th>
+								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Amount of packets to sent">num packets</span></th>
+								<th style="width: 14%;"><span aria-hidden="true"  data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>con:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uni:0:10</kbd> - uniformed distribution">msg size</span></th>
+								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Send-mode<br/><kbd>[blank]</kbd> - reliable<br/><kbd>ret:10</kbd> - try max. 10 retransmissions<br/><kbd>lft:10</kbd> - timeout after 10 seconds">send mode</span></th>
+								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Interval between each sent packet in ms<br/>set to 0 to send as much as possible<br/><kbd>con:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uni:0:10</kbd> - uniformed distribution">send interval</span></th>
+								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Start-delay in seconds">start delay</span></th>
+								<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Channel-runtime in seconds">runtime</span></th>
+								<th style="width: 9%;"><span aria-hidden="true" data-toggle="popover" data-content="Remove or clone channel-settings">actions</span></th>
+							</tr>
+
+							<!-- NPM Channel Dummy -->
+							<tr class="npmChannelParametersBlank" style="display:none;">
+								<td>
+								<button type="button" name="toggleActive" class="btn btn-success btn-sm toggleActive" value="o2">
+									1
+								</button></td>
+								<td>
+								<input type="text" class="form-control input-sm" name="paramPktCount" placeholder="num packets" size="5">
+								</td>
+
+								<td>
+								<input type="text" class="form-control input-sm" name="paramPktSize" size="4" placeholder="packet-size">
+								</td>
+
+								<td>
+								<input type="text" class="form-control input-sm" name="paramMode" placeholder="transfer-mode" size="4" aria-label="...">
+								</td>
+								<td>
+								<input type="text" class="form-control input-sm" name="paramInterval" size="4" placeholder="send-interval">
+								</td>
+								<td>
+								<input type="text" class="form-control input-sm" name="paramDelay" size="4" placeholder="start-delay">
+								</td>
+								<td>
+								<input type="text" class="form-control input-sm" name="paramRuntime" size="4" placeholder="runtime">
+								</td>
+								<td>
+								<button type="button" onclick="parametersRowCopy(this);" title="copy channel" class="btn btn-default btn-sm">
+									<span style="color:#316EA2;" class="glyphicon glyphicon-copy" aria-hidden="true"></span>
+								</button>
+								<button type="button" onclick="parametersRowDelete(this);" title="remove channel" class="btn btn-default btn-sm">
+									<span style="color:#D2403E;" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+								</button></td>
+							</tr>
+						</thead>
+
+						<tbody>
+
+						</tbody>
+					</table>
+				</div>
+				<button class="btn btn-primary btn-sm " onclick="parametersRowAdd();">
+					<span class="glyphicon glyphicon-plus" aria-hidden="false"></span> add Channel
+				</button>
+				<button class="btn btn-success btn-sm " id="npmRun" disabled="disabled" onclick="npmStart()">
+					<span class="glyphicon glyphicon-play" aria-hidden="true"></span> run NPM
+				</button>
+				<button class="btn btn-warning btn-sm " id="npmReset" disabled="disabled" onclick="npmReset()">
+					<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> reset NPM
+				</button>
+			</div>
+			<div id="dcStatusContainer" class="hidden">
+				<h3>DC-Status</h3>
+				<table class="table table-condensed" id="dcStatus">
+					<thead>
+						<tr>
+							<th>id</th>
+							<th>state</th>
+							<th>label</th>
+							<th>pkts</th>
+							<th>bytes</th>
+							<th>rate avg</th>
+							<th>action</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+			<div id="channelChartContainer" class="hidden">
+				<h3>Datarate</h3>
+				<div id="channelChart" style="width: 100%; height: 500px;"></div>
+			</div>
+
+			<div class="footer text-center">
+				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
+			</div>
+
+			<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title">Settings Editor</h4>
+							<p>
+								Copy or paste settings here
+							</p>
+						</div>
+						<div class="modal-body">
+							<textarea class="form-control" id="channelSettingsEditorTextarea" rows="15"></textarea>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-warning" data-dismiss="modal">
+								Close
+							</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="channelSettingsEditorApply();">
+								Apply
+							</button>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- /container -->
+		<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['corechart']}]}"></script>
+		<script type='text/javascript' src="netperfmeter.js"></script>
+
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+
+				$('[data-toggle="popover"]').popover({
+					placement : 'top',
+					html : 'true',
+					trigger : 'hover',
+				});
+			});
+
+			$(window).resize(function() {
+				statsDrawChart();
+			});
+
+		</script>
+
+	</body>
+</html>

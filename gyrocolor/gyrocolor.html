@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="description" content="WebRTC-DataChannel Playground - Browsertests">
+		<meta name="author" content="Felix Weinrank">
+
+		<title>WebRTC-DataChannel Playground - Gyrocolor</title>
+		
+		<link rel="apple-touch-icon"  href="../common/favicon/apple-icon-180x180.png">
+		<link rel="icon" type="image/png"  href="../common/favicon/android-icon-192x192.png">
+		<link rel="manifest" href="../common/favicon/manifest.json">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="../common/favicon/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
+
+		<!-- CSS Section -->
+		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="../common/custom.css">
+		
+
+		<!-- JAVSCRIPT Section -->
+		
+		<script src="../common/jquery.min.js"></script>
+		<script src="../common/bootstrap/js/bootstrap.min.js"></script>
+		
+	</head>
+
+	<body>
+		<nav class="navbar navbar-default navbar-static-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand">WebRTC Data-Channel Testsuite</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="navbar">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="../netperfmeter/netperfmeter.html">Netperfmeter</a>
+                        </li>
+                        <li>
+                           <a href="../stresstest/stresstest.html">Stresstest</a>
+                        </li>
+                        <li>
+                            <a href="../conformance-tests/conformance-tests.html">Browsertest</a>
+                        </li>
+                        <li class="active">
+                            <a href="../gyrocolor/gyrocolor.html">Gyrocolor</a>
+                        </li>
+                    </ul>
+                </div>
+			</div>
+
+		</nav>
+
+		<div class="container">
+			<h1 id="link">Colorchange by Gyroscope</h1>
+			<div class="alert alert-danger text-center" id="gyrostatus" role="alert">Sorry, your device provides no gyro data! :(</div>
+		</div>
+
+		<div class="log">
+		</div>
+
+		<div class="footer text-center">
+				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
+			</div>
+
+		<!-- /container -->
+		<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+		<script type='text/javascript' src='http://code.jquery.com/jquery-2.1.3.min.js'></script>
+		<script type='text/javascript' src="gyrocolor.js"></script>
+
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				gyroInit();
+
+
+
+
+			});
+
+		</script>
+
+	</body>
+</html>
