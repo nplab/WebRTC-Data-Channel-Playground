@@ -4,16 +4,17 @@ This playground contains some testing tools for WebRTC Datachannels. Some are us
 ## Demo
 https://cdn.rawgit.com/nplab/WebRTC-Datachannel-Playground/master/netperfmeter/netperfmeter.html
 
-## Netperfmeter
+## Our Toys
+#### Netperfmeter
 Netperfmeter is a perfomance meter for the WebRTC datachannels. It simultaneously transmits unidirectional data via datachannels to an endpoint and measures the resulting channel bandwidths.
 
-## Browsertests
+#### Browsertests
 Browsertests are used to check the implementation of WebRTC datachannels via a collection of severel tests.
 
-## Stresstest
+#### Stresstest
 Stresstest to create multiple local Peer-Connections containing multiple Datachannels which are sending messages.
 
-## Gyrocolor
+#### Gyrocolor
 If available, the clients changes the servers background color in dependence of its gyro-sensor values.
 
 ## Contact & Feedback
