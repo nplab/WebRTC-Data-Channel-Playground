@@ -21,6 +21,7 @@ We like feedback! :)
 Feel free to report bugs or ideas to us!
 
 Project maintainer: 
+
 Felix Weinrank - weinrank@fh-muenster.de
 
 
