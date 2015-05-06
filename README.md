@@ -1,5 +1,5 @@
 # WebRTC Datachannel Playground
-This playground contains some testing tools for WebRTC Datachannels. Some are useful measurement tools - some are just demos.
+This playground contains some testing tools for WebRTC Datachannels. Some are useful measurement tools, some are just demos and some may not work.
 
 ## Demo
 https://cdn.rawgit.com/nplab/WebRTC-Datachannel-Playground/master/netperfmeter/netperfmeter.html
