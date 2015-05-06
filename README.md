@@ -4,7 +4,7 @@ This playground contains some testing tools for WebRTC Datachannels. Some are us
 ## Demo
 https://cdn.rawgit.com/nplab/WebRTC-Datachannel-Playground/master/netperfmeter/netperfmeter.html
 
-## Our Toys
+## Our Tools
 #### Netperfmeter
 Netperfmeter is a perfomance meter for the WebRTC datachannels. It simultaneously transmits unidirectional data via datachannels to an endpoint and measures the resulting channel bandwidths.
 
