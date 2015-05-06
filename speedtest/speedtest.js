@@ -485,6 +485,7 @@ function msgHandleJson(message) {
 		
 	case 'bePassive': {
 		initiator = false;
+		console.log('test');
 		console.log('msgHandleJson - bePassive');
 		$("#paramRuntime").attr('disabled', true);
 		$("#paramMsgSize").attr('disabled', true);
