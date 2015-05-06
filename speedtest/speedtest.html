@@ -89,7 +89,7 @@
 			</div>
 
 			
-			<div class="row hidden" id="rowControl">
+			<div class="row" id="rowControl">
 				<div class="col-sm-12 text-center">
 					<h3>Settings</h3>
 					<form class="form-inline">
@@ -119,26 +119,8 @@
 				</div>
 
 			</div>
+
 			
-			<div class="row" id="rowResults">
-				<div class="col-sm-12"><h3>Results</h3></div>
-			</div>
-
-			<div class="row" id="rowResults">
-				<div class="col-sm-4 text-center">
-					<h3>RTT</h3>
-					<span class="resultsRtt">should not see me</span>
-				</div>
-				<div class="col-sm-4 text-center">
-					<h3>Upload</h3>
-					<span class="resultsUpload">should not see me</span>
-				</div>
-				<div class="col-sm-4 text-center">
-					<h3>Download</h3>
-					<span class="resultsDownload">should not see me</span>
-				</div>
-
-			</div>
 			
 			<div class="row hidden" id="rowSpinner">
 
@@ -150,6 +132,22 @@
 					<div class="rect5"></div>
 				</div>
 				<h3 class="text-center spinnerStatus"></h3>
+			</div>
+			
+			<div class="row" id="rowResults">
+				<div class="col-sm-4 text-center">
+					<h3><span class="glyphicon glyphicon-time" aria-hidden="true"></span> RTT</h3>
+					<span class="resultsRtt">should not see me</span>
+				</div>
+				<div class="col-sm-4 text-center">
+					<h3><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload </h3>
+					<span class="resultsUpload">should not see me</span>
+				</div>
+				<div class="col-sm-4 text-center">
+					<h3><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Download</h3>
+					<span class="resultsDownload">should not see me</span>
+				</div>
+
 			</div>
 
 
@@ -166,6 +164,9 @@
 
 			<script type="text/javascript">
 				jQuery(document).ready(function($) {
+					$("#rowResults").hide();
+					$("#rowControl").hide();
+					
 					$("#btnSpeedtestRun").click(function(event) {
 						event.preventDefault();
 						speedtestRunByLocal();

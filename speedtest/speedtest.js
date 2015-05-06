@@ -79,11 +79,8 @@ var speedtestParams = {
 var scheduler = new Worker("speedtest.scheduler.js");
 
 var statisticsLocal = {};
-
 var statisticsRemote = {};
-
 var bulkMessage = "";
-
 speedtestStatisticsReset();
 
 // clean firebase ref
@@ -92,11 +89,6 @@ signalingIdRef.child(freshsignalingId).remove();
 // generate a unique-ish string for storage in firebase
 function generateSignalingId() {
 	return (Math.random() * 10000 + 10000 | 0).toString();
-}
-
-// check for int
-function isInt(n) {
-	return Number(n) === n && n % 1 === 0;
 }
 
 // wrapper to send data to FireBase
@@ -354,6 +346,8 @@ function speedtestRunByRemote(runtime, msgSize) {
 }
 
 function speedtestRunByLocal() {
+	$("#rowResults").removeClass('hidden').hide().slideDown();
+	
 	console.log('speedtestRunByLocal');
 	
 	speedtestParams.runtime = $("#paramRuntime").val();
@@ -396,7 +390,7 @@ function speedtestRun() {
 		statisticsLocal.tx_t_start = new Date().getTime();
 		
 		console.log('starting speedtest - runtime: ' + speedtestParams.runtime + ', msg-size:' + speedtestParams.msgSize);
-		speedtestSend();
+		setTimeout(function(){ speedtestSend();}, 1000);
 	} else {
 		alert('Check parameter!');
 	}
@@ -436,7 +430,7 @@ function speedtestSend() {
 		if(initiator) {
 			
 			$(".spinnerStatus").text("downloading ...");
-			$("#rowSpinner").removeClass('hidden').hide().slideDown();
+			//$("#rowSpinner").removeClass('hidden').hide().slideDown();
 			
 			var request = {
 				type : 'startSending',
@@ -496,7 +490,8 @@ function msgHandleJson(message) {
 		$("#paramMsgSize").attr('disabled', true);
 		$("#btnSpeedtestRun").attr('disabled', true);
 		$(".spinnerStatus").text("downloading ...");
-		$("#rowSpinner").removeClass('hidden').hide().slideDown();
+		$("#rowSpinner").slideDown();
+		$("#rowResults").slideDown();
 		break;
 	}
 	
