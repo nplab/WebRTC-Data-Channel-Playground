@@ -61,14 +61,22 @@ var PeerConnection 		= window.RTCPeerConnection || window.mozRTCPeerConnection |
 var IceCandidate 		= window.mozRTCIceCandidate || window.RTCIceCandidate;
 var SessionDescription 	= window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 
-
-
-
-var datachannel;
+var offerer = false;
+var parameters = {};
+var pc = new PeerConnection(iceServer);
+var peerRole = "offerer";
+var role = "answerer";
+var signalingId;
+var freshsignalingId = generateSignalingId();
+var signalingIdRef = dbRef.child("gyroIDs");
+var t_startNewPackage = 0;
+var dcControl = {};
+var dcData = {};
 
 
 function gyroInit() {
-	if (window.DeviceOrientationEvent  && 'ontouchstart' in window) {
+	//if (window.DeviceOrientationEvent  && 'ontouchstart' in window) {
+		if (window.DeviceOrientationEvent) {
 		$('#gyrostatus').removeClass('alert-danger').addClass('alert-success');
 		// Listen for the deviceorientation event and handle the raw data
 		window.addEventListener('deviceorientation', function(eventData) {
@@ -91,8 +99,9 @@ function gyroInit() {
 			//$(document.body).css('background-color','rgb('+alpha+','+beta+','+gamma+')');​​​​​​​​​​​​​​​
 			$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
 			
-			if(datachannel.readyState === "open") {
-				datachannel.send(alpha+','+beta+','+gamma);
+			if(dcControl.hasOwnProperty('readyState') && dcControl.readyState === "open") {
+				alert('sending');
+				dcControl.send(alpha+','+beta+','+gamma);
 			}
 			
 			// call our orientation event handler
@@ -100,24 +109,11 @@ function gyroInit() {
 	}
 }
 
-
-
-var offerer = false;
-var parameters = {};
-var pc = new PeerConnection(iceServer);
-var peerRole = "offerer";
-var role = "answerer";
-var signalingID;
-var freshSignalingID = generateSignalingID();
-var signalingIDRef = dbRef.child("gyroIDs");
-var t_startNewPackage = 0;
-
 // clean firebase ref
-signalingIDRef.child(freshSignalingID).remove();
-$('#signalingID').val(location.hash.substring(1));
+signalingIdRef.child(freshsignalingId).remove();
 
 // generate a unique-ish string for storage in firebase
-function generateSignalingID() {
+function generateSignalingId() {
 	return (Math.random() * 10000 + 10000 | 0).toString();
 }
 
@@ -128,14 +124,14 @@ function isInt(n){
 
 
 // wrapper to send data to FireBase
-function firebaseSend(signalingID, key, data) {
-	signalingIDRef.child(signalingID).child(key).set(data);
+function firebaseSend(signalingId, key, data) {
+	signalingIdRef.child(signalingId).child(key).set(data);
 	console.log('firebaseSend - ' + key + ' - ' + data);
 }
 
 // wrapper function to receive data from FireBase - with callback function
-function firebaseReceive(signalingID, type, cb) {
-	signalingIDRef.child(signalingID).child(type).on("value", function(snapshot, key) {
+function firebaseReceive(signalingId, type, cb) {
+	signalingIdRef.child(signalingId).child(type).on("value", function(snapshot, key) {
 		var data = snapshot.val();
 		if (data) {
 			cb(data);
@@ -155,24 +151,37 @@ pc.onicecandidate = function(event) {
 	if (!pc || !event || !event.candidate) {
 		return;
 	}
+	
+	var ip = extractIpFromString(event.candidate.candidate);
 
 	// add local ice candidate to firebase
-	signalingIDRef.child(signalingID).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
+	signalingIdRef.child(signalingId).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
 
 	console.log('onicecandidate - ip:' + ip);
-
-	statsPcStatusUpdate(event);
 };
 
-
-function gyroConnectToPeer() {
-	var peerId = $("#peerId").val();
+function gyroCreateSignalingId() {
+	signalingId = freshsignalingId;
+	offerer = true;
+	role = "offerer";
+	peerRole = "answerer";
 	
-	if(!isInt(peerId)) {
-		console.log('peer ID invalid');
-		return;
-	}
-	console.log('connecting to peer:' + peerId);
+	
+	console.log('creating signaling id:' + signalingId);
+	gyroConnect();
+}
+
+
+function gyroConnectTosignalingId() {
+	signalingId = $("#signalingId").val();
+	offerer = false;
+	role = "answerer";
+	peerRole = "offerer";
+	
+	
+	console.log('connecting to peer:' + signalingId);
+	gyroConnect();
+	
 }
 
 
@@ -180,20 +189,28 @@ function gyroConnectToPeer() {
 function gyroConnect() {
 
 	// disable inputs
+	//$("#colCreateSignalingId").hide();
+	$("#colCreateSignalingId").fadeOut();
+	$("#colConnectToSignalingId").fadeOut(400,function(){
+		$("#colConnectionStatus").removeClass("hidden");
+	});
 	
 
 	if (role === "offerer") {
 
-		channelCreate('control');
+		dcControl = pc.createDataChannel('control');
+		
+		bindEvents(dcControl);
+		
 		// create the offer SDP
 		pc.createOffer(function(offer) {
 			pc.setLocalDescription(offer);
 
 			// send the offer SDP to FireBase
-			firebaseSend(signalingID, "offer", JSON.stringify(offer));
+			firebaseSend(signalingId, "offer", JSON.stringify(offer));
 
 			// wait for an answer SDP from FireBase
-			firebaseReceive(signalingID, "answer", function(answer) {
+			firebaseReceive(signalingId, "answer", function(answer) {
 				pc.setRemoteDescription(new SessionDescription(JSON.parse(answer)));
 			});
 		}, errorHandler, sdpConstraints);
@@ -210,7 +227,7 @@ function gyroConnect() {
 		};
 
 		// answerer needs to wait for an offer before generating the answer SDP
-		firebaseReceive(signalingID, "offer", function(offer) {
+		firebaseReceive(signalingId, "offer", function(offer) {
 			pc.setRemoteDescription(new SessionDescription(JSON.parse(offer)));
 
 			// now we can generate our answer SDP
@@ -218,14 +235,14 @@ function gyroConnect() {
 				pc.setLocalDescription(answer);
 
 				// send it to FireBase
-				firebaseSend(signalingID, "answer", JSON.stringify(answer));
+				firebaseSend(signalingId, "answer", JSON.stringify(answer));
 			}, errorHandler);
 		});
 		console.log('connect - role answerer');
 	}
 
 	// add handler for peers ice candidates
-	signalingIDRef.child(signalingID).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
+	signalingIdRef.child(signalingId).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
 		var childVal = childSnapshot.val();
 		var peerCandidate = JSON.parse(childVal);
 
@@ -239,62 +256,20 @@ function gyroConnect() {
 	});
 }
 
-function npmPrepareRole() {
-	// role offerer
-	if ($('#signalingID').val() != '') {
-
-		if ($('#signalingID').val() != '') {
-			signalingID = $('#signalingID').val();
-		}
-		role = "answerer";
-		peerRole = "offerer";
-
-		$('#statusSigID').html(signalingID);
-		$('#statusRole').html(role);
-		$('#npmChannelParametersContainer').hide();
-
-		// role answerer
-	} else {
-		role = 'offerer';
-		peerRole = 'answerer';
-		signalingID = freshSignalingID;
-		$('#statusRole').html(role);
-		$('#statusSigID').html("<a href='#" + signalingID + "'>" + signalingID + "</a>");
-		$('#npmChannelParametersContainer').show();
-
-	};
+// find and return an IPv4 Address from a given string
+function extractIpFromString(string) {
+	var pattern = '(?:25[0-5]|2[0-4][0-9]|1?[0-9][0-9]{1,2}|[0-9]){1,}(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}|0)){3}';
+	var match = string.match(pattern);
+	return match[0];
 }
 
 // bind the channel events
 function bindEvents(channel) {
 	channel.onopen = function() {
-
+		if(channel.label == 'control') {
+			dcControl = channel;
+		}
 		
-	window.onbeforeunload = function() {
-		channel.close();
-	};
-
-	// handle messages
-	channel.onmessage = function(e) {
-
-		// control messages on control-channel
-		if (e.currentTarget.label == 'control') {
-			msgHandleJson(e.data);
-			// handle data messages
-		} else if (role == 'answerer') {
-			msgHandleData(e);
-		}
-	};
-}
-}
-
-
-
-
-// bind the channel events
-function bindEvents(channel) {
-	channel.onopen = function() {
-		$('#dc_' + channel.label + ' span.status').html('open <button onclick="closeDataChannel(\'' + channel.label + '\');">close</button>');
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
 	};
 
