@@ -19,7 +19,7 @@ Stresstest to create multiple local Peer-Connections containing multiple Datacha
 #### Gyrocolor
 If available, the clients changes the servers background color in dependence of its gyro-sensor values.
 
-### Contact & Feedback
+## Contact & Feedback
 We like feedback! :)
   Feel free to report bugs or ideas to us!
 
