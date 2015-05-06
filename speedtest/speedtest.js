@@ -60,7 +60,7 @@ var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || 
 var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
 var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 
-var bufferedAmountLimit = 16 * 1024 * 1024;
+var bufferedAmountLimit = 1 * 1024 * 1024;
 var offerer = false;
 var initiator = false;
 var pc = new PeerConnection(iceServer);
