@@ -122,6 +122,13 @@ pc.onicecandidate = function(event) {
 
 	var ip = extractIpFromString(event.candidate.candidate);
 
+	// if filter is set: ignore all other addresses
+	if ($('#localIceFilter').val() != '' && $('#localIceFilter').val() != ip) {
+		console.log('onicecandidate - ignoring: ' + ip);
+		return;
+	}
+
+
 	// add local ice candidate to firebase
 	signalingIdRef.child(signalingId).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
 
@@ -341,6 +348,9 @@ function speedtestRunByRemote(runtime, msgSize) {
 	
 	speedtestParams.runtime = runtime;
 	speedtestParams.msgSize = msgSize;
+	
+	$("#paramRuntime").val(runtime);
+	$("#paramMsgSize").val(msgSize);
 	
 	speedtestRun();
 }
