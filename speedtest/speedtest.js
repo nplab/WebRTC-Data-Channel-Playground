@@ -62,7 +62,7 @@ var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDes
 
 var bufferedAmountLimit = 1 * 1024 * 1024;
 var offerer = false;
-var initiator = false;
+
 var pc = new PeerConnection(iceServer);
 var peerRole = "offerer";
 var role = "answerer";
@@ -71,17 +71,25 @@ var freshsignalingId = generateSignalingId();
 var signalingIdRef = dbRef.child("gyroIDs");
 var dcControl = {};
 var dcData = {};
-var speedtestParams = {
-	runtime : 30,
-	msgSize : 1024
-};
-
 var scheduler = new Worker("speedtest.scheduler.js");
 
-var statisticsLocal = {};
-var statisticsRemote = {};
-var bulkMessage = "";
-speedtestStatisticsReset();
+var speedtestParams = {
+	runtime : 0,
+	msgSize : 0
+};
+
+
+var speedtestInitator = false;
+var speedtestStatsRemote = {};
+var speedtestStatsLocal = {};
+var speedtestMessage = "";
+var speedtestContinueSending = true;
+var speedtestSchedulerObject = {sleep : 10};
+var speedtestSendLoopLimit = 1000;
+var speedtestSendLoopCounter = 0;
+
+
+
 
 // clean firebase ref
 signalingIdRef.child(freshsignalingId).remove();
@@ -287,14 +295,14 @@ function bindEventsData(channel) {
 		//rxData = e.data.toString();
 		//console.log("Message for " + e.currentTarget.label + " - content:" + rxData);
 
-		if (statisticsLocal.rx_t_start == 0) {
-			statisticsLocal.rx_t_start = new Date().getTime();
+		if (speedtestStatsLocal.rx_t_start == 0) {
+			speedtestStatsLocal.rx_t_start = new Date().getTime();
 		}
 
-		statisticsLocal.rx_t_end = new Date().getTime();
+		speedtestStatsLocal.rx_t_end = new Date().getTime();
 
-		statisticsLocal.rx_pkts++;
-		statisticsLocal.rx_bytes += e.data.length;
+		speedtestStatsLocal.rx_pkts++;
+		speedtestStatsLocal.rx_bytes += e.data.length;
 
 	};
 }
@@ -315,27 +323,21 @@ function generateByteString(count) {
 	return result + result.substring(0, count - result.length);
 };
 
-function speedtestStatisticsReset() {
+function speedtestStatsReset() {
 	console.log('speedtestStatisticsReset');
 	$(".resultsRtt").html('<div class="alert alert-info" role="alert">pending</div>');
 	$(".resultsUpload").html('<div class="alert alert-info" role="alert">pending</div>');
 	$(".resultsDownload").html('<div class="alert alert-info" role="alert">pending</div>');
-	statisticsLocal = {
-		tx_t_start : 0,
-		tx_t_end : 0,
-		tx_pkts : 0,
-		tx_bytes : 0,
+	speedtestStatsLocal = {
+		rtt : 0,
 		rx_t_start : 0,
 		rx_t_end : 0,
 		rx_pkts : 0,
 		rx_bytes : 0
 	};
 
-	statisticsRemote = {
-		tx_t_start : 0,
-		tx_t_end : 0,
-		tx_pkts : 0,
-		tx_bytes : 0,
+	speedtestStatsRemote = {
+		rtt : 0,
 		rx_t_start : 0,
 		rx_t_end : 0,
 		rx_pkts : 0,
@@ -343,111 +345,121 @@ function speedtestStatisticsReset() {
 	};
 }
 
-function speedtestRunByRemote(runtime, msgSize) {
-	console.log('speedtestRunByRemote');
-	
-	speedtestParams.runtime = runtime;
-	speedtestParams.msgSize = msgSize;
-	
-	$("#paramRuntime").val(runtime);
-	$("#paramMsgSize").val(msgSize);
-	
-	speedtestRun();
-}
 
 function speedtestRunByLocal() {
-	$("#rowResults").removeClass('hidden').hide().slideDown();
-	
 	console.log('speedtestRunByLocal');
-	
-	speedtestParams.runtime = $("#paramRuntime").val();
-	speedtestParams.msgSize = $("#paramMsgSize").val();
+
+
+	// check parameters!
+	if ($("#paramMsgSize").val() < 1 || $("#paramRuntime").val() < 1) {
+		alert('You do not want me to use that parameters?!');
+		return;
+	}
+
+	// I AM THE BOSS! ;)
+	speedtestInitator = true;
+
+	// show results
+	$("#rowResults").slideDown();
 	
 	// reset local stats
-	speedtestStatisticsReset();
+	speedtestStatsReset();
+	
+	
+	// tell peer to be the passive and handle parameters
+	var request = {
+		type 		: 'passiveRun',
+		msgSize 	: $("#paramMsgSize").val(),
+		runtime 	: $("#paramRuntime").val(),
+	};
+	dcControl.send(JSON.stringify(request));
+	
+	// get RTT
 	msgSendPing();
-	// reset remote stats
-	var request = {
-		type : 'resetStats',
-	};
-	dcControl.send(JSON.stringify(request));
-	
-	var request = {
-		type : 'bePassive',
-	};
-	dcControl.send(JSON.stringify(request));
-	
-	initiator = true;
-	
+
+	// start speedtest
 	speedtestRun();
 }
 	
 	
 	
 function speedtestRun() {
+	console.log('speedtestRun - runtime: ' + $("#paramRuntime").val() + ', msg-size:' + $("#paramMsgSize").val());
+
+	speedtestParams.runtime = $("#paramRuntime").val();
+	speedtestParams.msgSize = $("#paramMsgSize").val();
 	// parameters valid?
-	if (speedtestParams.runtime >= 1 && speedtestParams.msgSize >= 1) {
-		$("#paramRuntime").attr('disabled', true);
-		$("#paramMsgSize").attr('disabled', true);
-		$("#btnSpeedtestRun").attr('disabled', true);
 
-		bulkMessage = generateByteString(speedtestParams.msgSize);
+	$("#paramRuntime").attr('disabled', true);
+	$("#paramMsgSize").attr('disabled', true);
+	$("#btnSpeedtestRun").attr('disabled', true);
 
-		$(".spinnerStatus").text("uploading ...");
-		$("#rowSpinner").removeClass('hidden').hide().slideDown();
-		
-		// set beginning of upload
-		statisticsLocal.tx_t_start = new Date().getTime();
-		
-		console.log('starting speedtest - runtime: ' + speedtestParams.runtime + ', msg-size:' + speedtestParams.msgSize);
-		setTimeout(function(){ speedtestSend();}, 1000);
-	} else {
-		alert('Check parameter!');
-	}
+	speedtestMessage = generateByteString(speedtestParams.msgSize);
+
+	$(".spinnerStatus").text("sending ...");
+	$("#rowSpinner").slideDown();
+	
+	// set beginning of upload
+	speedtestStatsLocal.tx_t_start = new Date().getTime();
+	speedtestContinueSending = true;
+	// start sending after 1 second - wait for rtt measurement
+	setTimeout(function(){
+		speedtestSend();
+	}, 1000);
+
+	// stop sending after rundtime + start delay
+	setTimeout(function(){
+		speedtestContinueSending = false;
+	}, speedtestParams.runtime * 1000 + 1000);
+
 }
 
-function speedtestSend() {
-	statisticsLocal.tx_t_end = new Date().getTime();
-	var runtime = statisticsLocal.tx_t_end - statisticsLocal.tx_t_start;
-	if (runtime <= (speedtestParams.runtime * 1000)) {
-		if (dcData.bufferedAmount < bufferedAmountLimit) {
 
-			var pktCounter = 0;
-			while (dcData.bufferedAmount < bufferedAmountLimit && pktCounter < 1000) {
-				dcData.send(bulkMessage);
-				statisticsLocal.tx_pkts++;
-				statisticsLocal.tx_bytes += bulkMessage.length;
-				pktCounter++;
-			}
-			sendSleep = 10;
-			//console.log('reached limit!');
-		} else {
-			//console.log('npmSend - bufferedAmount >= limit (' + bufferedAmountLimit + ')');
+// todo: adaptive loop control!
+// be careful with this function - needs to be fast!
+function speedtestSend() {
+	speedtestSendLoopCounter = 0;
+	// send until timer comes back
+	if (speedtestContinueSending === true) {
+		
+		// increase messages per loop, if buffer is empty
+		if(dcData.bufferedAmount == 0) {
+			speedtestSendLoopLimit = speedtestSendLoopLimit * 2;
+
+		// decrease if more than 2 mb is pending
+		} else if (dcData.bufferedAmount > 4194304) {
+			speedtestSendLoopLimit = speedtestSendLoopLimit * 0.25;
 		}
-		var schedulerObject = "1";
-		scheduler.postMessage(schedulerObject);
+
+		// only send if buffered messages are under limit
+		while (dcData.bufferedAmount < bufferedAmountLimit && speedtestSendLoopCounter < speedtestSendLoopLimit) {
+			dcData.send(speedtestMessage);
+			++speedtestSendLoopCounter;
+		}
+
+		// schedule next send call
+		scheduler.postMessage(speedtestSchedulerObject);
+
 	} else {
-		console.log('runtime reached');
+		console.log('speedtestSend - runtime reached, requesting stats from peer');
 
 		// request statistics after runtime
 		var request = {
-			type : 'statisticsRequest'
+			type : 'statsRequest'
 		};
-		console.log('requesting stats');
 		dcControl.send(JSON.stringify(request));
 		
-		// request statistics after runtime
-		if(initiator) {
+		// if iam the iniatator, trigger peer to start sending
+		if(speedtestInitator) {
 			
-			$(".spinnerStatus").text("downloading ...");
-			//$("#rowSpinner").removeClass('hidden').hide().slideDown();
+			$(".spinnerStatus").text("receiving ...");
 			
 			var request = {
-				type : 'startSending',
-				msgSize : speedtestParams.msgSize,
-				runtime : speedtestParams.runtime,
+				type : 'startSending'
 			};
 			dcControl.send(JSON.stringify(request));
+
+		// otherwise: call finish, tell peer to do the same
 		} else {
 			speedtestFinish();
 			var request = {
@@ -465,13 +477,15 @@ function speedtestFinish() {
 	$("#paramMsgSize").attr('disabled', false);
 	$("#btnSpeedtestRun").attr('disabled', false);
 	$("#rowSpinner").slideUp();
+
+	$("#tableResults tbody").append("<tr><td>" + speedtestStatsLocal.rtt + "</td><td>" + speedtestStatsRemote.rx_bytes + "</td><td>" + speedtestStatsLocal.rx_bytes + "</td><td>" + speedtestParams.msgSize + "</td><td>" + speedtestParams.runtime + "</td></tr>");
 	
 }
 
 function msgSendPing() {
 	var date = new Date();
 	timestampMessage = {
-		type : 'timestamp',
+		type : 'ping',
 		timestamp : date.getTime(),
 	};
 	dcControl.send(JSON.stringify(timestampMessage));
@@ -482,61 +496,57 @@ function msgHandleJson(message) {
 	var messageObject = JSON.parse(message);
 
 	switch(messageObject.type) {
-		
+	
+	// peer indicates finish
 	case 'finish':
 		speedtestFinish();
 	break;
 
-	// reset statistics
-	case 'resetStats':
-		console.log('msgHandleJson - resetStats');
-		speedtestStatisticsReset();
-		break;
+	
+	// the peer has startet the speedtest
+	case 'passiveRun': {
+		console.log('msgHandleJson - passiveRun')
+		speedtestStatsReset();
+		speedtestInitator = false;
 		
-	case 'bePassive': {
-		initiator = false;
-		console.log('test');
-		console.log('msgHandleJson - bePassive');
-		$("#paramRuntime").attr('disabled', true);
-		$("#paramMsgSize").attr('disabled', true);
+		$("#paramRuntime").val(messageObject.runtime).attr('disabled', true);
+		$("#paramMsgSize").val(messageObject.msgSize).attr('disabled', true);
 		$("#btnSpeedtestRun").attr('disabled', true);
-		$(".spinnerStatus").text("downloading ...");
+		$(".spinnerStatus").text("receiving ...");
 		$("#rowSpinner").slideDown();
 		$("#rowResults").slideDown();
 		break;
 	}
 	
 	case 'startSending' : {
-		console.log('msgHandleJson - startSending');
-		console.log('msg-size: ' + messageObject.msgSize + ' - runtime: ' + messageObject.runtime);
-		speedtestRunByRemote(messageObject.runtime,messageObject.msgSize);
+		speedtestRun();
 		break;
 	}
 
 	// peer requests statistics
-	case 'statisticsRequest':
+	case 'statsRequest':
 		console.log('msgHandleJson - statisticsRequest');
 		
 		// show local bandwidth in gui
-		var bandwith = Math.round(statisticsLocal.rx_bytes / ((statisticsLocal.rx_t_end - statisticsLocal.rx_t_start) / 1000));
+		var bandwith = Math.round(speedtestStatsLocal.rx_bytes / ((speedtestStatsLocal.rx_t_end - speedtestStatsLocal.rx_t_start) / 1000));
 		
 		$('.resultsDownload').html('<div class="alert alert-success" role="alert">' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s - ' + bandwith + ' byte/s</div>');
 
 		// send local stats to peer
 		var request = {
-			type : 'statistics',
-			content : statisticsLocal
+			type : 'stats',
+			content : speedtestStatsLocal
 		};
 		dcControl.send(JSON.stringify(request));
 		break;
 
 	// peer sends statistics
-	case 'statistics':
+	case 'stats':
 	
 		// store remote statistics
 		console.log(messageObject.content);
-		statisticsRemote = messageObject.content;
-		var bandwith = Math.round(statisticsRemote.rx_bytes / ((statisticsRemote.rx_t_end - statisticsRemote.rx_t_start) / 1000));
+		speedtestStatsRemote = messageObject.content;
+		var bandwith = Math.round(speedtestStatsRemote.rx_bytes / ((speedtestStatsRemote.rx_t_end - speedtestStatsRemote.rx_t_start) / 1000));
 		$('.resultsUpload').html('<div class="alert alert-success" role="alert">' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s - ' + bandwith + ' byte/s</div>');
 
 		// got remote statistics - show in gui!
@@ -546,23 +556,23 @@ function msgHandleJson(message) {
 		break;
 
 	// timestamp - echo timestamp to sender
-	case 'timestamp':
+	case 'ping':
 		console.log('msgHandleJson - timestamp');
 		
 		
 		
-		if(!initiator) {
+		if(!speedtestInitator) {
 			msgSendPing();
 		}
 		
-		messageObject.type = 'timestampEcho';
+		messageObject.type = 'pingEcho';
 		dcControl.send(JSON.stringify(messageObject));
 		
 		
 		break;
 
 	// timestampEcho - measure RTT
-	case 'timestampEcho':
+	case 'pingEcho':
 		console.log('msgHandleJson - timestampEcho');
 		
 		var date = new Date();
@@ -570,6 +580,7 @@ function msgHandleJson(message) {
 		$('.resultsRtt').html('<div class="alert alert-success" role="alert">RTT: ' + t_delta + 'ms</div>');
 
 		console.log('RTT: ' + t_delta);
+		speedtestStatsRemote.rtt = t_delta;
 		break;
 
 	default:

@@ -161,6 +161,24 @@
 
 			</div>
 
+			<div class="row" id="rowResultsTable">
+			<div class="col-sm-12">
+			<table class="table" id="tableResults">
+				<thead>
+					<tr>
+						<th>rtt</th>
+						<th>upload</th>
+						<th>download</th>
+						<th>msg-size</th>
+						<th>runtime</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+				</tbody>
+			</table>
+			</div>
+			</div>
 
 			<div class="log"></div>
 
@@ -175,8 +193,8 @@
 
 			<script type="text/javascript">
 				jQuery(document).ready(function($) {
-					$("#rowResults").hide();
-					$("#rowControl").hide();
+					//$("#rowResults").hide();
+					//$("#rowControl").hide();
 					
 					$("#btnSpeedtestRun").click(function(event) {
 						event.preventDefault();
