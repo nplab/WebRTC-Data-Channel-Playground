@@ -548,6 +548,7 @@ function msgHandleJson(message) {
 	}
 	
 	case 'startSending' : {
+		console.log('msgHandleJson - startSending');
 		speedtestRun();
 		break;
 	}
