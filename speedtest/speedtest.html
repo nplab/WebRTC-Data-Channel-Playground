@@ -3,10 +3,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<meta name="description" content="WebRTC-DataChannel Playground - Browsertests">
+	<meta name="description" content="WebRTC-DataChannel Playground - Speedtest">
 	<meta name="author" content="Felix Weinrank">
 
-	<title>WebRTC-DataChannel Playground - Gyrocolor</title>
+	<title>WebRTC-DataChannel Playground - Speedtest</title>
 
 	<link rel="apple-touch-icon"  href="../common/favicon/apple-icon-180x180.png">
 	<link rel="icon" type="image/png"  href="../common/favicon/android-icon-192x192.png">
@@ -64,18 +64,23 @@
 	</nav>
 
 	<div class="container">
-		<h1>Speedtest<span class="connectionStatus"></span></h1>
+		<h1>Speedtest</h1>
+
+		<div class="row hidden" id="rowMessage">
+			<div class="col-sm-12" id="colMessage">
+			</div>
+		</div>
 
 		<div class="row" id="rowInit">
 			<div class="col-sm-4" id="colCreateSignalingId">
 				<h3>Create peer ID ...</h3>
-				<button class="btn btn-success btn-block" id="gyroCreateSignalingId" onclick="gyroCreateSignalingId();">
+				<button class="btn btn-success btn-block" id="gyroCreateSignalingId" onclick="speedtestCreateSignalingId();">
 					<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> create ID
 				</button>
 			</div>
 
 			<div class="col-sm-4 text-center" id="colLocalIceFilter">
-				<h3>filter locals ice candidates</h3>
+				<h3>filter ice ip</h3>
 				<div class="input-group">
 					<div class="input-group-addon">
 						local ip to offer
@@ -90,7 +95,7 @@
 					<input type="number" min="1" max="99999" class="form-control input" placeholder="peer ID" id="signalingId">
 
 					<span class="input-group-btn">
-						<button class="btn btn-success" id="gyroConnectToSignalingId" onclick="gyroConnectTosignalingId();">
+						<button class="btn btn-success" id="gyroConnectToSignalingId" onclick="speedtestConnectTosignalingId();">
 							<span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> connect
 						</button> </span>
 					</div><!-- /input-group -->
@@ -100,7 +105,7 @@
 			</div>
 
 			
-			<div class="row" id="rowControl">
+			<div class="row hidden" id="rowControl">
 				<div class="col-sm-12 text-center">
 					<h3><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Settings</h3>
 					<form class="form-inline">
@@ -145,42 +150,41 @@
 				<h3 class="text-center spinnerStatus"></h3>
 			</div>
 			
-			<div class="row" id="rowResults">
+			<div class="row hidden" id="rowResults">
 				<div class="col-sm-4 text-center">
 					<h3><span class="glyphicon glyphicon-time" aria-hidden="true"></span> RTT</h3>
-					<span class="resultsRtt">should not see me</span>
+					<div class="resultsRtt">should not see me</div>
 				</div>
 				<div class="col-sm-4 text-center">
 					<h3><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload </h3>
-					<span class="resultsUpload">should not see me</span>
+					<div class="resultsUpload">should not see me</div>
 				</div>
 				<div class="col-sm-4 text-center">
 					<h3><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Download</h3>
-					<span class="resultsDownload">should not see me</span>
+					<div class="resultsDownload">should not see me</div>
 				</div>
 
 			</div>
 
-			<div class="row" id="rowResultsTable">
-			<div class="col-sm-12">
-			<table class="table" id="tableResults">
-				<thead>
-					<tr>
-						<th>rtt</th>
-						<th>upload</th>
-						<th>download</th>
-						<th>msg-size</th>
-						<th>runtime</th>
-					</tr>
-				</thead>
-				<tbody>
-					
-				</tbody>
-			</table>
-			</div>
+			<div class="row hidden" id="rowResultsTable">
+				<div class="col-sm-12">
+					<table class="table" id="tableResults">
+						<thead>
+							<tr>
+								<th>rtt</th>
+								<th>upload</th>
+								<th>download</th>
+								<th>msg-size</th>
+								<th>runtime</th>
+							</tr>
+						</thead>
+						<tbody>
+							
+						</tbody>
+					</table>
+				</div>
 			</div>
 
-			<div class="log"></div>
 
 			<div class="footer text-center">
 				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
@@ -193,8 +197,10 @@
 
 			<script type="text/javascript">
 				jQuery(document).ready(function($) {
-					//$("#rowResults").hide();
-					//$("#rowControl").hide();
+					$("#rowResults").removeClass('hidden').hide();
+					$("#rowControl").removeClass('hidden').hide();
+					$("#rowSpinner").removeClass('hidden').hide();
+					$("#rowResultsTable").removeClass('hidden').hide();
 					
 					$("#btnSpeedtestRun").click(function(event) {
 						event.preventDefault();

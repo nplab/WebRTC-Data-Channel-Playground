@@ -96,7 +96,7 @@ signalingIdRef.child(freshsignalingId).remove();
 
 // generate a unique-ish string for storage in firebase
 function generateSignalingId() {
-	return (Math.random() * 10000 + 10000 | 0).toString();
+	return (Math.random() * 10000| 0).toString();
 }
 
 // wrapper to send data to FireBase
@@ -143,42 +143,46 @@ pc.onicecandidate = function(event) {
 	console.log('onicecandidate - ip:' + ip);
 };
 
-function gyroCreateSignalingId() {
+pc.oniceconnectionstatechange = function(event) { 
+	console.log("oniceconnectionstatechange - " + pc.iceConnectionState);
+	if (pc.iceConnectionState === 'disconnected') {
+		speedtestConnectionLost();
+	}
+};
+
+function speedtestCreateSignalingId() {
+	console.log('speedtestCreateSignalingId');
+
 	signalingId = freshsignalingId;
 	offerer = true;
 	role = "offerer";
 	peerRole = "answerer";
 
 	console.log('creating signaling id:' + signalingId);
-	gyroConnect();
+	speedtestConnect();
 }
 
-function gyroConnectTosignalingId() {
+function speedtestConnectTosignalingId() {
+	console.log('speedtestConnectTosignalingId');
+
 	signalingId = $("#signalingId").val();
 	offerer = false;
 	role = "answerer";
 	peerRole = "offerer";
 
 	console.log('connecting to peer:' + signalingId);
-	gyroConnect();
+	speedtestConnect();
 
-}
-
-function checkConnectionStatus() {
-	if (dcControl.readyState === 'open' && dcData.readyState === 'open') {
-		$(".connectionStatus").html(' - <span style="color:green;">connected</span>');
-	}
 }
 
 // establish connection to remote peer via webrtc
-function gyroConnect() {
+function speedtestConnect() {
 
 	$("#rowInit").slideUp();
-	//$("#rowSpinner").removeClass("hidden");
 
 	if (role === "offerer") {
-		$(".spinnerStatus").text("waiting for peer - id: " + signalingId);
-		$("#rowSpinner").removeClass('hidden').hide().slideDown();
+		$(".spinnerStatus").html("waiting for peer<br/>use id: " + signalingId);
+		$("#rowSpinner").slideDown();
 
 		dcControl = pc.createDataChannel('control');
 		dcData = pc.createDataChannel('data');
@@ -208,8 +212,10 @@ function gyroConnect() {
 		// answerer must wait for the data channel
 		pc.ondatachannel = function(event) {
 			if (event.channel.label == "control") {
+				dcControl = event.channel;
 				bindEventsControl(event.channel);
 			} else if (event.channel.label == "data") {
+				dcData = event.channel;
 				bindEventsData(event.channel);
 			} else {
 				alert("error: unknown channel!");
@@ -258,13 +264,14 @@ function extractIpFromString(string) {
 function bindEventsControl(channel) {
 	channel.onopen = function() {
 		$("#rowSpinner").slideUp();
-		$("#rowControl").removeClass('hidden').hide().slideDown();
-		dcControl = channel;
+		$("#rowControl").slideDown();
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
 	};
 
 	channel.onclose = function(e) {
 		console.log("Channel Close");
+		speedtestConnectionLost();
+
 	};
 
 	window.onbeforeunload = function() {
@@ -279,30 +286,26 @@ function bindEventsControl(channel) {
 // bind events for control channel
 function bindEventsData(channel) {
 	channel.onopen = function() {
-		dcData = channel;
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
 	};
 
 	channel.onclose = function(e) {
 		console.log("Channel Close");
-	};
+		speedtestConnectionLost();
+		};
 
 	window.onbeforeunload = function() {
 		channel.close();
 	};
 
 	channel.onmessage = function(e) {
-		//rxData = e.data.toString();
-		//console.log("Message for " + e.currentTarget.label + " - content:" + rxData);
-
 		if (speedtestStatsLocal.rx_t_start == 0) {
 			speedtestStatsLocal.rx_t_start = new Date().getTime();
 		}
 
 		speedtestStatsLocal.rx_t_end = new Date().getTime();
-
 		speedtestStatsLocal.rx_pkts++;
-		speedtestStatsLocal.rx_bytes += e.data.length;
+		speedtestStatsLocal.rx_bytes += speedtestParams.msgSize;
 
 	};
 }
@@ -346,6 +349,16 @@ function speedtestStatsReset() {
 }
 
 
+function speedtestConnectionLost() {
+	speedtestContinueSending = false;
+	$("#rowSpinner").hide();
+	$("#rowControl").hide();
+	$("#rowResults").hide();
+	$("#rowMessage").removeClass('hidden');
+	$("#colMessage").html('<div class="alert alert-danger text-center" role="alert"><strong>Error:</strong> Connection to peer lost!</div>');
+
+}
+
 function speedtestRunByLocal() {
 	console.log('speedtestRunByLocal');
 
@@ -386,8 +399,8 @@ function speedtestRunByLocal() {
 function speedtestRun() {
 	console.log('speedtestRun - runtime: ' + $("#paramRuntime").val() + ', msg-size:' + $("#paramMsgSize").val());
 
-	speedtestParams.runtime = $("#paramRuntime").val();
-	speedtestParams.msgSize = $("#paramMsgSize").val();
+	speedtestParams.runtime = parseInt($("#paramRuntime").val());
+	speedtestParams.msgSize = parseInt($("#paramMsgSize").val());
 	// parameters valid?
 
 	$("#paramRuntime").attr('disabled', true);
@@ -399,6 +412,9 @@ function speedtestRun() {
 	$(".spinnerStatus").text("sending ...");
 	$("#rowSpinner").slideDown();
 	
+	$(".resultsUpload").html('<div class="alert alert-info" role="alert">running</div>');
+
+
 	// set beginning of upload
 	speedtestStatsLocal.tx_t_start = new Date().getTime();
 	speedtestContinueSending = true;
@@ -477,8 +493,16 @@ function speedtestFinish() {
 	$("#paramMsgSize").attr('disabled', false);
 	$("#btnSpeedtestRun").attr('disabled', false);
 	$("#rowSpinner").slideUp();
+	$("#rowResultsTable").slideDown();
+	if(speedtestInitator) {
+		speedtestAddResults();
+	}
+}
 
-	$("#tableResults tbody").append("<tr><td>" + speedtestStatsLocal.rtt + "</td><td>" + speedtestStatsRemote.rx_bytes + "</td><td>" + speedtestStatsLocal.rx_bytes + "</td><td>" + speedtestParams.msgSize + "</td><td>" + speedtestParams.runtime + "</td></tr>");
+function speedtestAddResults() {
+	var bandwithUpload = Math.round(speedtestStatsRemote.rx_bytes / ((speedtestStatsRemote.rx_t_end - speedtestStatsRemote.rx_t_start) / 1000) / 1000 / 1000 * 8 * 100) / 100;
+	var bandwithDownload = Math.round(speedtestStatsLocal.rx_bytes / ((speedtestStatsLocal.rx_t_end - speedtestStatsLocal.rx_t_start) / 1000) / 1000 / 1000 * 8 * 100) / 100;
+	$("#tableResults tbody").append("<tr><td>" + speedtestStatsLocal.rtt + " ms</td><td>" + bandwithUpload + " Mbit/s</td><td>" + bandwithDownload + " Mbit/s</td><td>" + speedtestParams.msgSize + " byte</td><td>" + speedtestParams.runtime + " s</td></tr>");
 	
 }
 
@@ -505,9 +529,14 @@ function msgHandleJson(message) {
 	
 	// the peer has startet the speedtest
 	case 'passiveRun': {
-		console.log('msgHandleJson - passiveRun')
+		console.log('msgHandleJson - passiveRun');
+		$(".resultsDownload").html('<div class="alert alert-info" role="alert">running</div>');
+
 		speedtestStatsReset();
 		speedtestInitator = false;
+
+		speedtestParams.msgSize = parseInt(messageObject.msgSize);
+		speedtestParams.runtime = parseInt(messageObject.runtime);
 		
 		$("#paramRuntime").val(messageObject.runtime).attr('disabled', true);
 		$("#paramMsgSize").val(messageObject.msgSize).attr('disabled', true);
@@ -530,7 +559,7 @@ function msgHandleJson(message) {
 		// show local bandwidth in gui
 		var bandwith = Math.round(speedtestStatsLocal.rx_bytes / ((speedtestStatsLocal.rx_t_end - speedtestStatsLocal.rx_t_start) / 1000));
 		
-		$('.resultsDownload').html('<div class="alert alert-success" role="alert">' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s - ' + bandwith + ' byte/s</div>');
+		$('.resultsDownload').html('<div class="alert alert-success" role="alert">' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s</div>');
 
 		// send local stats to peer
 		var request = {
@@ -538,6 +567,7 @@ function msgHandleJson(message) {
 			content : speedtestStatsLocal
 		};
 		dcControl.send(JSON.stringify(request));
+
 		break;
 
 	// peer sends statistics
@@ -547,19 +577,22 @@ function msgHandleJson(message) {
 		console.log(messageObject.content);
 		speedtestStatsRemote = messageObject.content;
 		var bandwith = Math.round(speedtestStatsRemote.rx_bytes / ((speedtestStatsRemote.rx_t_end - speedtestStatsRemote.rx_t_start) / 1000));
-		$('.resultsUpload').html('<div class="alert alert-success" role="alert">' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s - ' + bandwith + ' byte/s</div>');
+		$('.resultsUpload').html('<div class="alert alert-success" role="alert">' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s</div>');
 
 		// got remote statistics - show in gui!
 		console.log('speed: ' + bandwith + ' byte/s');
 		console.log('speed: ' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s');
-		//$('.resultsUpload').html(Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s<br/>' + bandwith + ' byte/s');
+
+		if(!speedtestInitator) {
+			speedtestAddResults();
+		}
+		
+		
 		break;
 
 	// timestamp - echo timestamp to sender
 	case 'ping':
-		console.log('msgHandleJson - timestamp');
-		
-		
+		console.log('msgHandleJson - ping');
 		
 		if(!speedtestInitator) {
 			msgSendPing();
@@ -573,18 +606,18 @@ function msgHandleJson(message) {
 
 	// timestampEcho - measure RTT
 	case 'pingEcho':
-		console.log('msgHandleJson - timestampEcho');
+		console.log('msgHandleJson - pingEcho');
 		
 		var date = new Date();
 		var t_delta = date.getTime() - messageObject.timestamp;
 		$('.resultsRtt').html('<div class="alert alert-success" role="alert">RTT: ' + t_delta + 'ms</div>');
 
 		console.log('RTT: ' + t_delta);
-		speedtestStatsRemote.rtt = t_delta;
+		speedtestStatsLocal.rtt = t_delta;
 		break;
 
 	default:
-		alert('Unknown messagetype!!');
+		alert('Unknown messagetype: ' + messageObject.type);
 		break;
 	}
 }
