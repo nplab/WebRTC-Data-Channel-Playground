@@ -82,14 +82,12 @@ var speedtestParams = {
 var speedtestInitator = false;
 var speedtestStatsRemote = {};
 var speedtestStatsLocal = {};
+var speedtestStatsTempCounter = 0;
 var speedtestMessage = "";
 var speedtestContinueSending = true;
 var speedtestSchedulerObject = {sleep : 10};
 var speedtestSendLoopLimit = 1000;
 var speedtestSendLoopCounter = 0;
-
-
-
 
 // clean firebase ref
 signalingIdRef.child(freshsignalingId).remove();
@@ -305,8 +303,6 @@ function bindEventsData(channel) {
 
 		speedtestStatsLocal.rx_t_end = new Date().getTime();
 		speedtestStatsLocal.rx_pkts++;
-		speedtestStatsLocal.rx_bytes += speedtestParams.msgSize;
-
 	};
 }
 
@@ -315,7 +311,7 @@ function generateByteString(count) {
 		return "";
 	}
 	var count2 = count / 2;
-	var result = "x";
+	var result = "F";
 
 	// double the input until it is long enough.
 	while (result.length <= count2) {
@@ -335,16 +331,14 @@ function speedtestStatsReset() {
 		rtt : 0,
 		rx_t_start : 0,
 		rx_t_end : 0,
-		rx_pkts : 0,
-		rx_bytes : 0
+		rx_pkts : 0
 	};
 
 	speedtestStatsRemote = {
 		rtt : 0,
 		rx_t_start : 0,
 		rx_t_end : 0,
-		rx_pkts : 0,
-		rx_bytes : 0
+		rx_pkts : 0
 	};
 }
 
@@ -430,7 +424,6 @@ function speedtestRun() {
 
 }
 
-
 // todo: adaptive loop control!
 // be careful with this function - needs to be fast!
 function speedtestSend() {
@@ -442,7 +435,7 @@ function speedtestSend() {
 		if(dcData.bufferedAmount == 0) {
 			speedtestSendLoopLimit = speedtestSendLoopLimit * 2;
 
-		// decrease if more than 2 mb is pending
+		// decrease if more than 4 mb is pending
 		} else if (dcData.bufferedAmount > 4194304) {
 			speedtestSendLoopLimit = speedtestSendLoopLimit * 0.25;
 		}
@@ -455,6 +448,7 @@ function speedtestSend() {
 
 		// schedule next send call
 		scheduler.postMessage(speedtestSchedulerObject);
+		//setTimeout(function(){ speedtestSend(); }, 10);
 
 	} else {
 		console.log('speedtestSend - runtime reached, requesting stats from peer');
@@ -500,8 +494,8 @@ function speedtestFinish() {
 }
 
 function speedtestAddResults() {
-	var bandwithUpload = Math.round(speedtestStatsRemote.rx_bytes / ((speedtestStatsRemote.rx_t_end - speedtestStatsRemote.rx_t_start) / 1000) / 1000 / 1000 * 8 * 100) / 100;
-	var bandwithDownload = Math.round(speedtestStatsLocal.rx_bytes / ((speedtestStatsLocal.rx_t_end - speedtestStatsLocal.rx_t_start) / 1000) / 1000 / 1000 * 8 * 100) / 100;
+	var bandwithUpload = Math.round(speedtestStatsRemote.rx_pkts * speedtestParams.msgSize / ((speedtestStatsRemote.rx_t_end - speedtestStatsRemote.rx_t_start) / 1000) / 1000 / 1000 * 8 * 100) / 100;
+	var bandwithDownload = Math.round(speedtestStatsLocal.rx_pkts * speedtestParams.msgSize / ((speedtestStatsLocal.rx_t_end - speedtestStatsLocal.rx_t_start) / 1000) / 1000 / 1000 * 8 * 100) / 100;
 	$("#tableResults tbody").append("<tr><td>" + speedtestStatsLocal.rtt + " ms</td><td>" + bandwithUpload + " Mbit/s</td><td>" + bandwithDownload + " Mbit/s</td><td>" + speedtestParams.msgSize + " byte</td><td>" + speedtestParams.runtime + " s</td></tr>");
 	
 }
@@ -558,8 +552,7 @@ function msgHandleJson(message) {
 		console.log('msgHandleJson - statisticsRequest');
 		
 		// show local bandwidth in gui
-		var bandwith = Math.round(speedtestStatsLocal.rx_bytes / ((speedtestStatsLocal.rx_t_end - speedtestStatsLocal.rx_t_start) / 1000));
-		
+		var bandwith = Math.round(speedtestStatsLocal.rx_pkts * speedtestParams.msgSize / ((speedtestStatsLocal.rx_t_end - speedtestStatsLocal.rx_t_start) / 1000));
 		$('.resultsDownload').html('<div class="alert alert-success" role="alert">' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s</div>');
 
 		// send local stats to peer
@@ -577,7 +570,8 @@ function msgHandleJson(message) {
 		// store remote statistics
 		console.log(messageObject.content);
 		speedtestStatsRemote = messageObject.content;
-		var bandwith = Math.round(speedtestStatsRemote.rx_bytes / ((speedtestStatsRemote.rx_t_end - speedtestStatsRemote.rx_t_start) / 1000));
+		var bandwith = Math.round(speedtestStatsRemote.rx_pkts * speedtestParams.msgSize / ((speedtestStatsRemote.rx_t_end - speedtestStatsRemote.rx_t_start) / 1000));
+		
 		$('.resultsUpload').html('<div class="alert alert-success" role="alert">' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s</div>');
 
 		// got remote statistics - show in gui!
@@ -626,5 +620,6 @@ function msgHandleJson(message) {
 // scheduler only used for npmSend
 scheduler.onmessage = function(e) {
 	speedtestSend();
+	
 };
 
