@@ -22,7 +22,7 @@ If available, the client changes the servers background color in dependence of i
 Speedtest - runtime and message-size are configurable. 
 
 ## Trace Data Channel in Wireshark
-You can trace traffic with Wireshark on Firefox and Chrome (nightly) - tutorial is [here](https://github.com/nplab/WebRTC-Data-Channel-Playground/wiki/Analyze-Data-Channel-traffic-with-Wireshark).
+You can trace and analyze traffic with Wireshark on Firefox and Chrome (nightly) - [tutorial is here](https://github.com/nplab/WebRTC-Data-Channel-Playground/wiki/Analyze-Data-Channel-traffic-with-Wireshark).
 
 ## Contact & Feedback
 We like feedback! :)
