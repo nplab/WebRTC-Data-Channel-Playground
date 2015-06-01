@@ -71,7 +71,6 @@ var freshsignalingId = generateSignalingId();
 var signalingIdRef = dbRef.child("gyroIDs");
 var t_startNewPackage = 0;
 var dcControl = {};
-var dcData = {};
 
 
 function gyroInit() {
@@ -93,15 +92,17 @@ function gyroInit() {
 			var alphaRaw = Math.round(event.alpha);
 			var alpha = Math.round((Math.abs(eventData.alpha-180) / 0.7)% 255);
 			
-			$('#gyrostatus').html('alpha:' + alpha + ' beta:' + beta + ' gamma:' + gamma + '<br />' + 'alpha:' + alphaRaw + ' beta:' + betaRaw + ' gamma:' + gammaRaw );
-			
-			
-			//$(document.body).css('background-color','rgb('+alpha+','+beta+','+gamma+')');​​​​​​​​​​​​​​​
-			$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
-			
-			if(dcControl.hasOwnProperty('readyState') && dcControl.readyState === "open") {
-				alert('sending');
-				dcControl.send(alpha+','+beta+','+gamma);
+			if(gammaRaw != 0 && betaRaw != 0 && alphaRaw != 0) {
+				$('#gyrostatus').html('alpha:' + alpha + ' beta:' + beta + ' gamma:' + gamma + '<br />' + 'alpha:' + alphaRaw + ' beta:' + betaRaw + ' gamma:' + gammaRaw );
+				
+				
+				//$(document.body).css('background-color','rgb('+alpha+','+beta+','+gamma+')');​​​​​​​​​​​​​​​
+				$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
+				
+				if(typeof(dcControl.readyState) !== 'undefined' && dcControl.readyState === "open") {
+					//alert('sending');
+					dcControl.send(alpha+','+beta+','+gamma);
+				}
 			}
 			
 			// call our orientation event handler
@@ -114,14 +115,8 @@ signalingIdRef.child(freshsignalingId).remove();
 
 // generate a unique-ish string for storage in firebase
 function generateSignalingId() {
-	return (Math.random() * 10000 + 10000 | 0).toString();
+	return (Math.random() * 10000| 0).toString();
 }
-
-// check for int
-function isInt(n){
-	return Number(n)===n && n%1===0;
-}
-
 
 // wrapper to send data to FireBase
 function firebaseSend(signalingId, key, data) {
@@ -145,14 +140,19 @@ function errorHandler(err) {
 	console.error(err);
 }
 
+pc.oniceconnectionstatechange = function(event) { 
+	console.log("oniceconnectionstatechange - " + pc.iceConnectionState);
+};
+
 // handle local ice candidates
 pc.onicecandidate = function(event) {
 	// take the first candidate that isn't null
 	if (!pc || !event || !event.candidate) {
 		return;
 	}
-	
+
 	var ip = extractIpFromString(event.candidate.candidate);
+
 
 	// add local ice candidate to firebase
 	signalingIdRef.child(signalingId).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
@@ -166,7 +166,7 @@ function gyroCreateSignalingId() {
 	role = "offerer";
 	peerRole = "answerer";
 	
-	
+	$('#connectionStatus').text('waiting for peer - connect with to id ' + signalingId);
 	console.log('creating signaling id:' + signalingId);
 	gyroConnect();
 }
@@ -178,7 +178,7 @@ function gyroConnectTosignalingId() {
 	role = "answerer";
 	peerRole = "offerer";
 	
-	
+	$('#connectionStatus').text('connecting to peer id ' + signalingId);
 	console.log('connecting to peer:' + signalingId);
 	gyroConnect();
 	
@@ -222,7 +222,9 @@ function gyroConnect() {
 
 		// answerer must wait for the data channel
 		pc.ondatachannel = function(event) {
-			bindEvents(event.channel);
+			dcControl = event.channel;
+			console.log(event);
+			bindEvents(dcControl);
 			console.log('incoming datachannel');
 		};
 
@@ -266,10 +268,6 @@ function extractIpFromString(string) {
 // bind the channel events
 function bindEvents(channel) {
 	channel.onopen = function() {
-		if(channel.label == 'control') {
-			dcControl = channel;
-		}
-		
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
 	};
 
