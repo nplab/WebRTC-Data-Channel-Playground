@@ -293,15 +293,19 @@ function gyroInit() {
 			// gamma is the left-to-right tilt in degrees, where right is positive
 			var gammaRaw = Math.round(event.gamma);
 			var gamma = Math.round((Math.abs(eventData.gamma) * 2.83) % 255);
-
+                        if(Math.round((Math.abs(eventData.gamma) * 2.83)) > 255)
+                            gamma = 255 - gamma;
 			// beta is the front-to-back tilt in degrees, where front is positive
 			var betaRaw = Math.round(event.beta);
 			var beta = Math.round((Math.abs(eventData.beta) *1.41 )% 255);
-
+                        if(Math.round((Math.abs(eventData.beta) * 2.83)) > 255)
+                            beta = 255 - beta;
 			// alpha is the compass direction the device is facing in degrees
 			var alphaRaw = Math.round(event.alpha);
 			var alpha = Math.round((Math.abs(eventData.alpha-180) / 0.7)% 255);
-			
+			if(Math.round((Math.abs(eventData.alpha) * 2.83)) > 255)
+                            alpha = 255 - alpha;
+                        
 			if(gammaRaw != 0 && betaRaw != 0 && alphaRaw != 0) {
 				$('#gyrostatus').html('alpha:' + alpha + ' beta:' + beta + ' gamma:' + gamma + '<br />' + 'alpha:' + alphaRaw + ' beta:' + betaRaw + ' gamma:' + gammaRaw );
 				
@@ -331,7 +335,7 @@ function gyroInit() {
 function gyroSetColor(alpha, beta, gamma) {
 	console.log('color: ' + alpha + ' - ' + beta + ' - gamma ' + gamma);
 	$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
-    $('#complementary').css('color','rgb('+(alpha+128)%255+','+(beta+128)%255+','+(gamma+128)%255+')' );
+        $('#complementary').css('color','rgb('+(alpha+128)%255+','+(beta+128)%255+','+(gamma+128)%255+')' );
 }
 
 
