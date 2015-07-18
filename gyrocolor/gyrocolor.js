@@ -75,12 +75,12 @@ var dcControl = {};
 
 function gyroInit() {
 	//if (window.DeviceOrientationEvent  && 'ontouchstart' in window) {
-		if (window.DeviceOrientationEvent) {
+       
+	if (window.DeviceOrientationEvent) {
 		$('#gyrostatus').removeClass('alert-danger').addClass('alert-success');
 		// Listen for the deviceorientation event and handle the raw data
 		window.addEventListener('deviceorientation', function(eventData) {
 			// gamma is the left-to-right tilt in degrees, where right is positive
-			
 			var gammaRaw = Math.round(event.gamma);
 			var gamma = Math.round((Math.abs(eventData.gamma) * 2.83) % 255);
 
@@ -98,7 +98,8 @@ function gyroInit() {
 				
 				//$(document.body).css('background-color','rgb('+alpha+','+beta+','+gamma+')');​​​​​​​​​​​​​​​
 				$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
-				
+                                $('#complementary').css('color','rgb('+(alpha+128)%255+','+(beta+128)%255+','+(gamma+128)%255+')' );
+                                
 				if(typeof(dcControl.readyState) !== 'undefined' && dcControl.readyState === "open") {
 					//alert('sending');
 					dcControl.send(alpha+','+beta+','+gamma);
