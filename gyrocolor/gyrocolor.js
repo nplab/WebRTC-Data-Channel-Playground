@@ -331,7 +331,14 @@ function gyroInit() {
 function gyroSetColor(alpha, beta, gamma) {
 	console.log('color: ' + alpha + ' - ' + beta + ' - gamma ' + gamma);
 	$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
-    $('#complementary').css('color','rgb('+(alpha+128)%255+','+(beta+128)%255+','+(gamma+128)%255+')' );
+	$('#complementary').css('color','rgb('+(alpha+128)%255+','+(beta+128)%255+','+(gamma+128)%255+')' );
+
+	$('#gyroProgressAlpha').css('width',Math.round(alpha/2.55)+'%');
+	$('#gyroProgressAlpha').html(alpha);
+	$('#gyroProgressBeta').css('width',Math.round(beta/2.55)+'%');
+	$('#gyroProgressBeta').html(beta);
+	$('#gyroProgressGamma').css('width',Math.round(gamma/2.55)+'%');
+	$('#gyroProgressGamma').html(gamma);
 }
 
 
