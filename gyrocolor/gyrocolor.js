@@ -336,7 +336,7 @@ function gyroInit() {
 
 function gyroSetColor(alpha, beta, gamma) {
 	$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
-	$('#complementary').css('color','rgb('+(alpha+128)%255+','+(beta+128)%255+','+(gamma+128)%255+')' );
+	$('#complementary').css('color','rgb('+(alpha+64)%255+','+(beta+64)%255+','+(gamma+64)%255+')' );
 	$('#trCalc').html('<td>calc</td><td>'+alpha+'</td><td>'+beta+'</td><td>'+gamma+'</td>');
 
 }
