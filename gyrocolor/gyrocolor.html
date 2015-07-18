@@ -110,23 +110,27 @@
 		</div>
 
 		<div class="row" id="rowGyroStatus">
-			<div class="col-sm-6 text-right">
+			<div class="col-sm-6">
 				<h3>local gyro data</h3>
-				<div class="progress">
-					<div class="progress-bar progress-bar-danger" id="gyroProgressAlpha" role="progressbar">
-						
-					</div>
-				</div>
-				<div class="progress">
-					<div class="progress-bar progress-bar-success" id="gyroProgressBeta" role="progressbar">
-						
-					</div>
-				</div>
-				<div class="progress">
-					<div class="progress-bar progress-bar-info" id="gyroProgressGamma" role="progressbar">
-						
-					</div>
-				</div>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>type</th>
+							<th>alpha</th>
+							<th>beta</th>
+							<th>gamma</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr id="trRaw">
+							<td colspan="4" class="text-center">nothing yet</td>
+						</tr>
+						<tr id="trCalc">
+							<td colspan="4" class="text-center">nothing yet</td>
+						</tr>
+					</tbody>
+					
+				</table>
 			</div>
 		</div>
 

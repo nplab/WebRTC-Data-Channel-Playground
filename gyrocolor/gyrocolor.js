@@ -71,10 +71,6 @@ var signalingIdRef = dbRef.child("gyroIDs");
 var dcControl = {};
 var gyroColorFromRemote = false;
 
-
-var speedtestInitator = false;
-
-
 // clean firebase ref
 signalingIdRef.child(freshsignalingId).remove();
 
@@ -123,7 +119,7 @@ pc.onicecandidate = function(event) {
 pc.oniceconnectionstatechange = function(event) { 
 	console.log("oniceconnectionstatechange - " + pc.iceConnectionState);
 	if (pc.iceConnectionState === 'disconnected') {
-		speedtestConnectionLost();
+		gyroConnectionLost();
 	}
 };
 
@@ -273,6 +269,8 @@ function gyroConnectionLost() {
 	$("#rowSpinner").hide();
 	$("#rowMessage").removeClass('hidden');
 	$("#colMessage").html('<div class="alert alert-danger text-center" role="alert"><strong>Error:</strong> Connection to peer lost!</div>');
+	$("#rowInit").hide();
+	gyroSetColor(255,255,255);
 
 }
 
@@ -285,11 +283,9 @@ function gyroInit() {
 	}
        
 	if (window.DeviceOrientationEvent) {
-		console.log("hallo");
 		$('#gyrostatus').removeClass('alert-info').addClass('alert-success');
 		// Listen for the deviceorientation event and handle the raw data
 		window.addEventListener('deviceorientation', function(eventData) {
-			console.log("hallo2");
 			// gamma is the left-to-right tilt in degrees, where right is positive
 			var gammaRaw = Math.round(event.gamma);
 			var gamma = Math.round((Math.abs(eventData.gamma) * 2.83) % 255);
@@ -307,8 +303,8 @@ function gyroInit() {
                             alpha = 255 - alpha;
                         
 			if(gammaRaw != 0 && betaRaw != 0 && alphaRaw != 0) {
-				$('#gyrostatus').html('alpha:' + alpha + ' beta:' + beta + ' gamma:' + gamma + '<br />' + 'alpha:' + alphaRaw + ' beta:' + betaRaw + ' gamma:' + gammaRaw );
-				
+				$('#trRaw').html('<td>raw</td><td>'+alphaRaw+'</td><td>'+betaRaw+'</td><td>'+gammaRaw+'</td>');
+
 				if(!gyroColorFromRemote) {
 					gyroSetColor(alpha,beta,gamma);
 				}
@@ -333,33 +329,23 @@ function gyroInit() {
 }
 
 function gyroSetColor(alpha, beta, gamma) {
-	console.log('color: ' + alpha + ' - ' + beta + ' - gamma ' + gamma);
 	$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
 	$('#complementary').css('color','rgb('+(alpha+128)%255+','+(beta+128)%255+','+(gamma+128)%255+')' );
-
-	$('#gyroProgressAlpha').css('width',Math.round(alpha/2.55)+'%');
-	$('#gyroProgressAlpha').html(alpha);
-	$('#gyroProgressBeta').css('width',Math.round(beta/2.55)+'%');
-	$('#gyroProgressBeta').html(beta);
-	$('#gyroProgressGamma').css('width',Math.round(gamma/2.55)+'%');
-	$('#gyroProgressGamma').html(gamma);
+	
+	$('#trCalc').html('<td>calc</td><td>'+alpha+'</td><td>'+beta+'</td><td>'+gamma+'</td>');
+	
 }
 
 
 function msgHandleJson(message) {
 	var messageObject = JSON.parse(message);
-
-	console.log('message!');
-
 	switch(messageObject.type) {
 	
 	// peer indicates finish
 	case 'gyro':
 		gyroColorFromRemote = true;
-		console.log(message);
 		gyroSetColor(messageObject.alpha,messageObject.beta,messageObject.gamma);
 	break;
-
 
 	default:
 		alert('Unknown messagetype: ' + messageObject.type);
