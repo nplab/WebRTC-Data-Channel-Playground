@@ -292,20 +292,26 @@ function gyroInit() {
 			console.log("hallo2");
 			// gamma is the left-to-right tilt in degrees, where right is positive
 			var gammaRaw = Math.round(event.gamma);
-			var gamma = Math.round((Math.abs(eventData.gamma) * 2.83) % 255);
-                        if(Math.round((Math.abs(eventData.gamma) * 2.83)) > 255)
-                            gamma = 255 - gamma;
+                        var gamma = Math.round((((Math.abs(gammaRaw)*4) % 360)/360)*510);
+                        if(Math.round((Math.abs(eventData.gamma) * 1.41)) > 128){
+                            gamma = 128 - gamma;
+                        }
 			// beta is the front-to-back tilt in degrees, where front is positive
 			var betaRaw = Math.round(event.beta);
-			var beta = Math.round((Math.abs(eventData.beta) *1.41 )% 255);
-                        if(Math.round((Math.abs(eventData.beta) * 2.83)) > 255)
-                            beta = 255 - beta;
+			var beta = Math.round((((Math.abs(betaRaw)*4) % 360)/360)*510);
+                        if(beta > 255){
+                            beta = 510 - beta;
+                        }
+                        console.log("Result: "  +beta);
 			// alpha is the compass direction the device is facing in degrees
 			var alphaRaw = Math.round(event.alpha);
-			var alpha = Math.round((Math.abs(eventData.alpha-180) / 0.7)% 255);
-			if(Math.round((Math.abs(eventData.alpha) * 2.83)) > 255)
-                            alpha = 255 - alpha;
-                        
+                        if(alpha < 0){
+                            console.log("Alpha should never be negative: "+alphaRaw);
+                        }
+			var alpha = Math.round((Math.abs(eventData.alpha) / 360) * 510);
+			if(alpha > 255){
+                            alpha = 510 - alpha;
+                        }
 			if(gammaRaw != 0 && betaRaw != 0 && alphaRaw != 0) {
 				$('#gyrostatus').html('alpha:' + alpha + ' beta:' + beta + ' gamma:' + gamma + '<br />' + 'alpha:' + alphaRaw + ' beta:' + betaRaw + ' gamma:' + gammaRaw );
 				
@@ -337,11 +343,11 @@ function gyroSetColor(alpha, beta, gamma) {
 	$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
 	$('#complementary').css('color','rgb('+(alpha+128)%255+','+(beta+128)%255+','+(gamma+128)%255+')' );
 
-	$('#gyroProgressAlpha').css('width',Math.round(alpha/2.55)+'%');
+	$('#gyroProgressAlpha').css('width',Math.round(alpha/1.28)+'%');
 	$('#gyroProgressAlpha').html(alpha);
-	$('#gyroProgressBeta').css('width',Math.round(beta/2.55)+'%');
+	$('#gyroProgressBeta').css('width',Math.round(beta/1.28)+'%');
 	$('#gyroProgressBeta').html(beta);
-	$('#gyroProgressGamma').css('width',Math.round(gamma/2.55)+'%');
+	$('#gyroProgressGamma').css('width',Math.round(gamma/1.28)+'%');
 	$('#gyroProgressGamma').html(gamma);
 }
 
