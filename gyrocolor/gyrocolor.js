@@ -298,7 +298,7 @@ function gyroInit() {
                         if(beta > 255){
                             beta = 510 - beta;
                         }
-                        console.log("Result: "  +beta);
+                        
 			// alpha is the compass direction the device is facing in degrees
 			var alphaRaw = Math.round(event.alpha);
                         if(alpha < 0){
