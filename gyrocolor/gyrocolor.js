@@ -288,9 +288,9 @@ function gyroInit() {
 		window.addEventListener('deviceorientation', function(eventData) {
 			// gamma is the left-to-right tilt in degrees, where right is positive
 			var gammaRaw = Math.round(event.gamma);
-                        var gamma = Math.round((((Math.abs(gammaRaw)*4) % 360)/360)*510);
-                        if(Math.round((Math.abs(eventData.gamma) * 1.41)) > 128){
-                            gamma = 128 - gamma;
+                        var gamma = Math.round(((((Math.abs(gammaRaw)*4) % 360)/360)*510)%512);
+                        if(gamma > 255){
+                            gamma = 510 - gamma;
                         }
 			// beta is the front-to-back tilt in degrees, where front is positive
 			var betaRaw = Math.round(event.beta);
@@ -304,7 +304,7 @@ function gyroInit() {
                         if(alpha < 0){
                             console.log("Alpha should never be negative: "+alphaRaw);
                         }
-			var alpha = Math.round((Math.abs(eventData.alpha) / 360) * 510);
+			var alpha = Math.round(((Math.abs(eventData.alpha*4) / 360) * 510) % 510);
 			if(alpha > 255){
                             alpha = 510 - alpha;
                         }
@@ -336,7 +336,7 @@ function gyroInit() {
 
 function gyroSetColor(alpha, beta, gamma) {
 	$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
-	$('#complementary').css('color','rgb('+(alpha+64)%255+','+(beta+64)%255+','+(gamma+64)%255+')' );
+	$('#complementary').css('color','rgb('+(alpha > 128)?255:0+','+(beta > 128)?255:0+','+(gamma > 128)?255:0+')' );
 	$('#trCalc').html('<td>calc</td><td>'+alpha+'</td><td>'+beta+'</td><td>'+gamma+'</td>');
 
 }
