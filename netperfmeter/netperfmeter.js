@@ -311,20 +311,21 @@ function npmSend(label) {
 		var message = generateByteString(randomWrapper(parameters[label].pktSize));
 		var sendSleep	= randomWrapper(parameters[label].sendInterval);
 
-		if (runtime <= parameters[label].runtime) {
-			
-						
+		// check maximum runtime
+		if (runtime <= parameters[label].runtime) {	
 			if (channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit) {
 				if(sendSleep == 0) {
 					var pktCounter = 0;
-					while(channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit && pktCounter < 10000) {
+					while(channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit && pktCounter < 10000 && (channels[label].statistics.tx_pkts + pktCounter) < parameters[label].pktCount) {
 						channels[label].channel.send(message);
-						channels[label].statistics.tx_pkts++;
-						channels[label].statistics.tx_bytes += message.length;
 						pktCounter++;
-					} 
+					}
+
+					channels[label].statistics.tx_pkts += pktCounter;
+					channels[label].statistics.tx_bytes += message.length * pktCounter;
+
 					sendSleep = 10;
-					console.log('reached limi!');
+					console.log('npmSend - sleep 0 - reached sending limit');
 					
 				} else {
 					channels[label].channel.send(message);
@@ -507,17 +508,17 @@ function parametersRowCopy(element) {
 // create sample data
 function parametersRowAddSamples() {
 	var first = parametersRowAdd();
-	first.find('[name=paramPktCount]').val('1000');
+	first.find('[name=paramPktCount]').val('5000');
 	first.find('[name=paramPktSize]').val('1024');
 	first.find('[name=paramMode]').val('');
-	first.find('[name=paramInterval]').val('10');
-	first.find('[name=paramDelay]').val('2');
+	first.find('[name=paramInterval]').val('0');
+	first.find('[name=paramDelay]').val('1');
 	first.find('[name=paramRuntime]').val('30');
 
-	var second = parametersRowAdd();
+	/*var second = parametersRowAdd();
 	second.find('[name=paramPktCount]').val('1000');
 	second.find('[name=paramPktSize]').val('uni:512:1536');
-	second.find('[name=paramMode]').val('ret:2');
+	//second.find('[name=paramMode]').val('ret:2');
 	second.find('[name=paramInterval]').val('uni:5:15');
 	second.find('[name=paramDelay]').val('2');
 	second.find('[name=paramRuntime]').val('30');
@@ -525,7 +526,7 @@ function parametersRowAddSamples() {
 	var third = parametersRowAdd();
 	third.find('[name=paramPktCount]').val('2000');
 	third.find('[name=paramPktSize]').val('exp:1024');
-	third.find('[name=paramMode]').val('lft:2');
+	//third.find('[name=paramMode]').val('lft:2');
 	third.find('[name=paramInterval]').val('exp:10');
 	third.find('[name=paramDelay]').val('2');
 	third.find('[name=paramRuntime]').val('30');
@@ -533,7 +534,7 @@ function parametersRowAddSamples() {
 	var third = parametersRowAdd();
 	third.find('[name=paramPktCount]').val('2000');
 	third.find('[name=paramPktSize]').val('con:1024');
-	third.find('[name=paramMode]').val('ret:2');
+	//third.find('[name=paramMode]').val('ret:2');
 	third.find('[name=paramInterval]').val('exp:10');
 	third.find('[name=paramDelay]').val('20');
 	third.find('[name=paramRuntime]').val('30');
@@ -541,10 +542,10 @@ function parametersRowAddSamples() {
 	var third = parametersRowAdd();
 	third.find('[name=paramPktCount]').val('2000');
 	third.find('[name=paramPktSize]').val('con:2048');
-	third.find('[name=paramMode]').val('lft:2');
+	//third.find('[name=paramMode]').val('lft:2');
 	third.find('[name=paramInterval]').val('uni:0:5');
 	third.find('[name=paramDelay]').val('20');
-	third.find('[name=paramRuntime]').val('30');
+	third.find('[name=paramRuntime]').val('30');*/
 }
 
 function parametersValidate() {
@@ -992,7 +993,7 @@ function statsChannelStatusUpdate(event) {
 	} else {
 		$("#npmReset").prop('disabled', true);
 	}
-	if (refreshCounter % 3 == 0) {
+	if (refreshCounter % 3 == 0 && role == 'answerer') {
 		console.log('Graphzeichenn!!!');
 		statsDrawChart();
 	}
