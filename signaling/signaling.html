@@ -82,7 +82,7 @@
 				</button>
 			</div>
 
-			
+
 
 			<div class="col-sm-6 text-right" id="colConnectToSignalingId">
 				<h3>... or connect to peer</h3>
@@ -111,6 +111,10 @@
 				<div class="rect5"></div>
 			</div>
 		</div>
+		<video />
+		<div class="row">
+			<ul id="log"></ul>
+		</div>
 
 		<div class="footer text-center">
 			&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
@@ -118,7 +122,8 @@
 	</div>
 
 	<!-- /container -->
-	<script type='text/javascript' src="http://bsd1.fh-muenster.de:3000/socket.io/socket.io.js"></script>
+	<script type='text/javascript' src="https://webrtc.nplab.de/socket.io/socket.io.js"></script>
+	<script type='text/javascript' src="../common/webrtc.common.js"></script>
 	<script type='text/javascript' src="signaling.js"></script>
 
 
@@ -126,13 +131,39 @@
 		jQuery(document).ready(function($) {
 			console.log('ready! :)')
 
+			navigator.mediaDevices = navigator.mediaDevices || ((navigator.mozGetUserMedia || navigator.webkitGetUserMedia) ? {
+   getUserMedia: function(c) {
+     return new Promise(function(y, n) {
+       (navigator.mozGetUserMedia ||
+        navigator.webkitGetUserMedia).call(navigator, c, y, n);
+     });
+   }
+} : null);
+
+if (!navigator.mediaDevices) {
+  console.log("getUserMedia() not supported.");
+  return;
+}
+
+// Prefer camera resolution nearest to 1280x720.
+
+var constraints = { audio: true, video: true };
+
+navigator.mediaDevices.getUserMedia(constraints)
+.then(function(stream) {
+  var video = document.querySelector('video');
+  video.src = window.URL.createObjectURL(stream);
+  video.onloadedmetadata = function(e) {
+    video.play();
+  };
+})
+.catch(function(err) {
+  console.log(err.name + ": " + err.message);
+});
 		});
 
 
-        
-        socket.on('log', function(msg){
-            console.log(msg);
-        });
+
 
 	</script>
 

@@ -25,28 +25,23 @@
 *
 */
 
-var socket = io("http://bsd1.fh-muenster.de:3000");
+var socket = io("https://webrtc.nplab.de/");
+var appIdent = 'signaling';
 
-// ICE, STUN, TURN Servers
+// ICE, STUN, TURN ...
 var iceServer = {
 	iceServers : [{
-		url : 'stun:stun.l.google.com:19302'
+		url : 'stun:stun1.nplab.de:3478'
 	}, {
-		url : 'stun:stun1.l.google.com:19302'
-	}, {
-		url : 'stun:stun2.l.google.com:19302'
-	}, {
-		url : 'stun:stun3.l.google.com:19302'
-	}, {
-		url : 'stun:stun4.l.google.com:19302'
+		url : 'stun:stun2.nplab.de:3478'
 	}]
 };
 
-// constraints on the offer SDP.
+// constraints for the offer SDP - here we don't need audio or video...
 var sdpConstraints = {
 	'mandatory' : {
-		'offerToReceiveAudio' : false,
-		'offerToReceiveVideo' : false
+		'offerToReceiveAudio' : true,
+		'offerToReceiveVideo' : true
 	}
 };
 
@@ -55,15 +50,66 @@ var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || 
 var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
 var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 
+
 var pc = new PeerConnection(iceServer);
 var dcControl = {};
-var roleActive;
-var signalingId = generateSignalingId();
+var offerer;
+var signalingInProgress = false;
+var signalingId;
 
+// handle incoming info messages from server
+socket.on('info', function(msg) {
+    console.log('server info: ' + msg);
+});
 
+// handle incoming signaling messages
+socket.on('signaling', function(msg) {
+	if(!signalingInProgress) {
+		console.log('signaling - error: no signaling in progress...');
+		return;
+	}
 
-// clean firebase ref
-signalingIdRef.child(freshsignalingId).remove();
+	switch(msg.type) {
+		// answerer requests SDP-Offer
+		case 'sdpRequest':
+			if(offerer) {
+				pc.createOffer(function(offer) {
+					pc.setLocalDescription(offer);
+					console.log(JSON.stringify(offer));
+					socket.emit('signaling', {type:'sdp',payload:offer});
+				}, errorHandler, sdpConstraints);
+			} else {
+				console.log('error: got sdpRequest as answerer...');
+			}
+			break;
+
+		// we receive an sdp message
+		case 'sdp':
+			// only process message if it's an offer and we aren't offerer and signaling hasn't finished yet
+			if(msg.payload.type === 'offer' && !offerer) {
+				pc.setRemoteDescription(new SessionDescription(msg.payload));
+				// generate our answer SDP and send it to peer
+				pc.createAnswer(function(answer) {
+					pc.setLocalDescription(answer);
+					socket.emit('signaling', {type:'sdp',payload:answer});
+				}, errorHandler);
+				console.log('signaling - handle sdp offer and send answer');
+			// if we receive a sdp answer, we are the answerer and signaling isn't done yet, process answer
+			} else if(msg.payload.type === 'answer' && offerer) {
+				pc.setRemoteDescription(new SessionDescription(msg.payload));
+				console.log('signaling - handle sdp answer');
+			} else {
+				console.log('signaling - unexpected message');
+			}
+			break;
+		// we receive an ice candidate
+		case 'ice':
+			var peerIceCandidate = new IceCandidate(msg.payload);
+			pc.addIceCandidate(peerIceCandidate);
+			console.log('singaling - remote ice candiate: ' + commonIpExtract(msg.payload.candidate));
+			break;
+	}
+});
 
 // generate a unique-ish string for storage in firebase
 function generateSignalingId() {
@@ -75,113 +121,68 @@ function errorHandler(err) {
 	console.error(err);
 }
 
+
 // handle local ice candidates
 pc.onicecandidate = function(event) {
 	// take the first candidate that isn't null
 	if (!pc || !event || !event.candidate) {
 		return;
 	}
-
-	var ip = extractIpFromString(event.candidate.candidate);
-	console.log('onicecandidate - ip:' + ip);
+	// send ice candidate to signaling service
+	socket.emit('signaling', {type:'ice',payload:event.candidate});
+	console.log('local ice candidate:' + commonIpExtract(event.candidate.candidate));
 };
-
-
 
 // establish connection to remote peer via webrtc
 function connect(active) {
+	signalingInProgress = true;
 
 	if(active == true) {
 		console.log('connecting actively');
-		roleActive = true;
+		offerer = true;
+		//signalingId = generateSignalingId();
+		signalingId = 1207;
 	} else {
 		console.log('connecting passively');
-		roleActive = false;
-		signalingId = $("#signalingId").val();
+		offerer = false;
+		//signalingId = $("#signalingId").val();
+		signalingId = 1207;
 	}
 
-	// joining room
-	socket.emit('roomJoin', signalingId);
+	if(signalingId.length === 0) {
+		console.log('signalingId empty');
+		return;
+	}
 
+	// join room
+	socket.emit('roomJoin', appIdent + signalingId);
 	$("#rowInit").slideUp();
-	$("#rowSpinner").slideDown();
 
-	if (roleActive == true) {
+	if (offerer == true) {
 		$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
-		
 		//new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
-		
-		$("#rowSpinner").removeClass('hidden').hide().slideDown();
 
+		// create data channel
 		dcControl = pc.createDataChannel('control');
-
 		//bindEventsControl(dcControl);
-		
-
-		// create the offer SDP
-		pc.createOffer(function(offer) {
-			pc.setLocalDescription(offer);
-
-			// send the offer SDP to FireBase
-			//firebaseSend(signalingId, "offer", JSON.stringify(offer));
-			var signaling = {
-				type : 1,
-				data : offer
-			}
-
-			console.log(JSON.stringify(offer));
-			socket.emit('signaling', JSON.stringify(signaling));
-
-
-			// wait for an answer SDP from FireBase
-			//firebaseReceive(signalingId, "answer", function(answer) {
-				//pc.setRemoteDescription(new SessionDescription(JSON.parse(answer)));
-			//});
-		}, errorHandler, sdpConstraints);
-
 		console.log("connect - role: offerer");
-
-		// answerer role
 	} else {
-		$(".spinnerStatus").text("connecting - id: " + signalingId);
-		$("#rowSpinner").removeClass('hidden').hide().slideDown();
+		// request SDP from offerer
+		socket.emit('signaling', {type:'sdpRequest'});
 		// answerer must wait for the data channel
 		pc.ondatachannel = function(event) {
+			// bin incoming control channel
 			if (event.channel.label == "control") {
 				dcControl = event.channel;
-				bindEventsControl(event.channel);
+				//bindEventsControl(event.channel);
 			} else {
 				alert("error: unknown channel!");
 			}
-
 			console.log('incoming datachannel');
 		};
 
-		// answerer needs to wait for an offer before generating the answer SDP
-		firebaseReceive(signalingId, "offer", function(offer) {
-			pc.setRemoteDescription(new SessionDescription(JSON.parse(offer)));
-
-			// now we can generate our answer SDP
-			pc.createAnswer(function(answer) {
-				pc.setLocalDescription(answer);
-
-				// send it to FireBase
-				firebaseSend(signalingId, "answer", JSON.stringify(answer));
-			}, errorHandler);
-		});
+		$(".spinnerStatus").text("connecting to peer id: " + signalingId);
 		console.log('connect - role answerer');
 	}
-
-	// add handler for peers ice candidates
-	signalingIdRef.child(signalingId).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
-		var childVal = childSnapshot.val();
-		var peerCandidate = JSON.parse(childVal);
-
-		var peerIceCandidate = new IceCandidate(peerCandidate);
-		pc.addIceCandidate(new IceCandidate(peerCandidate));
-
-		var peerIp = extractIpFromString(peerIceCandidate.candidate);
-
-		console.log('peerIceCandidate: ' + peerIp);
-	});
+	$("#rowSpinner").hide().removeClass('hidden').slideDown();
 }
