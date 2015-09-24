@@ -29,30 +29,6 @@
 BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
 */
 
-// ICE, STUN, TURN Servers
-var iceServer = {
-	iceServers : [
-	{
-		url : 'turn:turn1.nplab.de:3478',
-		username: 'tiny',
-		credential : 'turner'
-	}, {
-		url : 'turn:turn2.nplab.de:3478',
-		username: 'tiny',
-		credential : 'turner'
-	}, {
-		url : 'stun:stun.l.google.com:19302'
-	}, {
-		url : 'stun:stun1.l.google.com:19302'
-	}, {
-		url : 'stun:stun2.l.google.com:19302'
-	}, {
-		url : 'stun:stun3.l.google.com:19302'
-	}, {
-		url : 'stun:stun4.l.google.com:19302'
-	}]
-};
-
 // constraints on the offer SDP.
 var sdpConstraints = {
 	'mandatory' : {
@@ -63,11 +39,6 @@ var sdpConstraints = {
 
 // Reference to Firebase APP
 var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
-
-// shims - wrappers for webkit and mozilla connections
-var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
-var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 
 var bufferedAmountLimit = 1 * 1024 * 1024;
 
@@ -83,10 +54,7 @@ var gyroColorFromRemote = false;
 // clean firebase ref
 signalingIdRef.child(freshsignalingId).remove();
 
-// generate a unique-ish string for storage in firebase
-function generateSignalingId() {
-	return (Math.random() * 10000| 0).toString();
-}
+
 
 // wrapper to send data to FireBase
 function firebaseSend(signalingId, key, data) {
@@ -332,7 +300,7 @@ function gyroInit() {
 						alpha : alpha,
 						beta : beta,
 						gamma : gamma
-					}
+					};
 
 					dcControl.send(JSON.stringify(gyroData));
 				}
@@ -347,7 +315,6 @@ function gyroSetColor(alpha, beta, gamma) {
 	$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
 	$('#complementary').css('color','rgb('+(alpha > 128)?255:0+','+(beta > 128)?255:0+','+(gamma > 128)?255:0+')' );
 	$('#trCalc').html('<td>calc</td><td>'+alpha+'</td><td>'+beta+'</td><td>'+gamma+'</td>');
-
 }
 
 

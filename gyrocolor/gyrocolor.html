@@ -57,13 +57,16 @@
 					<li>
 						<a href="../speedtest/speedtest.html">Speedtest</a>
 					</li>
+					<li>
+						<a href="../signaling/signaling.html">Signaling</a>
+					</li>
 				</ul>
 			</div>
 		</div>
 
 	</nav>
 
-	<div class="container" id="complementary">
+	<div class="container main" id="complementary">
 		<h1>Gyrocolor</h1>
 
 		<div class="row hidden" id="rowMessage">
@@ -79,7 +82,7 @@
 				</button>
 			</div>
 
-			
+
 
 			<div class="col-sm-6 text-right" id="colConnectToSignalingId">
 				<h3>... or connect to peer</h3>
@@ -129,7 +132,7 @@
 							<td colspan="4" class="text-center">nothing yet</td>
 						</tr>
 					</tbody>
-					
+
 				</table>
 			</div>
 		</div>
@@ -142,11 +145,14 @@
 	<!-- /container -->
 	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
 	<script type='text/javascript' src="../common/qrcode.min.js"></script>
+	<script type='text/javascript' src="../common/webrtc.common.js"></script>
 	<script type='text/javascript' src="gyrocolor.js"></script>
 
 
 	<script type="text/javascript">
 		jQuery(document).ready(function($) {
+			browsercheck();
+
 			gyroInit();
 
 		});

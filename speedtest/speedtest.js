@@ -25,33 +25,6 @@
 *
 */
 
-/*
-BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
-*/
-
-// ICE, STUN, TURN Servers
-var iceServer = {
-	iceServers : [
-	{
-		url : 'turn:turn1.nplab.de:3478',
-		username: 'tiny',
-		credential : 'turner'
-	}, {
-		url : 'turn:turn2.nplab.de:3478',
-		username: 'tiny',
-		credential : 'turner'
-	}, {
-		url : 'stun:stun.l.google.com:19302'
-	}, {
-		url : 'stun:stun1.l.google.com:19302'
-	}, {
-		url : 'stun:stun2.l.google.com:19302'
-	}, {
-		url : 'stun:stun3.l.google.com:19302'
-	}, {
-		url : 'stun:stun4.l.google.com:19302'
-	}]
-};
 
 // constraints on the offer SDP.
 var sdpConstraints = {
@@ -63,11 +36,6 @@ var sdpConstraints = {
 
 // Reference to Firebase APP
 var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
-
-// shims - wrappers for webkit and mozilla connections
-var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
-var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
 
 var bufferedAmountLimit = 1 * 1024 * 1024;
 var offerer = false;
@@ -150,7 +118,7 @@ pc.onicecandidate = function(event) {
 	console.log('onicecandidate - ip:' + ip);
 };
 
-pc.oniceconnectionstatechange = function(event) { 
+pc.oniceconnectionstatechange = function(event) {
 	console.log("oniceconnectionstatechange - " + pc.iceConnectionState);
 	if (pc.iceConnectionState === 'disconnected') {
 		speedtestConnectionLost();
@@ -260,12 +228,6 @@ function speedtestConnect() {
 	});
 }
 
-// find and return an IPv4 Address from a given string
-function extractIpFromString(string) {
-	var pattern = '(?:25[0-5]|2[0-4][0-9]|1?[0-9][0-9]{1,2}|[0-9]){1,}(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}|0)){3}';
-	var match = string.match(pattern);
-	return match[0];
-}
 
 // bind events for control channel
 function bindEventsControl(channel) {
@@ -377,11 +339,11 @@ function speedtestRunByLocal() {
 
 	// show results
 	$("#rowResults").slideDown();
-	
+
 	// reset local stats
 	speedtestStatsReset();
-	
-	
+
+
 	// tell peer to be the passive and handle parameters
 	var request = {
 		type 		: 'passiveRun',
@@ -389,16 +351,16 @@ function speedtestRunByLocal() {
 		runtime 	: $("#paramRuntime").val(),
 	};
 	dcControl.send(JSON.stringify(request));
-	
+
 	// get RTT
 	msgSendPing();
 
 	// start speedtest
 	speedtestRun();
 }
-	
-	
-	
+
+
+
 function speedtestRun() {
 	console.log('speedtestRun - runtime: ' + $("#paramRuntime").val() + ', msg-size:' + $("#paramMsgSize").val());
 
@@ -414,7 +376,7 @@ function speedtestRun() {
 
 	$(".spinnerStatus").text("sending ...");
 	$("#rowSpinner").slideDown();
-	
+
 	$(".resultsUpload").html('<div class="alert alert-info" role="alert">running</div>');
 
 
@@ -439,7 +401,7 @@ function speedtestSend() {
 	speedtestSendLoopCounter = 0;
 	// send until timer comes back
 	if (speedtestContinueSending === true) {
-		
+
 		// increase messages per loop, if buffer is empty
 		if(dcData.bufferedAmount == 0) {
 			speedtestSendLoopLimit = speedtestSendLoopLimit * 2;
@@ -467,12 +429,12 @@ function speedtestSend() {
 			type : 'statsRequest'
 		};
 		dcControl.send(JSON.stringify(request));
-		
+
 		// if iam the iniatator, trigger peer to start sending
 		if(speedtestInitator) {
-			
+
 			$(".spinnerStatus").text("receiving ...");
-			
+
 			var request = {
 				type : 'startSending'
 			};
@@ -506,7 +468,7 @@ function speedtestAddResults() {
 	var bandwithUpload = Math.round(speedtestStatsRemote.rx_pkts * speedtestParams.msgSize / ((speedtestStatsRemote.rx_t_end - speedtestStatsRemote.rx_t_start) / 1000) / 1000 / 1000 * 8 * 100) / 100;
 	var bandwithDownload = Math.round(speedtestStatsLocal.rx_pkts * speedtestParams.msgSize / ((speedtestStatsLocal.rx_t_end - speedtestStatsLocal.rx_t_start) / 1000) / 1000 / 1000 * 8 * 100) / 100;
 	$("#tableResults tbody").append("<tr><td>" + speedtestStatsLocal.rtt + " ms</td><td>" + bandwithUpload + " Mbit/s</td><td>" + bandwithDownload + " Mbit/s</td><td>" + speedtestParams.msgSize + " byte</td><td>" + speedtestParams.runtime + " s</td></tr>");
-	
+
 }
 
 function msgSendPing() {
@@ -523,13 +485,13 @@ function msgHandleJson(message) {
 	var messageObject = JSON.parse(message);
 
 	switch(messageObject.type) {
-	
+
 	// peer indicates finish
 	case 'finish':
 		speedtestFinish();
 	break;
 
-	
+
 	// the peer has startet the speedtest
 	case 'passiveRun': {
 		console.log('msgHandleJson - passiveRun');
@@ -540,7 +502,7 @@ function msgHandleJson(message) {
 
 		speedtestParams.msgSize = parseInt(messageObject.msgSize);
 		speedtestParams.runtime = parseInt(messageObject.runtime);
-		
+
 		$("#paramRuntime").val(messageObject.runtime).attr('disabled', true);
 		$("#paramMsgSize").val(messageObject.msgSize).attr('disabled', true);
 		$("#btnSpeedtestRun").attr('disabled', true);
@@ -549,7 +511,7 @@ function msgHandleJson(message) {
 		$("#rowResults").slideDown();
 		break;
 	}
-	
+
 	case 'startSending' : {
 		console.log('msgHandleJson - startSending');
 		speedtestRun();
@@ -559,7 +521,7 @@ function msgHandleJson(message) {
 	// peer requests statistics
 	case 'statsRequest':
 		console.log('msgHandleJson - statisticsRequest');
-		
+
 		// show local bandwidth in gui
 		var bandwith = Math.round(speedtestStatsLocal.rx_pkts * speedtestParams.msgSize / ((speedtestStatsLocal.rx_t_end - speedtestStatsLocal.rx_t_start) / 1000));
 		$('.resultsDownload').html('<div class="alert alert-success" role="alert">' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s</div>');
@@ -575,12 +537,12 @@ function msgHandleJson(message) {
 
 	// peer sends statistics
 	case 'stats':
-	
+
 		// store remote statistics
 		console.log(messageObject.content);
 		speedtestStatsRemote = messageObject.content;
 		var bandwith = Math.round(speedtestStatsRemote.rx_pkts * speedtestParams.msgSize / ((speedtestStatsRemote.rx_t_end - speedtestStatsRemote.rx_t_start) / 1000));
-		
+
 		$('.resultsUpload').html('<div class="alert alert-success" role="alert">' + Math.round(bandwith * 8 / 1000 / 1000 * 100) / 100 + ' Mbit/s</div>');
 
 		// got remote statistics - show in gui!
@@ -590,28 +552,28 @@ function msgHandleJson(message) {
 		if(!speedtestInitator) {
 			speedtestAddResults();
 		}
-		
-		
+
+
 		break;
 
 	// timestamp - echo timestamp to sender
 	case 'ping':
 		console.log('msgHandleJson - ping');
-		
+
 		if(!speedtestInitator) {
 			msgSendPing();
 		}
-		
+
 		messageObject.type = 'pingEcho';
 		dcControl.send(JSON.stringify(messageObject));
-		
-		
+
+
 		break;
 
 	// timestampEcho - measure RTT
 	case 'pingEcho':
 		console.log('msgHandleJson - pingEcho');
-		
+
 		var date = new Date();
 		var t_delta = date.getTime() - messageObject.timestamp;
 		$('.resultsRtt').html('<div class="alert alert-success" role="alert">RTT: ' + t_delta + 'ms</div>');
@@ -629,6 +591,5 @@ function msgHandleJson(message) {
 // scheduler only used for npmSend
 scheduler.onmessage = function(e) {
 	speedtestSend();
-	
-};
 
+};

@@ -57,13 +57,16 @@
 					<li class="active">
 						<a href="../speedtest/speedtest.html">Speedtest</a>
 					</li>
+					<li>
+						<a href="../signaling/signaling.html">Signaling</a>
+					</li>
 				</ul>
 			</div>
 		</div>
 
 	</nav>
 
-	<div class="container">
+	<div class="container main">
 		<h1>Speedtest</h1>
 
 		<div class="row hidden" id="rowMessage">
@@ -104,7 +107,7 @@
 
 		</div>
 
-			
+
 		<div class="row hidden" id="rowControl">
 			<div class="col-sm-12 text-center">
 				<h3><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Settings</h3>
@@ -136,8 +139,8 @@
 
 		</div>
 
-			
-			
+
+
 		<div class="row hidden" id="rowSpinner">
 
 			<div class="spinner">
@@ -149,7 +152,7 @@
 			</div>
 			<h3 class="text-center spinnerStatus"></h3>
 		</div>
-			
+
 		<div class="row hidden" id="rowResults">
 			<div class="col-sm-4 text-center">
 				<h3><span class="glyphicon glyphicon-time" aria-hidden="true"></span> RTT</h3>
@@ -179,7 +182,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						
+
 					</tbody>
 				</table>
 			</div>
@@ -192,15 +195,18 @@
 	</div>
 	<!-- /container -->
 	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+	<script type='text/javascript' src="../common/webrtc.common.js"></script>
 	<script type='text/javascript' src="speedtest.js"></script>
 
 	<script type="text/javascript">
 		jQuery(document).ready(function($) {
+			browsercheck();
+
 			$("#rowResults").removeClass('hidden').hide();
 			$("#rowControl").removeClass('hidden').hide();
 			$("#rowSpinner").removeClass('hidden').hide();
 			$("#rowResultsTable").removeClass('hidden').hide();
-			
+
 			$("#btnSpeedtestRun").click(function(event) {
 				event.preventDefault();
 				speedtestRunByLocal();

@@ -7,7 +7,7 @@
 		<meta name="author" content="Felix Weinrank">
 
 		<title>WebRTC Data Channel Playground - Netperfmeter</title>
-		
+
 		<link rel="apple-touch-icon"  href="../common/favicon/apple-icon-180x180.png">
 		<link rel="icon" type="image/png"  href="../common/favicon/android-icon-192x192.png">
 		<link rel="manifest" href="../common/favicon/manifest.json">
@@ -19,13 +19,13 @@
 		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap.min.css">
 		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="../common/custom.css">
-		
+
 
 		<!-- JAVSCRIPT Section -->
-		
+
 		<script src="../common/jquery.min.js"></script>
 		<script src="../common/bootstrap/js/bootstrap.min.js"></script>
-		
+
 	</head>
 
 	<body>
@@ -58,13 +58,16 @@
                         <li>
                             <a href="../speedtest/speedtest.html">Speedtest</a>
                         </li>
+						<li>
+							<a href="../signaling/signaling.html">Signaling</a>
+						</li>
                     </ul>
                 </div>
 			</div>
 
 		</nav>
 
-		<div class="container">
+		<div class="container main">
 			<h1 id="link">Netperfmeter</h1>
 			<div class="alert alert-info text-center" role="alert">
 				<strong>role: <span id="statusRole">#</span> - signaling ID: <span id="statusSigID">#</span></strong>
@@ -284,10 +287,13 @@
 		<!-- /container -->
 		<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
 		<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['corechart']}]}"></script>
+		<script type='text/javascript' src="../common/webrtc.common.js"></script>
 		<script type='text/javascript' src="netperfmeter.js"></script>
 
 		<script type="text/javascript">
 			jQuery(document).ready(function($) {
+
+				browsercheck();
 
 				$('[data-toggle="popover"]').popover({
 					placement : 'top',

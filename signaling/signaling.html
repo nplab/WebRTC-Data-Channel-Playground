@@ -111,9 +111,16 @@
 				<div class="rect5"></div>
 			</div>
 		</div>
-		<video />
-		<div class="row">
-			<ul id="log"></ul>
+
+		<div class="row hidden" id="rowChat">
+			<div class="col-sm-12">
+				<div id="chatMessages"></div>
+				<div class="input-group" id="chatControl">
+					<span class="input-group-addon">chat</span>
+					<input type="text" class="form-control input" placeholder="Send message to peer .. " id="chatInput">
+				</div><!-- /input-group -->
+			</div>
+
 		</div>
 
 		<div class="footer text-center">
@@ -129,42 +136,10 @@
 
 	<script type="text/javascript">
 		jQuery(document).ready(function($) {
+			browsercheck();
+
 			console.log('ready! :)')
-
-			navigator.mediaDevices = navigator.mediaDevices || ((navigator.mozGetUserMedia || navigator.webkitGetUserMedia) ? {
-   getUserMedia: function(c) {
-     return new Promise(function(y, n) {
-       (navigator.mozGetUserMedia ||
-        navigator.webkitGetUserMedia).call(navigator, c, y, n);
-     });
-   }
-} : null);
-
-if (!navigator.mediaDevices) {
-  console.log("getUserMedia() not supported.");
-  return;
-}
-
-// Prefer camera resolution nearest to 1280x720.
-
-var constraints = { audio: true, video: true };
-
-navigator.mediaDevices.getUserMedia(constraints)
-.then(function(stream) {
-  var video = document.querySelector('video');
-  video.src = window.URL.createObjectURL(stream);
-  video.onloadedmetadata = function(e) {
-    video.play();
-  };
-})
-.catch(function(err) {
-  console.log(err.name + ": " + err.message);
-});
 		});
-
-
-
-
 	</script>
 
 </body>

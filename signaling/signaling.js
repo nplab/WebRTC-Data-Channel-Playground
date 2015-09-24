@@ -28,28 +28,13 @@
 var socket = io("https://webrtc.nplab.de/");
 var appIdent = 'signaling';
 
-// ICE, STUN, TURN ...
-var iceServer = {
-	iceServers : [{
-		url : 'stun:stun1.nplab.de:3478'
-	}, {
-		url : 'stun:stun2.nplab.de:3478'
-	}]
-};
-
 // constraints for the offer SDP - here we don't need audio or video...
 var sdpConstraints = {
 	'mandatory' : {
-		'offerToReceiveAudio' : true,
-		'offerToReceiveVideo' : true
+		'offerToReceiveAudio' : false,
+		'offerToReceiveVideo' : false
 	}
 };
-
-// shims - wrappers for webkit and mozilla connections
-var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
-var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
-
 
 var pc = new PeerConnection(iceServer);
 var dcControl = {};
@@ -106,15 +91,10 @@ socket.on('signaling', function(msg) {
 		case 'ice':
 			var peerIceCandidate = new IceCandidate(msg.payload);
 			pc.addIceCandidate(peerIceCandidate);
-			console.log('singaling - remote ice candiate: ' + commonIpExtract(msg.payload.candidate));
+			console.log('singaling - remote ice candiate: ' + extractIpFromString(msg.payload.candidate));
 			break;
 	}
 });
-
-// generate a unique-ish string for storage in firebase
-function generateSignalingId() {
-	return (Math.random() * 10000| 0).toString();
-}
 
 // generic error handler
 function errorHandler(err) {
@@ -130,7 +110,7 @@ pc.onicecandidate = function(event) {
 	}
 	// send ice candidate to signaling service
 	socket.emit('signaling', {type:'ice',payload:event.candidate});
-	console.log('local ice candidate:' + commonIpExtract(event.candidate.candidate));
+	console.log('local ice candidate:' + extractIpFromString(event.candidate.candidate));
 };
 
 // establish connection to remote peer via webrtc
@@ -164,7 +144,7 @@ function connect(active) {
 
 		// create data channel
 		dcControl = pc.createDataChannel('control');
-		//bindEventsControl(dcControl);
+		bindEventsControl(dcControl);
 		console.log("connect - role: offerer");
 	} else {
 		// request SDP from offerer
@@ -174,7 +154,7 @@ function connect(active) {
 			// bin incoming control channel
 			if (event.channel.label == "control") {
 				dcControl = event.channel;
-				//bindEventsControl(event.channel);
+				bindEventsControl(event.channel);
 			} else {
 				alert("error: unknown channel!");
 			}
@@ -186,3 +166,37 @@ function connect(active) {
 	}
 	$("#rowSpinner").hide().removeClass('hidden').slideDown();
 }
+
+// bind events for control channel
+function bindEventsControl(channel) {
+	channel.onopen = function() {
+		$("#rowSpinner").slideUp();
+		$("#rowChat").hide().removeClass('hidden').slideDown();
+		$('#chatMessages').append('<div class="alert alert-warning" role="alert">Connection up - HTML enabled!</div>');
+		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
+	};
+
+	channel.onclose = function(e) {
+		console.log("Channel Close");
+		$('#chatMessages').append('<div class="alert alert-warning" role="alert">Connection lost!</div>');
+		$("#chatControl").slideUp();
+	};
+
+	window.onbeforeunload = function() {
+		channel.close();
+	};
+
+	channel.onmessage = function(e) {
+		$('#chatMessages').append('<div class="alert alert-info text-right" role="alert">' + e.data + '</div>');
+	};
+}
+
+// Send message to peer
+$('#chatInput').keypress(function (e) {
+	if (e.which == 13) {
+	  	var text = $(this).val();
+		dcControl.send(text);
+		$('#chatMessages').append('<div class="alert alert-success" role="alert">' + text + '</div>');
+    	$(this).val('');
+  	}
+});
