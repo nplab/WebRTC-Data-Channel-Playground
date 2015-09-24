@@ -33,9 +33,13 @@ BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
 var iceServer = {
 	iceServers : [
 	{
-		url : 'turn:turn1.nplab.de:3478'
+		url : 'turn:turn1.nplab.de:3478',
+		username: 'turn',
+		credential : 'turn'
 	}, {
-		url : 'turn:turn2.nplab.de:3478'
+		url : 'turn:turn2.nplab.de:3478',
+		username: 'turn',
+		credential : 'turn'
 	}, {
 		url : 'stun:stun.l.google.com:19302'
 	}, {
