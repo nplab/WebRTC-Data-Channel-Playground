@@ -34,12 +34,12 @@ var iceServer = {
 	iceServers : [
 	{
 		url : 'turn:turn1.nplab.de:3478',
-		username: 'turn',
-		credential : 'turn'
+		username: 'tiny',
+		credential : 'turner'
 	}, {
 		url : 'turn:turn2.nplab.de:3478',
-		username: 'turn',
-		credential : 'turn'
+		username: 'tiny',
+		credential : 'turner'
 	}, {
 		url : 'stun:stun.l.google.com:19302'
 	}, {

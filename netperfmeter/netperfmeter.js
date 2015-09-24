@@ -58,7 +58,16 @@ var chartOptions = {
 
 // ICE, STUN, TURN Servers
 var iceServer = {
-	iceServers : [{
+	iceServers : [
+	{
+		url : 'turn:turn1.nplab.de:3478',
+		username: 'tiny',
+		credential : 'turner'
+	}, {
+		url : 'turn:turn2.nplab.de:3478',
+		username: 'tiny',
+		credential : 'turner'
+	}, {
 		url : 'stun:stun.l.google.com:19302'
 	}, {
 		url : 'stun:stun1.l.google.com:19302'
