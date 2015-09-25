@@ -120,13 +120,11 @@ function connect(active) {
 	if(active == true) {
 		console.log('connecting actively');
 		offerer = true;
-		//signalingId = generateSignalingId();
-		signalingId = 1207;
+		signalingId = generateSignalingId();
 	} else {
 		console.log('connecting passively');
 		offerer = false;
-		//signalingId = $("#signalingId").val();
-		signalingId = 1207;
+		signalingId = $("#signalingId").val();
 	}
 
 	if(signalingId.length === 0) {
