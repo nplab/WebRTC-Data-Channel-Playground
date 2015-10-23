@@ -100,6 +100,10 @@ var availableSettings,
 // Local ID
 var id = "testing";
 
+jQuery(window).load(function(){
+	loadSettings();
+});
+
 // ICE Server
 var pcConfiguration =
 {
@@ -257,8 +261,12 @@ function saveSetting()
 
     chMin = inputMessageChars.val();
     chMax = inputMessageCharsMax.val();
-
-    settings.push({"0":name, "1":[pcType, pcMin, pcMax], "2":[dcType, dcMin, dcMax], "3":[meType, meMin, meMax], "4":[chType, chMin, chMax]});
+    settings.push(
+    	{"0":name,
+    	 "1":[pcType, pcMin, pcMax],
+    	 "2":[dcType, dcMin, dcMax], 
+    	 "3":[meType, meMin, meMax], 
+    	 "4":[chType, chMin, chMax]});
     saveSettings();
 }
 function saveSettings()
