@@ -41,6 +41,7 @@ var localwebcam = document.getElementById("local");
 var remotewebcam = document.getElementById("remote");
 	navigator.getMedia(sdpConstraints, function(stream) {
 	localwebcam.src = URL.createObjectURL(stream);
+	localwebcam.muted = true;
 	localstream = stream;
 	pc.addStream(localstream);
 }, errorHandler);	
@@ -233,24 +234,6 @@ function chatConnectionLost() {
 	document.getElementById("chatarea").value = "CONNECTION LOST";
 }
 
-function chatInit() {
-	//if(location.hash.substring(1)){
-		//signalingId = location.hash.substring(1);
-		//chatConnectTosignalingIdFromUrl();
-	//}		
-		if(typeof(dcControl.readyState) !== 'undefined' && dcControl.readyState === "open") {
-		//dcControl.send(JSON.stringify());
-
-	}
-	else
-	{
-		setInterval(function(){
-			if(typeof(dcControl.readyState) !== 'undefined' && dcControl.readyState === "open") {
-				chatInit();
-			}
-		},1000);
-	}
-}
 
 var chatnanme = "unkown";
 document.getElementById("eingabe").style.display = "none";
@@ -282,41 +265,20 @@ function setmessage(nachricht)
 
 function sendfile()
 {
-			
-            var file = document.getElementById('upload').files[0];      
-            var filename = document.getElementById('upload').files[0].name;      
-            var reader = new window.FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = onReadAsDataURL;
-            
-            /*var filetransfer = {
-						type : 'file',
-						filename : filename,
-						url : url 
-			};
-			
-            dcControl.send(JSON.stringify(filetransfer));  
-            document.getElementById("chatarea").value = document.getElementById("chatarea").value + "file has been send: "+ filename + "\r\n";
-            */
+	var file = document.getElementById('upload').files[0];            
+    var reader = new window.FileReader();
+	reader.readAsDataURL(file);
+	reader.onload = onReadAsDataURL;         
 }
     
 function setfile(file){
-    
     arrayToStoreChunks.push(file.message); // pushing chunks in array
+    console.log("added chunck");
 
     if (file.last) {
-        saveToDisk(arrayToStoreChunks.join(''), 'fake fileName');
+        SaveToDisk(arrayToStoreChunks.join(''), file.filename);
         arrayToStoreChunks = []; // resetting array
     }
-    
-    var blob = new Blob([file]);
-
-    var reader = new window.FileReader();
-    reader.readAsDataURL(blob);
-    reader.onload = function (event) {
-        var fileDataURL = event.target.result; // it is Data URL...can be saved to disk
-        SaveToDisk(fileDataURL, 'fake fileName');
-    };
 }
 
 function msgHandleJson(message) {
@@ -329,7 +291,7 @@ function msgHandleJson(message) {
 	break;
 	
 	case 'file' :
-		setfile(message);
+		 setfile(messageObject);
 	break;
 
 	default:
@@ -384,8 +346,10 @@ pc.onaddstream = function (obj) {
 };
 
 function onReadAsDataURL(event, text) {
+	var filename = document.getElementById('upload').files[0].name;
     var data = {
-    	type : 'file'
+    	type : 'file',
+    	filename : filename
     }; // data object to transmit over data channel
     var chunkLength = 1000;
 
@@ -404,7 +368,7 @@ function onReadAsDataURL(event, text) {
     var remainingDataURL = text.slice(data.message.length);
     if (remainingDataURL.length) setTimeout(function () {
         onReadAsDataURL(null, remainingDataURL); 
-    }, 500);
+    }, 5);
 }
 
 function SaveToDisk(fileUrl, fileName) {
@@ -412,7 +376,6 @@ function SaveToDisk(fileUrl, fileName) {
     save.href = fileUrl;
     save.target = '_blank';
     save.download = fileName || fileUrl;
-
     var event = document.createEvent('Event');
     event.initEvent('click', true, true);
 
