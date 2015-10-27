@@ -211,7 +211,9 @@ function extractIpFromString(string) {
 function bindEventsControl(channel) {
 	channel.onopen = function() {
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
-		document.getElementById("enteruser").style.display = "block";	
+		document.getElementById("enteruser").style.display = "block";
+		document.getElementById("upload").style.display = "block";	
+		document.getElementById("sendfile").style.display = "block";  
 	};
 
 	channel.onclose = function(e) {
@@ -238,9 +240,9 @@ function chatConnectionLost() {
 var chatnanme = "unkown";
 document.getElementById("eingabe").style.display = "none";
 document.getElementById("chatarea").style.display = "none";
-      
-            //  document.getElementById('welcomeDiv1').style.display = "block";
-     	
+document.getElementById("download").style.display = "none";
+document.getElementById("upload").style.display = "none";
+document.getElementById("sendfile").style.display = "none";  	
 	
 function sendmessage()
 {
@@ -372,13 +374,10 @@ function onReadAsDataURL(event, text) {
 }
 
 function SaveToDisk(fileUrl, fileName) {
-    var save = document.createElement('a');
+    var save = document.getElementById('download');
     save.href = fileUrl;
     save.target = '_blank';
     save.download = fileName || fileUrl;
-    var event = document.createEvent('Event');
-    event.initEvent('click', true, true);
-
-    save.dispatchEvent(event);
-    (window.URL || window.webkitURL).revokeObjectURL(save.href);
+    save.text = "Download: " + fileName;
+    document.getElementById("download").style.display = "block";
 }
