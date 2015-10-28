@@ -28,7 +28,7 @@ var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDes
 
 // generate a unique-ish string for storage in firebase
 function generateSignalingId() {
-	return (Math.random() * 10000| 0).toString();
+	return (Math.random(zaehler) * 10000| 0).toString();
 }
 
 var sdpConstraints = { "audio": true, "video": true };
@@ -39,11 +39,13 @@ navigator.getMedia = navigator.getUserMedia|| navigator.webkitGetUserMedia || na
 
 var localwebcam = document.getElementById("local");
 var remotewebcam = document.getElementById("remote");
-	navigator.getMedia(sdpConstraints, function(stream) {
+var remotewebcam2 = document.getElementById("2ndremote");
+navigator.getMedia(sdpConstraints, function(stream) {
 	localwebcam.src = URL.createObjectURL(stream);
 	localwebcam.muted = true;
 	localstream = stream;
-	pc.addStream(localstream);
+	pc1.addStream(localstream);
+	pc2.addStream(localstream);
 }, errorHandler);	
 
 // Reference to Firebase APP
@@ -51,14 +53,23 @@ var dbRef = new Firebase("https://webrtcchatv.firebaseio.com/");
 
 var bufferedAmountLimit = 1 * 1024 * 1024;
 
+var chatnanme = "unkown";
+document.getElementById("eingabe").style.display = "none";
+document.getElementById("chatarea").style.display = "none";
+document.getElementById("download").style.display = "none";
+document.getElementById("upload").style.display = "none";
+document.getElementById("sendfile").style.display = "none";  	
 var arrayToStoreChunks = [];
-var pc = new PeerConnection(iceServer);
+var pc1 = new PeerConnection(iceServer);
+var pc2 = new PeerConnection(iceServer);
 var peerRole = "offerer";
 var role = "answerer";
 var signalingId;
 var freshsignalingId = generateSignalingId();
 var signalingIdRef = dbRef.child("roomIDs");
-var dcControl = {};
+var dcControl1 = {};
+var dcControl2 = {};
+var zaehler = 0;
 
 // clean firebase ref
 signalingIdRef.child(freshsignalingId).remove();
@@ -86,9 +97,9 @@ function errorHandler(err) {
 }
 
 // handle local ice candidates
-pc.onicecandidate = function(event) {
+pc1.onicecandidate = function(event) {
 	// take the first candidate that isn't null
-	if (!pc || !event || !event.candidate) {
+	if (!pc1 || !event || !event.candidate) {
 		return;
 	}
 
@@ -100,12 +111,33 @@ pc.onicecandidate = function(event) {
 	console.log('onicecandidate - ip:' + ip);
 };
 
-pc.oniceconnectionstatechange = function(event) { 
-	console.log("oniceconnectionstatechange - " + pc.iceConnectionState);
-	if (pc.iceConnectionState === 'disconnected') {
+pc2.onicecandidate = function(event) {
+	// take the first candidate that isn't null
+	if (!pc2 || !event || !event.candidate) {
+		return;
+	}
+
+	var ip = extractIpFromString(event.candidate.candidate);
+
+	// add local ice candidate to firebase
+	signalingIdRef.child(signalingId).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
+
+	console.log('onicecandidate - ip:' + ip);
+};
+
+pc1.oniceconnectionstatechange = function(event) { 
+	console.log("oniceconnectionstatechange1 - " + pc1.iceConnectionState);
+	if (pc1.iceConnectionState === 'disconnected') {
 		chatConnectionLost();
 	}
 };
+pc2.oniceconnectionstatechange = function(event) { 
+	console.log("oniceconnectionstatechange2 - " + pc2.iceConnectionState);
+	if (pc2.iceConnectionState === 'disconnected') {
+		chatConnectionLost();
+	}
+};
+
 
 function chatCreateSignalingId() {
 	console.log('chatCreateSignalingId');
@@ -139,29 +171,51 @@ function chatConnectTosignalingIdFromUrl() {
 function chatConnect() {
 	if (role === "offerer") {
 	document.getElementById("ausgabe").value = signalingId;
-		dcControl = pc.createDataChannel('control');
-		bindEventsControl(dcControl);
-		
-		// create the offer SDP
-		pc.createOffer(function(offer) {
-			pc.setLocalDescription(offer);
+		dcControl1 = pc1.createDataChannel('control');
+		bindEventsControl(dcControl1);
+		dcControl2 = pc2.createDataChannel('control');
+		bindEventsControl(dcControl2);
+		if(zaehler === 0)
+		{
+			// create the offer SDP
+			pc1.createOffer(function(offer) {
+			pc1.setLocalDescription(offer);
 
 			// send the offer SDP to FireBase
 			firebaseSend(signalingId, "offer", JSON.stringify(offer));
 
 			// wait for an answer SDP from FireBase
 			firebaseReceive(signalingId, "answer", function(answer) {
-				pc.setRemoteDescription(new SessionDescription(JSON.parse(answer)));
+				pc1.setRemoteDescription(new SessionDescription(JSON.parse(answer)));
 			});
 		}, errorHandler, sdpConstraints);
 		console.log("connect - role: offerer");
+		}
+		else
+		{
+			pc2.createOffer(function(offer) {
+			pc2.setLocalDescription(offer);
+
+			// send the offer SDP to FireBase
+			firebaseSend(signalingId, "offer", JSON.stringify(offer));
+
+			// wait for an answer SDP from FireBase
+			firebaseReceive(signalingId, "answer", function(answer) {
+				pc2.setRemoteDescription(new SessionDescription(JSON.parse(answer)));
+			});
+		}, errorHandler, sdpConstraints);
+		console.log("connect - role: offerer");
+		}
+		
 
 		// answerer role
 	} else {
-		// answerer must wait for the data channel
-		pc.ondatachannel = function(event) {
+		if(zaehler === 0)
+		{
+			// answerer must wait for the data channel
+		pc1.ondatachannel = function(event) {
 			if (event.channel.label == "control") {
-				dcControl = event.channel;
+				dcControl1 = event.channel;
 				bindEventsControl(event.channel);
 			} else {
 				alert("error: unknown channel!");
@@ -169,34 +223,72 @@ function chatConnect() {
 
 			console.log('incoming datachannel');
 		};
-
+		
 		// answerer needs to wait for an offer before generating the answer SDP
 		firebaseReceive(signalingId, "offer", function(offer) {
-			pc.setRemoteDescription(new SessionDescription(JSON.parse(offer)));
+			pc1.setRemoteDescription(new SessionDescription(JSON.parse(offer)));
 
 			// now we can generate our answer SDP
-			pc.createAnswer(function(answer) {
-				pc.setLocalDescription(answer);
+			pc1.createAnswer(function(answer) {
+				pc1.setLocalDescription(answer);
+
+				// send it to FireBase
+				firebaseSend(signalingId, "answer", JSON.stringify(answer));
+			}, errorHandler);
+		});
+		// add handler for peers ice candidates
+		signalingIdRef.child(signalingId).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
+			var childVal = childSnapshot.val();
+			var peerCandidate = JSON.parse(childVal);
+			var peerIceCandidate = new IceCandidate(peerCandidate);
+			pc1.addIceCandidate(new IceCandidate(peerCandidate));
+	
+			var peerIp1 = extractIpFromString(peerIceCandidate.candidate);
+			console.log('peerIceCandidate for pc1: ' + peerIp1);
+			
+		});
+		}
+		else
+		{
+			pc2.ondatachannel = function(event) {
+			if (event.channel.label == "control") {
+				dcControl2 = event.channel;
+				bindEventsControl(event.channel);
+			} else {
+				alert("error: unknown channel!");
+			}
+
+			console.log('incoming datachannel');
+		};
+		
+		
+		firebaseReceive(signalingId, "offer", function(offer) {
+			pc2.setRemoteDescription(new SessionDescription(JSON.parse(offer)));
+
+			// now we can generate our answer SDP
+			pc2.createAnswer(function(answer) {
+				pc2.setLocalDescription(answer);
 
 				// send it to FireBase
 				firebaseSend(signalingId, "answer", JSON.stringify(answer));
 			}, errorHandler);
 		});
 		console.log('connect - role answerer');
+		console.log('connect - role answerer');
+		signalingIdRef.child(signalingId).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
+			var childVal = childSnapshot.val();
+			var peerCandidate = JSON.parse(childVal);
+	
+			var peerIceCandidate = new IceCandidate(peerCandidate);
+			pc2.addIceCandidate(new IceCandidate(peerCandidate));
+			
+			var peerIp2 = extractIpFromString(peerIceCandidate.candidate);
+			console.log('peerIceCandidate for pc2: ' + peerIp2);
+	
+			
+		});
+		}
 	}
-
-	// add handler for peers ice candidates
-	signalingIdRef.child(signalingId).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
-		var childVal = childSnapshot.val();
-		var peerCandidate = JSON.parse(childVal);
-
-		var peerIceCandidate = new IceCandidate(peerCandidate);
-		pc.addIceCandidate(new IceCandidate(peerCandidate));
-
-		var peerIp = extractIpFromString(peerIceCandidate.candidate);
-
-		console.log('peerIceCandidate: ' + peerIp);
-	});
 }
 
 
@@ -210,6 +302,8 @@ function extractIpFromString(string) {
 
 function bindEventsControl(channel) {
 	channel.onopen = function() {
+		zaehler++;
+		freshsignalingId = generateSignalingId();
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
 		document.getElementById("enteruser").style.display = "block";
 		document.getElementById("upload").style.display = "block";	
@@ -235,14 +329,6 @@ function chatConnectionLost() {
 	//speedtestContinueSending = false;
 	document.getElementById("chatarea").value = "CONNECTION LOST";
 }
-
-
-var chatnanme = "unkown";
-document.getElementById("eingabe").style.display = "none";
-document.getElementById("chatarea").style.display = "none";
-document.getElementById("download").style.display = "none";
-document.getElementById("upload").style.display = "none";
-document.getElementById("sendfile").style.display = "none";  	
 	
 function sendmessage()
 {
@@ -255,7 +341,8 @@ function sendmessage()
 						type : 'msg',
 						nachricht : nachricht 
 					};
-	dcControl.send(JSON.stringify(peermsg));
+	dcControl1.send(JSON.stringify(peermsg));
+	dcControl2.send(JSON.stringify(peermsg));
 }
 
 function setmessage(nachricht)
@@ -270,7 +357,7 @@ function sendfile()
 	var file = document.getElementById('upload').files[0];            
     var reader = new window.FileReader();
 	reader.readAsDataURL(file);
-	reader.onload = onReadAsDataURL;         
+	reader.onload = onReadAsDataURL;        
 }
     
 function setfile(file){
@@ -331,19 +418,22 @@ $('#eingabe').keypress(function (e) {
 						};
 						
 						
-		dcControl.send(JSON.stringify(peermsg));	
+		dcControl1.send(JSON.stringify(peermsg));
+		dcControl2.send(JSON.stringify(peermsg));	
 		
 		document.getElementById("eingabe").value = "";
   	}
 });   
 
-pc.onaddstream = function (obj) {
+pc1.onaddstream = function (obj) {
+	remotewebcam2.src = URL.createObjectURL(obj.stream);
+	remotewebcam2.play();
+	console.log("got stream");
+};
+
+pc2.onaddstream = function (obj) {
 	remotewebcam.src = URL.createObjectURL(obj.stream);
 	remotewebcam.play();
-	window.AudioContext = window.AudioContext || window.webkitAudioContext;
-	var audioContext = new AudioContext();
-	var mediaStreamSource = audioContext.createMediaStreamSource(stream);
-	mediaStreamSource.connect(audioContext.destination);
 	console.log("got stream");
 };
 
@@ -353,10 +443,9 @@ function onReadAsDataURL(event, text) {
     	type : 'file',
     	filename : filename
     }; // data object to transmit over data channel
-    var chunkLength = 1000;
+    var chunkLength = 16385;
 
     if (event) text = event.target.result; // on first invocation
-
     if (text.length > chunkLength) {
         data.message = text.slice(0, chunkLength); // getting chunk using predefined chunk length
     } else {
@@ -364,13 +453,13 @@ function onReadAsDataURL(event, text) {
         data.message = text;
         data.last = true;
     }
-
-   	dcControl.send(JSON.stringify(data)); 
+   	dcControl1.send(JSON.stringify(data)); 
+   	dcControl2.send(JSON.stringify(data));
 
     var remainingDataURL = text.slice(data.message.length);
     if (remainingDataURL.length) setTimeout(function () {
         onReadAsDataURL(null, remainingDataURL); 
-    }, 5);
+    }, 1);
 }
 
 function SaveToDisk(fileUrl, fileName) {
