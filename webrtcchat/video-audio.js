@@ -38,6 +38,7 @@ document.getElementById("enteruser").style.display = "none";
 
 navigator.getMedia = navigator.getUserMedia|| navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
+var user = 0;
 var peer1ID;
 var localwebcam = document.getElementById("local");
 var remotewebcam = document.getElementById("remote");
@@ -307,6 +308,19 @@ function extractIpFromString(string) {
 function bindEventsControl(channel) {
 	channel.onopen = function() {
 		zaehler++;
+		if(zaehler == 1)
+		{
+			document.getElementById("enteruser").style.display = "block";
+			document.getElementById("upload").style.display = "block";	
+			document.getElementById("sendfile").style.display = "block"; 
+		}
+		if(zaehler == 2)
+		{
+			var createsignal = {
+    		type : 'createsignal'
+   			 }; 
+   			 dcControl1.send(JSON.stringify(createsignal));
+		}
 		if(role != "answerer" && zaehler == 1)
 		{
 			remoteCreateID();
@@ -316,10 +330,7 @@ function bindEventsControl(channel) {
 			sendRemoteConnect(peer1ID);
 		}
 		freshsignalingId = generateSignalingId();
-		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
-		document.getElementById("enteruser").style.display = "block";
-		document.getElementById("upload").style.display = "block";	
-		document.getElementById("sendfile").style.display = "block";  
+		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id); 
 	};
 
 	channel.onclose = function(e) {
@@ -345,7 +356,6 @@ function sendmessage()
 {
 	var eingabemsg = document.getElementById("eingabe").value;
 	document.getElementById("chatarea").value = document.getElementById("chatarea").value + eingabemsg + "\r\n";
-	chatarea.scrollTop = chatarea.scrollHeight;
 	nachricht = document.getElementById("chatarea").value;
 	
 	var peermsg = {
@@ -353,7 +363,11 @@ function sendmessage()
 						nachricht : nachricht 
 					};
 	dcControl1.send(JSON.stringify(peermsg));
-	dcControl2.send(JSON.stringify(peermsg));
+	if(user == 2)
+   	{
+   		dcControl2.send(JSON.stringify(peermsg));
+   	} 
+	chatarea.scrollTop = chatarea.scrollHeight;
 }
 
 function setmessage(nachricht)
@@ -394,17 +408,17 @@ function msgHandleJson(message) {
 		 setfile(messageObject);
 	break;
 	
+	case 'createsignal' :
+		 createsignal();
+	break;
+
+	
 	case 'ID' :
 		connected++;
 		console.log('chatCreateSignalingId');
 		signalingId = freshsignalingId;
-		role = "offerer";
-		peerRole = "answerer";
-
 		console.log('creating signaling id:' + signalingId);
-		
 		sendRemoteID();
-		chatConnect();
 	break;
 	
 	case 'GotID' :
@@ -453,19 +467,23 @@ $('#eingabe').keypress(function (e) {
 						
 						
 		dcControl1.send(JSON.stringify(peermsg));
-		dcControl2.send(JSON.stringify(peermsg));	
-		
+		if(user == 2)
+   		{
+   			dcControl2.send(JSON.stringify(peermsg));
+ 	  	} 
 		document.getElementById("eingabe").value = "";
   	}
 });   
 
 pc1.onaddstream = function (obj) {
+	user++;
 	remotewebcam2.src = URL.createObjectURL(obj.stream);
 	remotewebcam2.play();
 	console.log("got stream");
 };
 
 pc2.onaddstream = function (obj) {
+	user++;
 	remotewebcam.src = URL.createObjectURL(obj.stream);
 	remotewebcam.play();
 	console.log("got stream");
@@ -487,8 +505,11 @@ function onReadAsDataURL(event, text) {
         data.message = text;
         data.last = true;
     }
-   	dcControl1.send(JSON.stringify(data)); 
-   	dcControl2.send(JSON.stringify(data));
+   	dcControl1.send(JSON.stringify(data));
+   	if(user == 2)
+   	{
+   		dcControl2.send(JSON.stringify(data));
+   	} 
 
     var remainingDataURL = text.slice(data.message.length);
     if (remainingDataURL.length) setTimeout(function () {
@@ -531,4 +552,11 @@ function sendRemoteConnect(peer1ID)
 	};	
 	dcControl2.send(JSON.stringify(RemoteConnect));
 	console.log("sending peer2 peer1ID");
+}
+
+function createsignal()
+{
+		role = "offerer";
+		peerRole = "answerer";
+		chatConnect();	
 }
