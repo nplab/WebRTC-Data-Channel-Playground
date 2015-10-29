@@ -28,15 +28,17 @@ var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDes
 
 // generate a unique-ish string for storage in firebase
 function generateSignalingId() {
-	return (Math.random(zaehler) * 10000| 0).toString();
+	return (Math.random() * 10000| 0).toString();
 }
 
+var connected = 0;
 var sdpConstraints = { "audio": true, "video": true };
 
 document.getElementById("enteruser").style.display = "none";
 
 navigator.getMedia = navigator.getUserMedia|| navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
+var peer1ID;
 var localwebcam = document.getElementById("local");
 var remotewebcam = document.getElementById("remote");
 var remotewebcam2 = document.getElementById("2ndremote");
@@ -127,12 +129,14 @@ pc2.onicecandidate = function(event) {
 
 pc1.oniceconnectionstatechange = function(event) { 
 	console.log("oniceconnectionstatechange1 - " + pc1.iceConnectionState);
-	if (pc1.iceConnectionState === 'disconnected') {
+
+	if (pc1.iceConnectionState == 'disconnected') {
 		chatConnectionLost();
 	}
 };
 pc2.oniceconnectionstatechange = function(event) { 
 	console.log("oniceconnectionstatechange2 - " + pc2.iceConnectionState);
+	
 	if (pc2.iceConnectionState === 'disconnected') {
 		chatConnectionLost();
 	}
@@ -154,7 +158,7 @@ function chatConnectTosignalingId() {
 	signalingId = $("#signalingId").val();
 	role = "answerer";
 	peerRole = "offerer";
-
+	
 	console.log('connecting to peer:' + signalingId);
 	chatConnect();
 }
@@ -303,6 +307,14 @@ function extractIpFromString(string) {
 function bindEventsControl(channel) {
 	channel.onopen = function() {
 		zaehler++;
+		if(role != "answerer" && zaehler == 1)
+		{
+			remoteCreateID();
+		}
+		if(dcControl2.readyState == 'open' && role != "answerer" && connected == 0)
+		{
+			sendRemoteConnect(peer1ID);
+		}
 		freshsignalingId = generateSignalingId();
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
 		document.getElementById("enteruser").style.display = "block";
@@ -326,8 +338,7 @@ function bindEventsControl(channel) {
 }
 
 function chatConnectionLost() {
-	//speedtestContinueSending = false;
-	document.getElementById("chatarea").value = "CONNECTION LOST";
+	console.log("Connection lost");
 }
 	
 function sendmessage()
@@ -382,7 +393,30 @@ function msgHandleJson(message) {
 	case 'file' :
 		 setfile(messageObject);
 	break;
+	
+	case 'ID' :
+		connected++;
+		console.log('chatCreateSignalingId');
+		signalingId = freshsignalingId;
+		role = "offerer";
+		peerRole = "answerer";
 
+		console.log('creating signaling id:' + signalingId);
+		
+		sendRemoteID();
+		chatConnect();
+	break;
+	
+	case 'GotID' :
+		console.log("got peer1 ID");
+		peer1ID = messageObject.signalingId;
+	break;
+	
+	case 'RConnect' :
+		document.getElementById("signalingId").value = messageObject.peer1ID;
+		chatConnectTosignalingId();
+	break;
+	
 	default:
 		alert('Unknown messagetype: ' + messageObject.type);
 		break;
@@ -469,4 +503,32 @@ function SaveToDisk(fileUrl, fileName) {
     save.download = fileName || fileUrl;
     save.text = "Download: " + fileName;
     document.getElementById("download").style.display = "block";
+}
+
+function remoteCreateID()
+{
+	var CreateID = {
+							type : 'ID'
+		};	
+	dcControl1.send(JSON.stringify(CreateID));
+	console.log("peer1 creates ID");
+}
+
+function sendRemoteID()
+{
+	var GotID = {
+							type : 'GotID',
+							signalingId : signalingId
+	};	
+	dcControl1.send(JSON.stringify(GotID));					
+}
+
+function sendRemoteConnect(peer1ID)
+{
+	var RemoteConnect = {
+							type : 'RConnect',
+							peer1ID : peer1ID
+	};	
+	dcControl2.send(JSON.stringify(RemoteConnect));
+	console.log("sending peer2 peer1ID");
 }
