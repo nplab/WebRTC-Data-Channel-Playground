@@ -10,9 +10,9 @@
 </head>
 <body>
 <div style="text-align: center">
-<video id="local" height="400px" width="400px" autoplay></video>
-<video id="remote" height="400px" width="400px" autoplay></video>
-<video id="2ndremote" height="400px" width="400px" autoplay></video>
+	<div id="dVideos" style="text-align: center">
+		<video id="local" height="400px" width="400px" autoplay>
+	</div>	
 <br>
 <button onclick="chatCreateSignalingId()">create ID</button>
 <input type="number" min="1" max="99999" class="form-control input" placeholder="peer ID" id="signalingId">
@@ -29,6 +29,9 @@
 	<button onclick="sendfile()" id="sendfile">send</button>
 	<br><br>
 	<a id="download">download</a>
+	<br><br><br>
+	<textarea id="IDS" rows="10" cols="20" readonly > </textarea>
+	<br>
 </div>
 <script type="text/javascript">
 	jQuery(document).ready(function($) {
