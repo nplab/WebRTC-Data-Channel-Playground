@@ -38,10 +38,10 @@ document.getElementById("enteruser").style.display = "none";
 
 navigator.getMedia = navigator.getUserMedia|| navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
+var localrole;
 var localstream;
-var user = 0;
 var i = 0;
-var x = 0;
+
 var peer1ID;
 var localwebcam = document.getElementById("local");
 
@@ -56,6 +56,7 @@ var dbRef = new Firebase("https://webrtcchatv.firebaseio.com/");
 
 var bufferedAmountLimit = 1 * 1024 * 1024;
 
+var remoteID;
 var chatnanme = "unkown";
 document.getElementById("eingabe").style.display = "none";
 document.getElementById("chatarea").style.display = "none";
@@ -74,7 +75,8 @@ var peerIp = new Array();
 var peerID = new Array();
 var dcControl = new Array();
 dcControl[0] = {};
-var zaehler = 0;
+
+var zaehler = 1;
 var dVideos = $('#dVideos'); 
 
 // clean firebase ref
@@ -103,7 +105,12 @@ function errorHandler(err) {
 }
 
 function chatCreateSignalingId() {
+	if(i == 0)
+	{
+		localrole = 'offerer';
+	}
 	i++;
+	
 	freshsignalingId = generateSignalingId();
 	console.log('chatCreateSignalingId');
 	signalingId = freshsignalingId;
@@ -115,6 +122,10 @@ function chatCreateSignalingId() {
 }
 
 function chatConnectTosignalingId() {
+	if(i == 0)
+	{
+		localrole = 'answerer';
+	}
 	i++;
 	console.log('chatConnectTosignalingId');
 	signalingId = $("#signalingId").val();
@@ -125,22 +136,16 @@ function chatConnectTosignalingId() {
 	chatConnect();
 }
 
-function chatConnectTosignalingIdFromUrl() {
-	console.log('chatConnectTosignalingId');
-	role = "answerer";
-	peerRole = "offerer";
 
-	console.log('connecting to peer:' + signalingId);
-	chatConnect();
-} 
 
 function chatConnect() {
 	dcControl[i] = {};
 	pc[i] = new PeerConnection(iceServer);
 	pc[i].addStream(localstream);
+
 	pc[i].oniceconnectionstatechange = function(event) 
 	{ 
-		console.log("oniceconnectionstatechange1 - " + pc[i].iceConnectionState);
+		console.log("oniceconnectionstatechange - "+ i + pc[i].iceConnectionState);
 	
 		if (pc[i].iceConnectionState == 'disconnected') {
 			chatConnectionLost();
@@ -150,9 +155,8 @@ function chatConnect() {
 	pc[i].onaddstream = function (obj) 
 	{
 		console.log("got stream");
-		user++;
 		var video = document.createElement('video');
-		dVideos.append("<video id='v" + user + "' height='400px' width='400px' src='" + URL.createObjectURL(obj.stream)+"' autoplay>");
+		dVideos.append("<video id='v" + i + "' height='400px' width='400px' src='" + URL.createObjectURL(obj.stream)+"' autoplay>");
 	};
 	
 	// handle local ice candidates
@@ -187,7 +191,6 @@ function chatConnect() {
 			});
 		}, errorHandler, sdpConstraints);
 		console.log("connect - role: offerer");
-		document.getElementById("IDS").value = document.getElementById("IDS").value + signalingId + "\r\n";
 		// answerer role
 	} else {
 		
@@ -228,7 +231,6 @@ function chatConnect() {
 	}
 }
 
-
 // find and return an IPv4 Address from a given string
 function extractIpFromString(string) {
 	console.log(string);
@@ -239,10 +241,15 @@ function extractIpFromString(string) {
 
 function bindEventsControl(channel) {
 	channel.onopen = function() {
-		zaehler++;
-		if(zaehler == 1)
+		
+		if(i > 1 && localrole == 'offerer')
 		{
-			//document.getElementById("IDS").value = document.getElementById("IDS").value + signalingId + ": " + dcControl[i].readyState + "\r\n";
+			zaehler = 1;
+			getID();
+		}
+		
+		if(i == 1)
+		{
 			document.getElementById("enteruser").style.display = "block";
 			document.getElementById("upload").style.display = "block";	
 			document.getElementById("sendfile").style.display = "block"; 
@@ -275,7 +282,6 @@ function setmessage(nachricht)
 	chatarea.scrollTop = chatarea.scrollHeight;
 }
 
-
 function sendfile()
 {
 	var file = document.getElementById('upload').files[0];            
@@ -307,6 +313,47 @@ function msgHandleJson(message) {
 		 setfile(messageObject);
 	break;
 	
+	case 'createid' :
+		freshsignalingId = generateSignalingId();
+			
+		var ID = {
+			type : 'ID',
+			ID : freshsignalingId 
+		};
+		dcControl[1].send(JSON.stringify(ID));
+		i++;
+		signalingId = freshsignalingId;
+		console.log('chatCreateSignalingId');
+		role = "offerer";
+		peerRole = "answerer";
+		console.log('creating signaling id:' + signalingId);
+		chatConnect();			
+	break;
+	
+	case 'ID' :
+		 remoteID = messageObject.ID;
+		 console.log("got ID: " + remoteID);
+		 var RConnect = {
+					type : 'RConnect',
+					ID : remoteID 
+				};
+				dcControl[i].send(JSON.stringify(RConnect));
+				setTimeout(function(){
+    				getID();
+				}, 1000);	
+	break;
+	
+	case 'RConnect' :
+		console.log("connecting to other peers");
+		i++;
+		console.log('chatConnectTosignalingId');
+		signalingId = messageObject.ID;
+		role = "answerer";
+		peerRole = "offerer";
+		console.log('connecting to peer:' + signalingId);
+		chatConnect();
+	break;
+	
 	default:
 		alert('Unknown messagetype: ' + messageObject.type);
 		break;
@@ -329,7 +376,6 @@ $('#name').keypress(function (e) {
   	}
 });
 
-
 $('#eingabe').keypress(function (e) {
 	if (e.which == 13) {
 	  	var eingabemsg = document.getElementById("eingabe").value;
@@ -340,11 +386,10 @@ $('#eingabe').keypress(function (e) {
 							type : 'msg',
 							nachricht : nachricht 
 						};
-						
-						
-		for (var y = 0; y <= i; y++)
+										
+		for (var y = 1; y <= i; y++)
  		{
- 			dcControl[i].send(JSON.stringify(peermsg));
+ 			dcControl[y].send(JSON.stringify(peermsg));
  		}	
 		
 		document.getElementById("eingabe").value = "";
@@ -367,9 +412,9 @@ function onReadAsDataURL(event, text) {
         data.message = text;
         data.last = true;
     }
-   for (var y = 0; y <= i; y++)
+   for (var y = 1; y <= i; y++)
  	{
- 		dcControl[i].send(JSON.stringify(data));
+ 		dcControl[y].send(JSON.stringify(data));
  	}
 
     var remainingDataURL = text.slice(data.message.length);
@@ -385,4 +430,17 @@ function SaveToDisk(fileUrl, fileName) {
     save.download = fileName || fileUrl;
     save.text = "Download: " + fileName;
     document.getElementById("download").style.display = "block";
+}
+
+function getID()
+{
+	var createid = {
+				type : 'createid'					
+			};
+			
+	if(zaehler != i)
+	{
+		dcControl[zaehler].send(JSON.stringify(createid));
+		zaehler++;
+	}	
 }
