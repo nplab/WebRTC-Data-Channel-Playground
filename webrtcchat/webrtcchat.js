@@ -170,9 +170,9 @@ function chatConnect() {
 		$("#rowInit").slideUp();
 		$("#rowSpinner").slideDown();
 		$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
-		
+
 		//new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
-		
+
 		$("#rowSpinner").removeClass('hidden').hide().slideDown();
 		dcControl[i] = pc[i].createDataChannel('control');
 		bindEventsControl(dcControl[i]);
@@ -241,7 +241,7 @@ function bindEventsControl(channel) {
 	channel.onopen = function() {
 		$("#rowSpinner").slideUp();
 		$("#rowInit").slideDown();
-		
+
 		if (i > 1 && localrole == 'offerer') {
 			zaehler = 1;
 			getID();
@@ -271,11 +271,14 @@ function bindEventsControl(channel) {
 }
 
 function chatConnectionLost() {
+	$('#tChat tr:last').after('<tr class="danger"><td>Warning</td><td>Lost Connection to a peer</td></tr>');
+	$("#tChat tr:last").focus();
 	console.log("Connection lost");
 }
 
-function setmessage(username,message) {
-	$('#tChat tr:last').after('<tr class="warning"><td>'+username+'</td><td>' + message + '</td></tr>');
+function setmessage(username, message) {
+	$('#tChat tr:last').after('<tr class="warning"><td>' + username + '</td><td>' + message + '</td></tr>');
+	$("#tChat tr:last").focus();
 }
 
 function sendfile() {
@@ -303,7 +306,7 @@ function msgHandleJson(message) {
 
 	// peer indicates finish
 	case 'msg':
-		setmessage(messageObject.username,messageObject.message);
+		setmessage(messageObject.username, messageObject.message);
 		break;
 
 	case 'file' :
@@ -374,19 +377,21 @@ $('#name').keypress(function(e) {
 
 $('#eingabe').keypress(function(e) {
 	if (e.which == 13) {
-		$('#tChat tr:last').after('<tr class="success"><td>You</td><td>' + eingabe.val() + '</td></tr>');
+		if (eingabe.val().length != 0) {
+			$('#tChat tr:last').after('<tr class="success"><td>You</td><td>' + eingabe.val() + '</td></tr>');
+			var peermsg = {
+				type : 'msg',
+				username : username,
+				message : eingabe.val()
+			};
 
-		var peermsg = {
-			type : 'msg',
-			username : username,
-			message : eingabe.val()
-		};
-
-		for (var y = 1; y <= i; y++) {
-			dcControl[y].send(JSON.stringify(peermsg));
+			for (var y = 1; y <= i; y++) {
+				dcControl[y].send(JSON.stringify(peermsg));
+			}
+			$("#tChat tr:last").focus();
+			eingabe.val("");
 		}
 
-		eingabe.val("");
 	}
 });
 

@@ -124,7 +124,7 @@
 				</div>
 				<div id="dChatRow" class="row">
 					<div id="dChat" class="table-responsive col-md-12">
-						<div id="dChatTable">
+						<div id="dChatTable" >
 							<table id="tChat" class="table table-hover">
 								<tbody>
 									<tr class="info">
@@ -135,11 +135,8 @@
 							</table>
 						</div>
 						<div class="input-group">
-							<input id="eingabe" type="text" class="form-control" placeholder="Your message">
-							<span class="input-group-btn">
-								<button onclick="sendMessage();" class="btn btn-success" type="button">
-									Send message
-								</button> </span>
+							<span class="input-group-addon">chat</span>
+					<input type="text" class="form-control input" placeholder="Send message.. " id="eingabe">
 						</div>
 					</div>
 				</div>
@@ -167,7 +164,7 @@
 			jQuery(document).ready(function($) {
 				browsercheck();
 
-				console.log('ready!')
+				console.log('ready!');
 			});
 		</script>
 
