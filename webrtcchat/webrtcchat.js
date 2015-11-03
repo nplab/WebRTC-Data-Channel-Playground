@@ -1,72 +1,19 @@
-// STUN, TURN Servers
-var iceServer = {
-	iceServers : [{
-		urls : 'turn:turn1.nplab.de:3478',
-		username : 'tiny',
-		credential : 'turner'
-	}, {
-		urls : 'turn:turn2.nplab.de:3478',
-		username : 'tiny',
-		credential : 'turner'
-	}, {
-		urls : 'stun:stun.l.google.com:19302'
-	}, {
-		urls : 'stun:stun1.l.google.com:19302'
-	}, {
-		urls : 'stun:stun2.l.google.com:19302'
-	}, {
-		urls : 'stun:stun3.l.google.com:19302'
-	}, {
-		urls : 'stun:stun4.l.google.com:19302'
-	}]
-};
-
-var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
-var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
-
-// generate a unique-ish string for storage in firebase
-function generateSignalingId() {
-	return (Math.random() * 10000 | 0).toString();
-}
-
-var connected = 0;
-var sdpConstraints = {
-	"audio" : true,
-	"video" : true
-};
-
-document.getElementById("enteruser").style.display = "none";
-
-navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
+// Reference to Firebase APP
+var dbRef = new Firebase("https://webrtcchatv.firebaseio.com/");
+var peer1ID;
+var localwebcam = document.getElementById("local");
 var eingabe = $('#eingabe');
 var localrole;
 var localstream;
 var i = 0;
-
-var peer1ID;
-var localwebcam = document.getElementById("local");
-//get Video/Audio
-navigator.getMedia(sdpConstraints, function(stream) {
-	localwebcam.src = URL.createObjectURL(stream);
-	localstream = stream;
-}, errorHandler);
-
-// Reference to Firebase APP
-var dbRef = new Firebase("https://webrtcchatv.firebaseio.com/");
-
+var cam = 0;
+var zaehler = 1;
+var dVideos = $('#dVideos');
 var bufferedAmountLimit = 1 * 1024 * 1024;
-
 var remoteID;
 var chatnanme = "unkown";
-document.getElementById("dChatRow").style.display = "none";
-document.getElementById("download").style.display = "none";
-document.getElementById("upload").style.display = "none";
-document.getElementById("sendfile").style.display = "none";
 var arrayToStoreChunks = [];
 var pc = new Array();
-pc[0] = new PeerConnection(iceServer);
 var peerRole = "offerer";
 var role = "answerer";
 var signalingId;
@@ -75,10 +22,27 @@ var signalingIdRef = dbRef.child("roomIDs");
 var peerIp = new Array();
 var peerID = new Array();
 var dcControl = new Array();
+var sdpConstraints = {
+	"audio" : true,
+	"video" : true
+};
+pc[0] = new PeerConnection(iceServer);
 dcControl[0] = {};
+document.getElementById("dChatRow").style.display = "none";
+document.getElementById("download").style.display = "none";
+document.getElementById("upload").style.display = "none";
+document.getElementById("sendfile").style.display = "none";
+document.getElementById("enteruser").style.display = "none";
 
-var zaehler = 1;
-var dVideos = $('#dVideos');
+navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+//get Video/Audio
+navigator.getMedia(sdpConstraints, function(stream) {
+	localwebcam.src = URL.createObjectURL(stream);
+	localstream = stream;
+	}, function(stream) {
+	cam++;
+	});
 
 // clean firebase ref
 signalingIdRef.child(freshsignalingId).remove();
@@ -138,7 +102,10 @@ function chatConnectTosignalingId() {
 function chatConnect() {
 	dcControl[i] = {};
 	pc[i] = new PeerConnection(iceServer);
-	pc[i].addStream(localstream);
+	if(cam == 0)
+	{
+		pc[i].addStream(localstream);
+	}
 
 	pc[i].oniceconnectionstatechange = function(event) {
 		console.log("oniceconnectionstatechange - " + i + pc[i].iceConnectionState);
