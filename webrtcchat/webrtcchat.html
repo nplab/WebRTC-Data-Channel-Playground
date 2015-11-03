@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="description" content="WebRTC Data Channel Playground - Gyrocolor">
+		<meta name="author" content="Felix Weinrank">
+
+		<title>WebRTC Data Channel Playground - WebRTCChat</title>
+
+		<link rel="apple-touch-icon"  href="../common/favicon/apple-icon-180x180.png">
+		<link rel="icon" type="image/png"  href="../common/favicon/android-icon-192x192.png">
+		<link rel="manifest" href="../common/favicon/manifest.json">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="../common/favicon/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
+
+		<!-- CSS Section -->
+		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="../common/custom.css">
+
+		<!-- JAVSCRIPT Section -->
+
+		<script src="../common/jquery.min.js"></script>
+		<script src="../common/bootstrap/js/bootstrap.min.js"></script>
+
+	</head>
+
+	<body>
+		<nav class="navbar navbar-default navbar-static-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand">WebRTC Data Channel Playground</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="navbar">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="../netperfmeter/netperfmeter.html">Netperfmeter</a>
+						</li>
+						<li>
+							<a href="../stresstest/stresstest.html">Stresstest</a>
+						</li>
+						<li>
+							<a href="../conformance-tests/conformance-tests.html">Browsertest</a>
+						</li>
+						<li>
+							<a href="../gyrocolor/gyrocolor.html">Gyrocolor</a>
+						</li>
+						<li>
+							<a href="../speedtest/speedtest.html">Speedtest</a>
+						</li>
+						<li>
+							<a href="../signaling/signaling.html">Signaling</a>
+						</li>
+						<li class="active">
+							<a href="../webrtcchat/webrtcchat.html">WebRTCChat</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+		</nav>
+
+		<div class="container" id="complementary">
+			<h1>WebRTCChat</h1>
+
+			<div class="row hidden" id="rowMessage">
+				<div class="col-sm-12" id="colMessage"></div>
+			</div>
+
+			<div class="row" id="rowInit">
+				<div class="col-sm-6" id="chatCreateSignalingId">
+					<h3>Create peer ID ...</h3>
+					<button class="btn btn-success btn-block" onclick="chatCreateSignalingId();">
+						<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> create ID
+					</button>
+				</div>
+
+				<div class="col-sm-6 text-right" id="chatConnectToSignalingId">
+					<h3>... or connect to peer</h3>
+					<div class="input-group">
+						<input type="number" min="1" max="99999" class="form-control input" placeholder="peer ID" id="signalingId">
+
+						<span class="input-group-btn">
+							<button class="btn btn-success" onclick="chatConnectTosignalingId();">
+								<span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> connect
+							</button> </span>
+					</div><!-- /input-group -->
+
+				</div>
+
+			</div>
+
+			<div class="row hidden" id="rowSpinner">
+				<h3 class="text-center spinnerStatus"></h3>
+
+				<div class="spinner">
+					<div class="rect1"></div>
+					<div class="rect2"></div>
+					<div class="rect3"></div>
+					<div class="rect4"></div>
+					<div class="rect5"></div>
+				</div>
+			</div>
+			<div id="chat">
+				<div id="dVideos" style="text-align: center">
+					<video id="local" height="400px" width="400px" muted autoplay></video>
+				</div>
+				<br>
+				<div id = "enteruser">
+					<br>
+					<br>
+					<br>
+					Please enter a Username:
+					<input type="text" id="name">
+				</div>
+				<div id="dChatRow" class="row">
+					<div id="dChat" class="table-responsive col-md-12">
+						<div id="dChatTable">
+							<table id="tChat" class="table table-hover">
+								<tbody>
+									<tr class="info">
+										<td> Welcome! </td>
+										<td> The chat will be here! </td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="input-group">
+							<input id="eingabe" type="text" class="form-control" placeholder="Your message">
+							<span class="input-group-btn">
+								<button onclick="sendMessage();" class="btn btn-success" type="button">
+									Send message
+								</button> </span>
+						</div>
+					</div>
+				</div>
+				<br>
+				<br>
+				<br>
+				<br>
+				<input class="btn btn-success" type="file" id="upload">
+				<button class="btn btn-success" onclick="sendfile()" id="sendfile">
+					Send File
+				</button>
+				<a id="download">download</a>
+			</div>
+			<div class="footer text-center">
+				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
+			</div>
+		</div>
+
+		<!-- /container -->
+		<script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+		<script type='text/javascript' src="../common/webrtc.common.js"></script>
+		<script type='text/javascript' src="webrtcchat.js"></script>
+
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				browsercheck();
+
+				console.log('ready!')
+			});
+		</script>
+
+	</body>
+</html>
