@@ -171,7 +171,7 @@ function chatConnect() {
 		$("#rowSpinner").slideDown();
 		$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
 
-		//new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
+		new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
 
 		$("#rowSpinner").removeClass('hidden').hide().slideDown();
 		dcControl[i] = pc[i].createDataChannel('control');
