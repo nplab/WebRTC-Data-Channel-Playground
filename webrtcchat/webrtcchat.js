@@ -1,6 +1,6 @@
 // Reference to Firebase APP
 var dbRef = new Firebase("https://webrtcchatv.firebaseio.com/");
-var peer1ID;
+
 var localwebcam = document.getElementById("local");
 var eingabe = $('#eingabe');
 var localrole;
@@ -40,9 +40,8 @@ navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || n
 navigator.getMedia(sdpConstraints, function(stream) {
 	localwebcam.src = URL.createObjectURL(stream);
 	localstream = stream;
-	}, function(stream) {
 	cam++;
-	});
+}, errorHandler);
 
 // clean firebase ref
 signalingIdRef.child(freshsignalingId).remove();
@@ -102,8 +101,7 @@ function chatConnectTosignalingId() {
 function chatConnect() {
 	dcControl[i] = {};
 	pc[i] = new PeerConnection(iceServer);
-	if(cam == 0)
-	{
+	if (cam == 1) {
 		pc[i].addStream(localstream);
 	}
 
@@ -358,7 +356,6 @@ $('#eingabe').keypress(function(e) {
 			$("#tChat tr:last").focus();
 			eingabe.val("");
 		}
-
 	}
 });
 
