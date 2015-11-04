@@ -23,8 +23,8 @@ var peerIp = new Array();
 var peerID = new Array();
 var dcControl = new Array();
 var sdpConstraints = {
-	"audio" : true,
-	"video" : true
+	offerToReceiveAudio : true,
+	offerToReceiveVideo : true
 };
 pc[0] = new PeerConnection(iceServer);
 dcControl[0] = {};
@@ -37,7 +37,10 @@ document.getElementById("enteruser").style.display = "none";
 navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
 //get Video/Audio
-navigator.getMedia(sdpConstraints, function(stream) {
+navigator.getMedia({
+	audio : true,
+	video : true
+}, function(stream) {
 	localwebcam.src = URL.createObjectURL(stream);
 	localstream = stream;
 	cam++;
@@ -335,7 +338,6 @@ $('#name').keypress(function(e) {
 			document.getElementById("enteruser").style.display = "none";
 			document.getElementById("dChatRow").style.display = "block";
 			document.getElementById("eingabe").focus();
-
 		}
 	}
 });
@@ -378,8 +380,10 @@ function onReadAsDataURL(event, text) {
 
 		data.message = text;
 		data.last = true;
+		console.log("done sending");
 	}
 	for (var y = 1; y <= i; y++) {
+		console.log("sending chunk");
 		dcControl[y].send(JSON.stringify(data));
 	}
 
@@ -387,14 +391,14 @@ function onReadAsDataURL(event, text) {
 	if (remainingDataURL.length)
 		setTimeout(function() {
 			onReadAsDataURL(null, remainingDataURL);
-		}, 1);
+		}, 0);
 }
 
 function SaveToDisk(fileUrl, fileName) {
 	var save = document.getElementById('download');
 	save.href = fileUrl;
 	save.target = '_blank';
-	save.download = fileName || fileUrl;
+	save.download = fileName;
 	save.text = "Download: " + fileName;
 	document.getElementById("download").style.display = "block";
 }
