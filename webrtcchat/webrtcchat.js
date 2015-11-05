@@ -1,5 +1,5 @@
-// Reference to Firebase APP
-var dbRef = new Firebase("https://webrtcchatv.firebaseio.com/");
+var socket = io("https://webrtc.nplab.de/");
+var appIdent = 'signaling';
 
 var localwebcam = document.getElementById("local");
 var eingabe = $('#eingabe');
@@ -14,25 +14,30 @@ var remoteID;
 var chatnanme = "unkown";
 var arrayToStoreChunks = [];
 var pc = new Array();
-var peerRole = "offerer";
 var role = "answerer";
 var signalingId;
 var freshsignalingId = generateSignalingId();
-var signalingIdRef = dbRef.child("roomIDs");
 var peerIp = new Array();
 var peerID = new Array();
 var dcControl = new Array();
+var offerer;
+var signalingInProgress = false;
 var sdpConstraints = {
 	offerToReceiveAudio : true,
 	offerToReceiveVideo : true
 };
 pc[0] = new PeerConnection(iceServer);
 dcControl[0] = {};
-document.getElementById("dChatRow").style.display = "none";
-document.getElementById("download").style.display = "none";
-document.getElementById("upload").style.display = "none";
-document.getElementById("sendfile").style.display = "none";
-document.getElementById("enteruser").style.display = "none";
+$("#dChatRow").hide();
+$("#download").hide();
+$("#upload").hide();
+$("#sendfile").hide();
+$("#enteruser").hide();
+
+// handle incoming info messages from server
+socket.on('info', function(msg) {
+	console.log('server info: ' + msg);
+});
 
 navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
@@ -46,32 +51,13 @@ navigator.getMedia({
 	cam++;
 }, errorHandler);
 
-// clean firebase ref
-signalingIdRef.child(freshsignalingId).remove();
-
-// wrapper to send data to FireBase
-function firebaseSend(signalingId, key, data) {
-	signalingIdRef.child(signalingId).child(key).set(data);
-	console.log('firebaseSend - ' + key + ' - ' + data);
-}
-
-// wrapper function to receive data from FireBase - with callback function
-function firebaseReceive(signalingId, type, cb) {
-	signalingIdRef.child(signalingId).child(type).on("value", function(snapshot, key) {
-		var data = snapshot.val();
-		if (data) {
-			cb(data);
-			console.log('firebaseReceive - ' + type + ' - ' + data);
-		}
-	});
-}
-
 // generic error handler
 function errorHandler(err) {
 	console.error(err);
 }
 
 function chatCreateSignalingId() {
+	signalingInProgress = true;
 	if (i == 0) {
 		localrole = 'offerer';
 	}
@@ -81,13 +67,13 @@ function chatCreateSignalingId() {
 	console.log('chatCreateSignalingId');
 	signalingId = freshsignalingId;
 	role = "offerer";
-	peerRole = "answerer";
 
 	console.log('creating signaling id:' + signalingId);
 	chatConnect();
 }
 
 function chatConnectTosignalingId() {
+	signalingInProgress = true;
 	if (i == 0) {
 		localrole = 'answerer';
 	}
@@ -95,13 +81,13 @@ function chatConnectTosignalingId() {
 	console.log('chatConnectTosignalingId');
 	signalingId = $("#signalingId").val();
 	role = "answerer";
-	peerRole = "offerer";
 
 	console.log('connecting to peer:' + signalingId);
 	chatConnect();
 }
 
 function chatConnect() {
+	socket.emit('roomJoin', appIdent + signalingId);
 	dcControl[i] = {};
 	pc[i] = new PeerConnection(iceServer);
 	if (cam == 1) {
@@ -130,7 +116,10 @@ function chatConnect() {
 		}
 		var ip = extractIpFromString(event.candidate.candidate);
 		// add local ice candidate to firebase
-		signalingIdRef.child(signalingId).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
+		socket.emit('signaling', {
+			type : 'ice',
+			payload : event.candidate
+		});
 		console.log('onicecandidate - ip:' + ip);
 	};
 
@@ -144,22 +133,12 @@ function chatConnect() {
 		$("#rowSpinner").removeClass('hidden').hide().slideDown();
 		dcControl[i] = pc[i].createDataChannel('control');
 		bindEventsControl(dcControl[i]);
-
-		// create the offer SDP
-		pc[i].createOffer(function(offer) {
-			pc[i].setLocalDescription(offer);
-
-			// send the offer SDP to FireBase
-			firebaseSend(signalingId, "offer", JSON.stringify(offer));
-
-			// wait for an answer SDP from FireBase
-			firebaseReceive(signalingId, "answer", function(answer) {
-				pc[i].setRemoteDescription(new SessionDescription(JSON.parse(answer)));
-			});
-		}, errorHandler, sdpConstraints);
 		console.log("connect - role: offerer");
 		// answerer role
 	} else {
+		socket.emit('signaling', {
+			type : 'sdpRequest'
+		});
 		// answerer must wait for the data channel
 		pc[i].ondatachannel = function(event) {
 			if (event.channel.label == "control") {
@@ -171,31 +150,62 @@ function chatConnect() {
 
 			console.log('incoming datachannel');
 		};
-
-		// answerer needs to wait for an offer before generating the answer SDP
-		firebaseReceive(signalingId, "offer", function(offer) {
-			pc[i].setRemoteDescription(new SessionDescription(JSON.parse(offer)));
-
-			// now we can generate our answer SDP
-			pc[i].createAnswer(function(answer) {
-				pc[i].setLocalDescription(answer);
-
-				// send it to FireBase
-				firebaseSend(signalingId, "answer", JSON.stringify(answer));
-			}, errorHandler);
-		});
-		// add handler for peers ice candidates
-		signalingIdRef.child(signalingId).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
-			var childVal = childSnapshot.val();
-			var peerCandidate = JSON.parse(childVal);
-			var peerIceCandidate = new IceCandidate(peerCandidate);
-			pc[i].addIceCandidate(new IceCandidate(peerCandidate));
-
-			peerIp[i] = extractIpFromString(peerIceCandidate.candidate);
-			console.log('peerIceCandidate for pc: ' + peerIp[i]);
-		});
 	}
 }
+
+socket.on('signaling', function(msg) {
+	if (!signalingInProgress) {
+		console.log('signaling - error: no signaling in progress...');
+		return;
+	}
+
+	switch(msg.type) {
+	// answerer requests SDP-Offer
+	case 'sdpRequest':
+		if (role == 'offerer') {
+			pc[i].createOffer(function(offer) {
+				pc[i].setLocalDescription(offer);
+				console.log(JSON.stringify(offer));
+				socket.emit('signaling', {
+					type : 'sdp',
+					payload : offer
+				});
+			}, errorHandler, sdpConstraints);
+		} else {
+			console.log('error: got sdpRequest as answerer...');
+		}
+		break;
+
+	// we receive an sdp message
+	case 'sdp':
+		// only process message if it's an offer and we aren't offerer and signaling hasn't finished yet
+		if (msg.payload.type === 'offer' && role != 'offerer') {
+			pc[i].setRemoteDescription(new SessionDescription(msg.payload));
+			// generate our answer SDP and send it to peer
+			pc[i].createAnswer(function(answer) {
+				pc[i].setLocalDescription(answer);
+				socket.emit('signaling', {
+					type : 'sdp',
+					payload : answer
+				});
+			}, errorHandler);
+			console.log('signaling - handle sdp offer and send answer');
+			// if we receive a sdp answer, we are the answerer and signaling isn't done yet, process answer
+		} else if (msg.payload.type === 'answer' && role == 'offerer') {
+			pc[i].setRemoteDescription(new SessionDescription(msg.payload));
+			console.log('signaling - handle sdp answer');
+		} else {
+			console.log('signaling - unexpected message');
+		}
+		break;
+	// we receive an ice candidate
+	case 'ice':
+		var peerIceCandidate = new IceCandidate(msg.payload);
+		pc[i].addIceCandidate(peerIceCandidate);
+		console.log('singaling - remote ice candiate: ' + extractIpFromString(msg.payload.candidate));
+		break;
+	}
+});
 
 // find and return an IPv4 Address from a given string
 function extractIpFromString(string) {
@@ -216,9 +226,9 @@ function bindEventsControl(channel) {
 		}
 
 		if (i == 1) {
-			document.getElementById("enteruser").style.display = "block";
-			document.getElementById("upload").style.display = "block";
-			document.getElementById("sendfile").style.display = "block";
+			$("#enteruser").show();
+			$("#upload").show();
+			$("#sendfile").show();
 		}
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
 	};
@@ -341,9 +351,9 @@ $('#name').keypress(function(e) {
 		test = document.getElementById("name").value;
 		if (test.length != 0) {
 			username = document.getElementById("name").value;
-			document.getElementById("enteruser").style.display = "none";
-			document.getElementById("dChatRow").style.display = "block";
-			document.getElementById("eingabe").focus();
+			$("#enteruser").hide();
+			$("#dChatRow").show();
+			$("#eingabe").focus();
 		}
 	}
 });
@@ -409,7 +419,7 @@ function SaveToDisk(fileUrl, fileName) {
 	save.target = '_blank';
 	save.download = fileName;
 	save.text = "Download: " + fileName;
-	document.getElementById("download").style.display = "block";
+	$("#download").show();
 }
 
 function getID() {
