@@ -21,10 +21,8 @@
 	<link rel="stylesheet" href="../common/custom.css">
 
 	<!-- JAVSCRIPT Section -->
-
 	<script src="../common/jquery.min.js"></script>
 	<script src="../common/bootstrap/js/bootstrap.min.js"></script>
-
 </head>
 
 <body>
@@ -61,7 +59,7 @@
 						<a href="../signaling/signaling.html">Signaling</a>
 					</li>
 					<li>
-						<a href="../webrtcchat/webrtcchat.html">WebRTCChat</a>
+						<a href="../webrtcchat/webrtcchat.html">AVDM</a>
 					</li>
 				</ul>
 			</div>
@@ -97,7 +95,7 @@
 							<span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> connect
 						</button>
 					</span>
-				</div><!-- /input-group -->
+				</div>
 
 			</div>
 
@@ -121,22 +119,19 @@
 				<div class="input-group" id="chatControl">
 					<span class="input-group-addon">chat</span>
 					<input type="text" class="form-control input" placeholder="Send message to peer .. " id="chatInput">
-				</div><!-- /input-group -->
+				</div>
 			</div>
 
 		</div>
 
 		<div class="footer text-center">
-			&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
+			&copy; Network Programming Lab of Münster University of Applied Sciences - Felix Weinrank - weinrank@fh-muenster.de - <a href="https://github.com/nplab/WebRTC-Data-Channel-Playground">@GitHub</a>
 		</div>
 	</div>
 
-	<!-- /container -->
 	<script type='text/javascript' src="https://webrtc.nplab.de/socket.io/socket.io.js"></script>
 	<script type='text/javascript' src="../common/webrtc.common.js"></script>
 	<script type='text/javascript' src="signaling.js"></script>
-
-
 	<script type="text/javascript">
 		jQuery(document).ready(function($) {
 			browsercheck();
@@ -144,6 +139,5 @@
 			console.log('ready! :)')
 		});
 	</script>
-
 </body>
 </html>
