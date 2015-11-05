@@ -240,13 +240,19 @@ function bindEventsControl(channel) {
 
 function chatConnectionLost() {
 	$('#tChat tr:last').after('<tr class="danger"><td>Warning</td><td>Lost Connection to a peer</td></tr>');
-	$("#tChat tr:last").focus();
+	var height = $('#tChat').height();
+	$('#dChatTable').animate({
+		scrollTop : height
+	});
 	console.log("Connection lost");
 }
 
 function setmessage(username, message) {
 	$('#tChat tr:last').after('<tr class="warning"><td>' + username + '</td><td>' + message + '</td></tr>');
-	$("#tChat tr:last").focus();
+	var height = $('#tChat').height();
+	$('#dChatTable').animate({
+		scrollTop : height
+	});
 }
 
 function sendfile() {
@@ -355,7 +361,10 @@ $('#eingabe').keypress(function(e) {
 			for (var y = 1; y <= i; y++) {
 				dcControl[y].send(JSON.stringify(peermsg));
 			}
-			$("#tChat tr:last").focus();
+			var height = $('#tChat').height();
+			$('#dChatTable').animate({
+				scrollTop : height
+			});
 			eingabe.val("");
 		}
 	}
