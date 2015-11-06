@@ -33,6 +33,7 @@ $("#download").hide();
 $("#upload").hide();
 $("#sendfile").hide();
 $("#enteruser").hide();
+$("#dVideos").css("position", "relative");
 
 // handle incoming info messages from server
 socket.on('info', function(msg) {
@@ -73,13 +74,17 @@ function chatCreateSignalingId() {
 }
 
 function chatConnectTosignalingId() {
+	signalingId = $("#signalingId").val();
+	if (signalingId.length === 0) {
+		console.log('signalingId empty');
+		return;
+	}
 	signalingInProgress = true;
 	if (i == 0) {
 		localrole = 'answerer';
 	}
 	i++;
 	console.log('chatConnectTosignalingId');
-	signalingId = $("#signalingId").val();
 	role = "answerer";
 
 	console.log('connecting to peer:' + signalingId);
@@ -105,7 +110,10 @@ function chatConnect() {
 	pc[i].onaddstream = function(obj) {
 		console.log("got stream");
 		var video = document.createElement('video');
-		dVideos.append("<video id='v" + i + "' height='400px' width='400px' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
+		dVideos.append("<video id='v" + i + "' height='100%' width='100%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
+		$("#local").css("padding-left", "80%");
+		$("#local").css("padding-top", "59.5%");
+		$("#local").css("position", "absolute");
 	};
 
 	// handle local ice candidates
@@ -115,7 +123,6 @@ function chatConnect() {
 			return;
 		}
 		var ip = extractIpFromString(event.candidate.candidate);
-		// add local ice candidate to firebase
 		socket.emit('signaling', {
 			type : 'ice',
 			payload : event.candidate
@@ -124,6 +131,7 @@ function chatConnect() {
 	};
 
 	if (role === "offerer") {
+		$("#chatConnectToSignalingId").slideUp();
 		$("#rowInit").slideUp();
 		$("#rowSpinner").slideDown();
 		$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
@@ -136,6 +144,7 @@ function chatConnect() {
 		console.log("connect - role: offerer");
 		// answerer role
 	} else {
+		$("#chatCreateSignalingId").slideUp();
 		socket.emit('signaling', {
 			type : 'sdpRequest'
 		});
@@ -227,6 +236,10 @@ function bindEventsControl(channel) {
 
 		if (i == 1) {
 			$("#enteruser").show();
+			$("#name").val("Stranger");
+			username = "Stranger";
+			$("#dChatRow").show();
+			$("#eingabe").focus();
 			$("#upload").show();
 			$("#sendfile").show();
 		}
@@ -249,7 +262,7 @@ function bindEventsControl(channel) {
 }
 
 function chatConnectionLost() {
-	$('#tChat tr:last').after('<tr class="danger"><td>Warning</td><td>Lost Connection to a peer</td></tr>');
+	$('#tChat tr:last').after('<tr class="danger"><td>Warning: Lost Connection to a peer</td></tr>');
 	var height = $('#tChat').height();
 	$('#dChatTable').animate({
 		scrollTop : height
@@ -258,7 +271,7 @@ function chatConnectionLost() {
 }
 
 function setmessage(username, message) {
-	$('#tChat tr:last').after('<tr class="warning"><td>' + username + '</td><td>' + message + '</td></tr>');
+	$('#tChat tr:last').after('<tr class="warning"><td>' + username + ": " + message + '</td></tr>');
 	var height = $('#tChat').height();
 	$('#dChatTable').animate({
 		scrollTop : height
@@ -347,13 +360,23 @@ function msgHandleJson(message) {
 
 $('#name').keypress(function(e) {
 	if (e.which == 13) {
+		$("#eingabe").focus();
+	}
+});
 
-		test = document.getElementById("name").value;
-		if (test.length != 0) {
-			username = document.getElementById("name").value;
-			$("#enteruser").hide();
-			$("#dChatRow").show();
-			$("#eingabe").focus();
+$('#name').focusout(function(e) {
+	test = document.getElementById("name").value;
+	if (test.length != 0) {
+		var oldname = username;
+		username = document.getElementById("name").value;
+		$('#tChat tr:last').after('<tr class="success"><td>' + "You changed your Username to: " + username + '</td></tr>');
+		var peermsg = {
+			type : 'msg',
+			username : oldname,
+			message : "has changed his Username to " + username
+		};
+		for (var y = 1; y <= i; y++) {
+			dcControl[y].send(JSON.stringify(peermsg));
 		}
 	}
 });
@@ -361,7 +384,7 @@ $('#name').keypress(function(e) {
 $('#eingabe').keypress(function(e) {
 	if (e.which == 13) {
 		if (eingabe.val().length != 0) {
-			$('#tChat tr:last').after('<tr class="success"><td>You</td><td>' + eingabe.val() + '</td></tr>');
+			$('#tChat tr:last').after('<tr class="success"><td>' + username + ": " + eingabe.val() + '</td></tr>');
 			var peermsg = {
 				type : 'msg',
 				username : username,
