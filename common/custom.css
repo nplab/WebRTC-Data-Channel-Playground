@@ -142,7 +142,4 @@ table#testlist td, table#npmChannelParameters td{
 	overflow: auto;
 }
 
-video {
-  width: 100%    !important;
-  height: auto   !important;
-}
+
