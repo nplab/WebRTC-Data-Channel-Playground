@@ -1,7 +1,3 @@
-/**
- * @author Sven Niehus
- * @version 0.1
- */
 var IceCandidate        = window.mozRTCIceCandidate || window.RTCIceCandidate;
 var PeerConnection      = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
 var SessionDescription  = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
@@ -264,8 +260,8 @@ function saveSetting()
     settings.push(
     	{"0":name,
     	 "1":[pcType, pcMin, pcMax],
-    	 "2":[dcType, dcMin, dcMax], 
-    	 "3":[meType, meMin, meMax], 
+    	 "2":[dcType, dcMin, dcMax],
+    	 "3":[meType, meMin, meMax],
     	 "4":[chType, chMin, chMax]});
     saveSettings();
 }

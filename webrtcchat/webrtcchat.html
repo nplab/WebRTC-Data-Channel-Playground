@@ -3,10 +3,10 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-		<meta name="description" content="WebRTC Data Channel Playground - Gyrocolor">
+		<meta name="description" content="WebRTC Data Channel Playground - AVDM">
 		<meta name="author" content="Felix Weinrank">
 
-		<title>WebRTC Data Channel Playground - WebRTCChat</title>
+		<title>WebRTC Data Channel Playground - AVDM</title>
 
 		<link rel="apple-touch-icon"  href="../common/favicon/apple-icon-180x180.png">
 		<link rel="icon" type="image/png"  href="../common/favicon/android-icon-192x192.png">
@@ -21,10 +21,9 @@
 		<link rel="stylesheet" href="../common/custom.css">
 
 		<!-- JAVSCRIPT Section -->
-		<script type='text/javascript' src="../common/qrcode.min.js"></script>
 		<script src="../common/jquery.min.js"></script>
 		<script src="../common/bootstrap/js/bootstrap.min.js"></script>
-
+		<script src="../common/qrcode.min.js"></script>
 	</head>
 
 	<body>
@@ -61,7 +60,7 @@
 							<a href="../signaling/signaling.html">Signaling</a>
 						</li>
 						<li class="active">
-							<a href="../webrtcchat/webrtcchat.html">WebRTCChat</a>
+							<a href="../webrtcchat/webrtcchat.html">AVDM</a>
 						</li>
 					</ul>
 				</div>
@@ -70,7 +69,7 @@
 		</nav>
 
 		<div class="container" id="complementary">
-			<h1>WebRTCChat</h1>
+			<h1>Audio Data Video Mesh</h1>
 
 			<div class="row hidden" id="rowMessage">
 				<div class="col-sm-12" id="colMessage"></div>
@@ -112,7 +111,7 @@
 			</div>
 			<div id="chat">
 				<div id="dVideos" style="text-align: center">
-					<video id="local" height="400px" width="400px" muted autoplay></video>
+					<video id="local"  muted autoplay></video>
 				</div>
 				<br>
 				<div id = "enteruser">
@@ -151,7 +150,7 @@
 				<a id="download">download</a>
 			</div>
 			<div class="footer text-center">
-				&copy; Fachhochschule Münster - Labor für Netzwerkprogrammierung - Felix Weinrank - weinrank@fh-muenster.de
+				&copy; Network Programming Lab of Münster University of Applied Sciences - Felix Weinrank - weinrank@fh-muenster.de - <a href="https://github.com/nplab/WebRTC-Data-Channel-Playground">@GitHub</a>
 			</div>
 		</div>
 
