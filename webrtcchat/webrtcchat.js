@@ -9,6 +9,7 @@ var i = 0;
 var cam = 0;
 var zaehler = 1;
 var dVideos = $('#dVideos');
+var peerVideos = $('#peerVideos');
 var bufferedAmountLimit = 1 * 1024 * 1024;
 var remoteID;
 var chatnanme = "unkown";
@@ -108,12 +109,25 @@ function chatConnect() {
 	};
 
 	pc[i].onaddstream = function(obj) {
-		console.log("got stream");
-		var video = document.createElement('video');
-		dVideos.append("<video id='v" + i + "' height='100%' width='100%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
-		$("#local").css("padding-left", "80%");
-		$("#local").css("padding-top", "59.5%");
-		$("#local").css("position", "absolute");
+		if (i >= 2) {
+			console.log("got stream");
+			var video = document.createElement('video');
+			peerVideos.append("<video id='v" + i + "' height='25%' width='25%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
+			$(document).on('click', '#v' + i + '', function() {
+				var source = v1.src;
+				$('#v1').attr('src', $('#v' + i + '').attr("src"));
+				$('#v' + i + '').attr('src', source);
+				$("#v1")[0].load();
+				$('#v' +i+ '')[0].load();
+			});
+		} else {
+			console.log("got stream");
+			var video = document.createElement('video');
+			dVideos.append("<video id='v" + i + "' height='100%' width='100%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
+			$("#local").css("padding-left", "80%");
+			$("#local").css("padding-top", "59.5%");
+			$("#local").css("position", "absolute");
+		}
 	};
 
 	// handle local ice candidates
@@ -280,6 +294,9 @@ function setmessage(username, message) {
 
 function sendfile() {
 	var file = document.getElementById('upload').files[0];
+	if (file.size > 1048576) {
+		alert("Max 1MB");
+	}
 	var reader = new window.FileReader();
 	reader.readAsDataURL(file);
 	reader.onload = onReadAsDataURL;
