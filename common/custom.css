@@ -17,10 +17,9 @@ h3 {
 }
 
 .progressLabel {
-    float: left;
-    margin-right: 1em;
+	float: left;
+	margin-right: 1em;
 }
-
 
 .testControls {
 	margin-bottom: 20px;
@@ -28,39 +27,39 @@ h3 {
 }
 
 #testlist label {
-	font-weight:500;
+	font-weight: 500;
 }
 
 progress {
-	height:20px;
-	border-radius:9px;
+	height: 20px;
+	border-radius: 9px;
 }
 
-.popover{
-    max-width: 100%; // Max Width of the popover (depending on the container!)
+.popover {
+	max-width: 100%;// Max Width of the popover (depending on the container!)
 }
 
 span.dcStatus-open {
-	color:#3c763d;
+	color: #3c763d;
 }
 
 span.dcStatus-closed {
-	color:#a94442;
+	color: #a94442;
 }
 
 span.dcStatus-connecting, span.dcStatus-closing {
-	color:#337ab7;
+	color: #337ab7;
 }
 
-table#npmChannelParameters td,table#npmChannelParameters th, table#npmChannelParameters input {
-	text-align:center;
-	vertical-align:middle;
+table#npmChannelParameters td, table#npmChannelParameters th, table#npmChannelParameters input {
+	text-align: center;
+	vertical-align: middle;
 }
 
 #signalingID {
 	font-size: 14px;
 	margin-bottom: 5px;
-	text-align:center;
+	text-align: center;
 }
 
 #npmChannelParameters th span.glyphicon {
@@ -69,77 +68,76 @@ table#npmChannelParameters td,table#npmChannelParameters th, table#npmChannelPar
 
 input.has-error {
 	border: 1px solid #a94442;
-	background-color:#F2DEDE;
+	background-color: #F2DEDE;
 }
 
-table#testlist td, table#npmChannelParameters td{
+table#testlist td, table#npmChannelParameters td {
 	white-space: nowrap;
 }
 
-.row
-{
-    margin-top: 10px;
+.row {
+	margin-top: 10px;
 }
 
-
 .spinner {
-  margin: 10px auto;
-  width: 50px;
-  height: 30px;
-  text-align: center;
-  font-size: 10px;
+	margin: 10px auto;
+	width: 50px;
+	height: 30px;
+	text-align: center;
+	font-size: 10px;
 }
 
 .spinner > div {
-  background-color: #666;
-  height: 100%;
-  width: 6px;
-  display: inline-block;
-  
-  -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
-  animation: stretchdelay 1.2s infinite ease-in-out;
+	background-color: #666;
+	height: 100%;
+	width: 6px;
+	display: inline-block;
+	-webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+	animation: stretchdelay 1.2s infinite ease-in-out;
 }
 
 .spinner .rect2 {
-  -webkit-animation-delay: -1.1s;
-  animation-delay: -1.1s;
+	-webkit-animation-delay: -1.1s;
+	animation-delay: -1.1s;
 }
 
 .spinner .rect3 {
-  -webkit-animation-delay: -1.0s;
-  animation-delay: -1.0s;
+	-webkit-animation-delay: -1.0s;
+	animation-delay: -1.0s;
 }
 
 .spinner .rect4 {
-  -webkit-animation-delay: -0.9s;
-  animation-delay: -0.9s;
+	-webkit-animation-delay: -0.9s;
+	animation-delay: -0.9s;
 }
 
 .spinner .rect5 {
-  -webkit-animation-delay: -0.8s;
-  animation-delay: -0.8s;
+	-webkit-animation-delay: -0.8s;
+	animation-delay: -0.8s;
 }
 
 @-webkit-keyframes stretchdelay {
-  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
-  20% { -webkit-transform: scaleY(1.0) }
+0%, 40%, 100% { -webkit-transform: scaleY(0.4) }
+20% { -webkit-transform: scaleY(1.0) }
 }
 
 @keyframes stretchdelay {
-  0%, 40%, 100% { 
-    transform: scaleY(0.4);
-    -webkit-transform: scaleY(0.4);
-  }  20% { 
-    transform: scaleY(1.0);
-    -webkit-transform: scaleY(1.0);
-  }
+0%, 40%, 100% {
+transform: scaleY(0.4);
+-webkit-transform: scaleY(0.4);
+}  20% {
+transform: scaleY(1.0);
+-webkit-transform: scaleY(1.0);
+}
 }
 
-#dChatTable
-{
+#dChatTable {
 	width: 100%;
 	height: 200px;
 	overflow: auto;
 }
 
-
+#local {
+	width: 100% !important;
+	height: auto !important;
+}

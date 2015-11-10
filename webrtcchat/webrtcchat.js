@@ -122,7 +122,7 @@ function chatConnect() {
 			console.log("got stream");
 			dVideos.append("<video id='v" + i + "' height='100%' width='100%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
 			$("#local").css("padding-left", "80%");
-			$("#local").css("padding-top", "59.5%");
+			$("#local").css("padding-top", "60%");
 			$("#local").css("position", "absolute");
 		}
 	};
