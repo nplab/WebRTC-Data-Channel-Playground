@@ -291,13 +291,10 @@ function setmessage(username, message) {
 
 function sendfile() {
 	var file = document.getElementById('upload').files[0];
-	if (file.size > 1544012) {
-		alert("Max 1.5MB");
-	} else {
-		var reader = new window.FileReader();
-		reader.readAsDataURL(file);
-		reader.onload = onReadAsDataURL;
-	}
+
+	var reader = new window.FileReader();
+	reader.readAsDataURL(file);
+	reader.onload = onReadAsDataURL;
 }
 
 function setfile(file) {
@@ -306,7 +303,7 @@ function setfile(file) {
 	console.log("added chunck");
 
 	if (file.last) {
-		SaveToDisk(arrayToStoreChunks.join(''), file.filename);
+		dataURLtoBlob(arrayToStoreChunks.join(''), file.filename);
 		arrayToStoreChunks = [];
 		// resetting array
 	}
@@ -453,7 +450,7 @@ function onReadAsDataURL(event, text) {
 
 function SaveToDisk(fileUrl, fileName) {
 	var save = document.getElementById('download');
-	save.href = fileUrl;
+	save.href = URL.createObjectURL(fileUrl);
 	save.target = '_blank';
 	save.download = fileName;
 	save.text = "Download: " + fileName;
@@ -469,4 +466,22 @@ function getID() {
 		dcControl[zaehler].send(JSON.stringify(createid));
 		zaehler++;
 	}
+}
+
+function dataURLtoBlob(dataURL, filename) {
+
+	var byteString = atob(dataURL.split(',')[1]);
+
+	var mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+
+	var ab = new ArrayBuffer(byteString.length);
+	var ia = new Uint8Array(ab);
+	for (var i = 0; i < byteString.length; i++) {
+		ia[i] = byteString.charCodeAt(i);
+	}
+
+	var blob = new Blob([ab], {
+		type : mimeString
+	});
+	SaveToDisk(blob, filename);
 }
