@@ -113,12 +113,11 @@ function chatConnect() {
 			console.log("got stream");
 			var video = document.createElement('video');
 			peerVideos.append("<video id='v" + i + "' height='25%' width='25%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
-			$(document).on('click', '#v' + i + '', function() {
+
+			$(document).on('click', '#v' + i + '', function edit_event(event_data) {
 				var source = v1.src;
-				$('#v1').attr('src', $('#v' + i + '').attr("src"));
-				$('#v' + i + '').attr('src', source);
-				$("#v1")[0].load();
-				$('#v' +i+ '')[0].load();
+				$('#v1').attr('src', event_data.target.src);
+				event_data.target.src = source;
 			});
 		} else {
 			console.log("got stream");
@@ -294,12 +293,13 @@ function setmessage(username, message) {
 
 function sendfile() {
 	var file = document.getElementById('upload').files[0];
-	if (file.size > 1048576) {
-		alert("Max 1MB");
+	if (file.size > 1544012) {
+		alert("Max 1.5MB");
+	} else {
+		var reader = new window.FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = onReadAsDataURL;
 	}
-	var reader = new window.FileReader();
-	reader.readAsDataURL(file);
-	reader.onload = onReadAsDataURL;
 }
 
 function setfile(file) {
