@@ -111,7 +111,6 @@ function chatConnect() {
 	pc[i].onaddstream = function(obj) {
 		if (i >= 2) {
 			console.log("got stream");
-			var video = document.createElement('video');
 			peerVideos.append("<video id='v" + i + "' height='25%' width='25%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
 
 			$(document).on('click', '#v' + i + '', function edit_event(event_data) {
@@ -121,7 +120,6 @@ function chatConnect() {
 			});
 		} else {
 			console.log("got stream");
-			var video = document.createElement('video');
 			dVideos.append("<video id='v" + i + "' height='100%' width='100%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
 			$("#local").css("padding-left", "80%");
 			$("#local").css("padding-top", "59.5%");
