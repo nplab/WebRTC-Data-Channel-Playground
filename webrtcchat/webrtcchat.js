@@ -9,6 +9,7 @@ var i = 0;
 var cam = 0;
 var zaehler = 1;
 var dVideos = $('#dVideos');
+var peerVideos = $('#peerVideos');
 var bufferedAmountLimit = 1 * 1024 * 1024;
 var remoteID;
 var chatnanme = "unkown";
@@ -108,12 +109,22 @@ function chatConnect() {
 	};
 
 	pc[i].onaddstream = function(obj) {
-		console.log("got stream");
-		var video = document.createElement('video');
-		dVideos.append("<video id='v" + i + "' height='100%' width='100%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
-		$("#local").css("padding-left", "80%");
-		$("#local").css("padding-top", "59.5%");
-		$("#local").css("position", "absolute");
+		if (i >= 2) {
+			console.log("got stream");
+			peerVideos.append("<video id='v" + i + "' height='25%' width='25%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
+
+			$(document).on('click', '#v' + i + '', function edit_event(event_data) {
+				var source = v1.src;
+				$('#v1').attr('src', event_data.target.src);
+				event_data.target.src = source;
+			});
+		} else {
+			console.log("got stream");
+			dVideos.append("<video id='v" + i + "' height='100%' width='100%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
+			$("#local").css("padding-left", "80%");
+			$("#local").css("padding-top", "59.5%");
+			$("#local").css("position", "absolute");
+		}
 	};
 
 	// handle local ice candidates
@@ -280,6 +291,7 @@ function setmessage(username, message) {
 
 function sendfile() {
 	var file = document.getElementById('upload').files[0];
+
 	var reader = new window.FileReader();
 	reader.readAsDataURL(file);
 	reader.onload = onReadAsDataURL;
@@ -291,7 +303,7 @@ function setfile(file) {
 	console.log("added chunck");
 
 	if (file.last) {
-		SaveToDisk(arrayToStoreChunks.join(''), file.filename);
+		dataURLtoBlob(arrayToStoreChunks.join(''), file.filename);
 		arrayToStoreChunks = [];
 		// resetting array
 	}
@@ -438,7 +450,7 @@ function onReadAsDataURL(event, text) {
 
 function SaveToDisk(fileUrl, fileName) {
 	var save = document.getElementById('download');
-	save.href = fileUrl;
+	save.href = URL.createObjectURL(fileUrl);
 	save.target = '_blank';
 	save.download = fileName;
 	save.text = "Download: " + fileName;
@@ -454,4 +466,22 @@ function getID() {
 		dcControl[zaehler].send(JSON.stringify(createid));
 		zaehler++;
 	}
+}
+
+function dataURLtoBlob(dataURL, filename) {
+
+	var byteString = atob(dataURL.split(',')[1]);
+
+	var mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+
+	var ab = new ArrayBuffer(byteString.length);
+	var ia = new Uint8Array(ab);
+	for (var i = 0; i < byteString.length; i++) {
+		ia[i] = byteString.charCodeAt(i);
+	}
+
+	var blob = new Blob([ab], {
+		type : mimeString
+	});
+	SaveToDisk(blob, filename);
 }
