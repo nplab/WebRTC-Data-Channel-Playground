@@ -16,7 +16,7 @@
 		<meta name="theme-color" content="#ffffff">
 
 		<!-- CSS Section -->
-		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" title="bootstrap" href="../common/bootstrap/css/bootstrap.min.css">
 		<link rel="stylesheet" href="../common/bootstrap/css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="../common/custom.css">
 
@@ -27,7 +27,7 @@
 	</head>
 
 	<body>
-		<nav class="navbar navbar-default navbar-static-top">
+		<nav class="navbar navbar-default navbar-static-top" id="nav-bar">
 			<div class="container">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -95,6 +95,12 @@
 					</div><!-- /input-group -->
 
 				</div>
+				<div class="col-sm-6" id="Fullscreen">
+					<h3>Full Screen</h3>
+					<button class="btn btn-success btn-block" onclick="fullscreen();">
+						<span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span> Full Screen
+					</button>
+				</div>
 
 			</div>
 
@@ -109,8 +115,8 @@
 					<div class="rect5"></div>
 				</div>
 			</div>
-			<div id="chat" class="col-sm-13">
-				<div id="dVideos" style="text-align: center">
+			<div id="chat">
+				<div id="dVideos"  style="text-align: center">
 					<video id="local" muted autoplay></video>
 				</div>
 				<div id="peerVideos" style="text-align: center"></div>
@@ -151,7 +157,7 @@
 				</button>
 				<a id="download">download</a>
 			</div>
-			<div class="footer text-center">
+			<div class="footer text-center" id="footer">
 				&copy; Network Programming Lab of Münster University of Applied Sciences - Felix Weinrank - weinrank@fh-muenster.de - <a href="https://github.com/nplab/WebRTC-Data-Channel-Playground">@GitHub</a>
 			</div>
 		</div>

@@ -6,7 +6,6 @@ var eingabe = $('#eingabe');
 var localrole;
 var localstream;
 var i = 0;
-var cam = 0;
 var zaehler = 1;
 var dVideos = $('#dVideos');
 var peerVideos = $('#peerVideos');
@@ -35,6 +34,7 @@ $("#upload").hide();
 $("#sendfile").hide();
 $("#enteruser").hide();
 $("#dVideos").css("position", "relative");
+$("#Fullscreen").hide();
 
 // handle incoming info messages from server
 socket.on('info', function(msg) {
@@ -48,9 +48,12 @@ navigator.getMedia({
 	audio : true,
 	video : true
 }, function(stream) {
+	$('#local').css({
+		width : '100%',
+		height : 'auto'
+	});
 	localwebcam.src = URL.createObjectURL(stream);
 	localstream = stream;
-	cam++;
 }, errorHandler);
 
 // generic error handler
@@ -96,7 +99,7 @@ function chatConnect() {
 	socket.emit('roomJoin', appIdent + signalingId);
 	dcControl[i] = {};
 	pc[i] = new PeerConnection(iceServer);
-	if (cam == 1) {
+	if (localstream != undefined) {
 		pc[i].addStream(localstream);
 	}
 
@@ -120,7 +123,7 @@ function chatConnect() {
 			});
 		} else {
 			console.log("got stream");
-			dVideos.append("<video id='v" + i + "' height='100%' width='100%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
+			dVideos.append("<video id='v" + i + "' width='100%' height='auto' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
 			$("#local").css("padding-left", "80%");
 			$("#local").css("padding-top", "60%");
 			$("#local").css("position", "absolute");
@@ -156,6 +159,7 @@ function chatConnect() {
 		// answerer role
 	} else {
 		$("#chatCreateSignalingId").slideUp();
+		$("#chatConnectToSignalingId").slideUp();
 		socket.emit('signaling', {
 			type : 'sdpRequest'
 		});
@@ -239,6 +243,7 @@ function bindEventsControl(channel) {
 	channel.onopen = function() {
 		$("#rowSpinner").slideUp();
 		$("#rowInit").slideDown();
+		$("#Fullscreen").slideDown();
 
 		if (i > 1 && localrole == 'offerer') {
 			zaehler = 1;
@@ -246,13 +251,13 @@ function bindEventsControl(channel) {
 		}
 
 		if (i == 1) {
-			$("#enteruser").show();
+			$("#enteruser").slideDown();
 			$("#name").val("Stranger");
 			username = "Stranger";
-			$("#dChatRow").show();
+			$("#dChatRow").slideDown();
 			$("#eingabe").focus();
-			$("#upload").show();
-			$("#sendfile").show();
+			$("#upload").slideDown();
+			$("#sendfile").slideDown();
 		}
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
 	};
@@ -454,7 +459,7 @@ function SaveToDisk(fileUrl, fileName) {
 	save.target = '_blank';
 	save.download = fileName;
 	save.text = "Download: " + fileName;
-	$("#download").show();
+	$("#download").slideDown();
 }
 
 function getID() {
@@ -485,3 +490,75 @@ function dataURLtoBlob(dataURL, filename) {
 	});
 	SaveToDisk(blob, filename);
 }
+
+function fullscreen() {
+	$("#nav-bar").hide();
+	$("h1").hide();
+	$("#rowInit").hide();
+	$("#enteruser").hide();
+	$("#dChatRow").hide();
+	$("#upload").hide();
+	$("#download").hide();
+	$("#sendfile").hide();
+	$("#footer").hide();
+	$("#complementary").attr("class", "col-sm-12");
+	$('body').css("background-color", "#555555");
+	for (var y = 1; y <= i; y++) {
+		$('#v' + y + '').css({
+			width : '18%',
+			height : '18%',
+		});
+	}
+	if (i > 1) {
+		$('#v1').css({
+			width : 'auto',
+			height : $(window).height() - $('#v2').height(),
+		});
+		$('#local').css({
+			width : 'auto',
+			height : $('#v1').height(),
+		});
+		$("#local").css("padding-top", "35%");
+		$("#local").css("padding-left", "46.6%");
+	} else {
+		$('#v1').css({
+			width : 'auto',
+			height : $(window).height(),
+		});
+		$('#local').css({
+			width : 'auto',
+			height : $(window).height(),
+		});
+		$("#local").css("padding-top", "46%");
+		$("#local").css("padding-left", "61%");
+	}
+}
+
+
+$(document).keyup(function(e) {
+	if (e.keyCode == 27) {
+		if ($("#nav-bar").css("display") == "none") {
+			$("#nav-bar").show();
+			$("h1").show();
+			$("#rowInit").show();
+			$("#enteruser").show();
+			$("#dChatRow").show();
+			$("#upload").show();
+			$("#download").show();
+			$("#sendfile").show();
+			$("#footer").show();
+			$("#complementary").attr("class", "container");
+			$('body').css("background-color", "#fff");
+			$('#v1').css({
+				width : '100%',
+				height : 'auto'
+			});
+			$('#local').css({
+				width : '100%',
+				height : 'auto'
+			});
+			$("#local").css("padding-left", "80%");
+			$("#local").css("padding-top", "60%");
+		}
+	}
+});

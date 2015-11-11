@@ -136,8 +136,3 @@ transform: scaleY(1.0);
 	height: 200px;
 	overflow: auto;
 }
-
-#local {
-	width: 100% !important;
-	height: auto !important;
-}
