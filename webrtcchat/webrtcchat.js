@@ -301,6 +301,8 @@ function setmessage(username, message) {
 }
 
 function sendfile() {
+	$("#sendfile").prop('disabled', true);
+	$("#sendfile").text("Sending");
 	var file = document.getElementById('upload').files[0];
 
 	var reader = new window.FileReader();
@@ -442,7 +444,8 @@ function onReadAsDataURL(event, text) {
 		data.message = text.slice(0, chunkLength);
 		// getting chunk using predefined chunk length
 	} else {
-
+		$("#sendfile").prop('disabled', false);
+		$("#sendfile").text("Send File");
 		data.message = text;
 		data.last = true;
 		console.log("done sending");
@@ -510,7 +513,7 @@ function fullscreen() {
 	$("#footer").hide();
 	$("#complementary").attr("class", "col-sm-12");
 	$('body').css("background-color", "#555555");
-	for (var y = 1; y <= i; y++) {
+	for (var y = 2; y <= i; y++) {
 		$('#v' + y + '').css({
 			width : '100%',
 			height : '100%',
@@ -525,9 +528,9 @@ function fullscreen() {
 			width : 'auto',
 			height : $('#v1').height(),
 		});
-		$("#local").css("padding-top", "45%");
-		$("#local").css("padding-left", "10%");
-		$("#v1").css("float", "left");
+		$("#local").css("padding-top", "56%");
+		$("#local").css("padding-left", "74.6%");
+		$("#dVideos").css("float", "left");
 		$("#peerVideos").css("float", "right");
 		$('#peerVideos').css({
 			width : "20.5%",
@@ -573,11 +576,17 @@ $(document).keyup(function(e) {
 			});
 			$("#local").css("padding-left", "80%");
 			$("#local").css("padding-top", "60%");
-			$("#v1").css("float", "none");
+			$("#dVideos").css("float", "none");
 			$("#peerVideos").css("float", "none");
+			for (var y = 2; y <= i; y++) {
+				$('#v' + y + '').css({
+					width : '25%',
+					height : '25%',
+				});
+			}
 			$('#peerVideos').css({
-				width : "25%",
-				height : '25%'
+				width : "100%",
+				height : '100%'
 			});
 		}
 	}
