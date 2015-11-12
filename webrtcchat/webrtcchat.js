@@ -6,7 +6,6 @@ var eingabe = $('#eingabe');
 var localrole;
 var localstream;
 var i = 0;
-var cam = 0;
 var zaehler = 1;
 var dVideos = $('#dVideos');
 var peerVideos = $('#peerVideos');
@@ -35,6 +34,7 @@ $("#upload").hide();
 $("#sendfile").hide();
 $("#enteruser").hide();
 $("#dVideos").css("position", "relative");
+$("#Fullscreen").hide();
 
 // handle incoming info messages from server
 socket.on('info', function(msg) {
@@ -48,9 +48,12 @@ navigator.getMedia({
 	audio : true,
 	video : true
 }, function(stream) {
+	$('#local').css({
+		width : '100%',
+		height : 'auto'
+	});
 	localwebcam.src = URL.createObjectURL(stream);
 	localstream = stream;
-	cam++;
 }, errorHandler);
 
 // generic error handler
@@ -96,7 +99,7 @@ function chatConnect() {
 	socket.emit('roomJoin', appIdent + signalingId);
 	dcControl[i] = {};
 	pc[i] = new PeerConnection(iceServer);
-	if (cam == 1) {
+	if (localstream != undefined) {
 		pc[i].addStream(localstream);
 	}
 
@@ -120,9 +123,9 @@ function chatConnect() {
 			});
 		} else {
 			console.log("got stream");
-			dVideos.append("<video id='v" + i + "' height='100%' width='100%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
+			dVideos.append("<video id='v" + i + "' width='100%' height='auto' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
 			$("#local").css("padding-left", "80%");
-			$("#local").css("padding-top", "59.5%");
+			$("#local").css("padding-top", "60%");
 			$("#local").css("position", "absolute");
 		}
 	};
@@ -142,20 +145,23 @@ function chatConnect() {
 	};
 
 	if (role === "offerer") {
-		$("#chatConnectToSignalingId").slideUp();
-		$("#rowInit").slideUp();
-		$("#rowSpinner").slideDown();
-		$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
+		if (localrole == 'offerer') {
+			$("#chatConnectToSignalingId").slideUp();
+			$("#rowInit").slideUp();
+			$("#rowSpinner").slideDown();
+			$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
 
-		new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
+			new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
 
-		$("#rowSpinner").removeClass('hidden').hide().slideDown();
+			$("#rowSpinner").removeClass('hidden').hide().slideDown();
+		}
 		dcControl[i] = pc[i].createDataChannel('control');
 		bindEventsControl(dcControl[i]);
 		console.log("connect - role: offerer");
 		// answerer role
 	} else {
 		$("#chatCreateSignalingId").slideUp();
+		$("#chatConnectToSignalingId").slideUp();
 		socket.emit('signaling', {
 			type : 'sdpRequest'
 		});
@@ -237,6 +243,11 @@ function extractIpFromString(string) {
 
 function bindEventsControl(channel) {
 	channel.onopen = function() {
+		if ($("#nav-bar").css("display") == "none") {
+			fullscreen();
+		} else {
+			$("#Fullscreen").slideDown();
+		}
 		$("#rowSpinner").slideUp();
 		$("#rowInit").slideDown();
 
@@ -246,13 +257,13 @@ function bindEventsControl(channel) {
 		}
 
 		if (i == 1) {
-			$("#enteruser").show();
+			$("#enteruser").slideDown();
 			$("#name").val("Stranger");
 			username = "Stranger";
-			$("#dChatRow").show();
+			$("#dChatRow").slideDown();
 			$("#eingabe").focus();
-			$("#upload").show();
-			$("#sendfile").show();
+			$("#upload").slideDown();
+			$("#sendfile").slideDown();
 		}
 		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
 	};
@@ -290,6 +301,8 @@ function setmessage(username, message) {
 }
 
 function sendfile() {
+	$("#sendfile").prop('disabled', true);
+	$("#sendfile").text("Sending");
 	var file = document.getElementById('upload').files[0];
 
 	var reader = new window.FileReader();
@@ -431,7 +444,8 @@ function onReadAsDataURL(event, text) {
 		data.message = text.slice(0, chunkLength);
 		// getting chunk using predefined chunk length
 	} else {
-
+		$("#sendfile").prop('disabled', false);
+		$("#sendfile").text("Send File");
 		data.message = text;
 		data.last = true;
 		console.log("done sending");
@@ -454,7 +468,7 @@ function SaveToDisk(fileUrl, fileName) {
 	save.target = '_blank';
 	save.download = fileName;
 	save.text = "Download: " + fileName;
-	$("#download").show();
+	$("#download").slideDown();
 }
 
 function getID() {
@@ -485,3 +499,95 @@ function dataURLtoBlob(dataURL, filename) {
 	});
 	SaveToDisk(blob, filename);
 }
+
+function fullscreen() {
+	$("#nav-bar").hide();
+	$("h1").hide();
+	$("#rowInit").hide();
+	$("#Fullscreen").hide();
+	$("#enteruser").hide();
+	$("#dChatRow").hide();
+	$("#upload").hide();
+	$("#download").hide();
+	$("#sendfile").hide();
+	$("#footer").hide();
+	$("#complementary").attr("class", "col-sm-12");
+	$('body').css("background-color", "#555555");
+	for (var y = 2; y <= i; y++) {
+		$('#v' + y + '').css({
+			width : '100%',
+			height : '100%',
+		});
+	}
+	if (i > 1) {
+		$('#v1').css({
+			width : 'auto',
+			height : $(window).height(),
+		});
+		$('#local').css({
+			width : 'auto',
+			height : $('#v1').height(),
+		});
+		$("#local").css("padding-top", "56%");
+		$("#local").css("padding-left", "74.6%");
+		$("#dVideos").css("float", "left");
+		$("#peerVideos").css("float", "right");
+		$('#peerVideos').css({
+			width : "20.5%",
+			height : '100%'
+		});
+	} else {
+		$('#v1').css({
+			width : 'auto',
+			height : $(window).height(),
+		});
+		$('#local').css({
+			width : 'auto',
+			height : $(window).height(),
+		});
+		$("#local").css("padding-top", "46%");
+		$("#local").css("padding-left", "61%");
+	}
+}
+
+
+$(document).keyup(function(e) {
+	if (e.keyCode == 27) {
+		if ($("#nav-bar").css("display") == "none") {
+			$("#nav-bar").show();
+			$("h1").show();
+			$("#rowInit").show();
+			$("#Fullscreen").show();
+			$("#enteruser").show();
+			$("#dChatRow").show();
+			$("#upload").show();
+			$("#download").show();
+			$("#sendfile").show();
+			$("#footer").show();
+			$("#complementary").attr("class", "container");
+			$('body').css("background-color", "#fff");
+			$('#v1').css({
+				width : '100%',
+				height : 'auto'
+			});
+			$('#local').css({
+				width : '100%',
+				height : 'auto'
+			});
+			$("#local").css("padding-left", "80%");
+			$("#local").css("padding-top", "60%");
+			$("#dVideos").css("float", "none");
+			$("#peerVideos").css("float", "none");
+			for (var y = 2; y <= i; y++) {
+				$('#v' + y + '').css({
+					width : '25%',
+					height : '25%',
+				});
+			}
+			$('#peerVideos').css({
+				width : "100%",
+				height : '100%'
+			});
+		}
+	}
+});
