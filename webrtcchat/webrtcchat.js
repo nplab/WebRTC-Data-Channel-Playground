@@ -145,14 +145,16 @@ function chatConnect() {
 	};
 
 	if (role === "offerer") {
-		$("#chatConnectToSignalingId").slideUp();
-		$("#rowInit").slideUp();
-		$("#rowSpinner").slideDown();
-		$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
+		if (localrole == 'offerer') {
+			$("#chatConnectToSignalingId").slideUp();
+			$("#rowInit").slideUp();
+			$("#rowSpinner").slideDown();
+			$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
 
-		new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
+			new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
 
-		$("#rowSpinner").removeClass('hidden').hide().slideDown();
+			$("#rowSpinner").removeClass('hidden').hide().slideDown();
+		}
 		dcControl[i] = pc[i].createDataChannel('control');
 		bindEventsControl(dcControl[i]);
 		console.log("connect - role: offerer");
@@ -241,9 +243,13 @@ function extractIpFromString(string) {
 
 function bindEventsControl(channel) {
 	channel.onopen = function() {
+		if ($("#nav-bar").css("display") == "none") {
+			fullscreen();
+		} else {
+			$("#Fullscreen").slideDown();
+		}
 		$("#rowSpinner").slideUp();
 		$("#rowInit").slideDown();
-		$("#Fullscreen").slideDown();
 
 		if (i > 1 && localrole == 'offerer') {
 			zaehler = 1;
@@ -495,6 +501,7 @@ function fullscreen() {
 	$("#nav-bar").hide();
 	$("h1").hide();
 	$("#rowInit").hide();
+	$("#Fullscreen").hide();
 	$("#enteruser").hide();
 	$("#dChatRow").hide();
 	$("#upload").hide();
@@ -547,6 +554,7 @@ $(document).keyup(function(e) {
 			$("#nav-bar").show();
 			$("h1").show();
 			$("#rowInit").show();
+			$("#Fullscreen").show();
 			$("#enteruser").show();
 			$("#dChatRow").show();
 			$("#upload").show();
@@ -568,9 +576,9 @@ $(document).keyup(function(e) {
 			$("#v1").css("float", "none");
 			$("#peerVideos").css("float", "none");
 			$('#peerVideos').css({
-			width : "25%",
-			height : '25%'
-		});
+				width : "25%",
+				height : '25%'
+			});
 		}
 	}
 });
