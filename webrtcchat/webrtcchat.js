@@ -52,6 +52,10 @@ navigator.getMedia({
 		width : '100%',
 		height : 'auto'
 	});
+	$('#local').css({
+		"border-width" : "3px",
+		"border-style" : "solid"
+	});
 	localwebcam.src = URL.createObjectURL(stream);
 	localstream = stream;
 }, errorHandler);
@@ -115,6 +119,10 @@ function chatConnect() {
 		if (i >= 2) {
 			console.log("got stream");
 			peerVideos.append("<video id='v" + i + "' height='25%' width='25%' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
+			$('#v' + i + '').css({
+				"border-width" : "3px",
+				"border-style" : "solid"
+			});
 
 			$(document).on('click', '#v' + i + '', function edit_event(event_data) {
 				var source = v1.src;
@@ -124,9 +132,19 @@ function chatConnect() {
 		} else {
 			console.log("got stream");
 			dVideos.append("<video id='v" + i + "' width='100%' height='auto' src='" + URL.createObjectURL(obj.stream) + "' autoplay>");
-			$("#local").css("padding-left", "80%");
-			$("#local").css("padding-top", "60%");
+			$('#v1').css({
+				"border-width" : "3px",
+				"border-style" : "solid"
+			});
 			$("#local").css("position", "absolute");
+			setTimeout(function() {
+				$('#local').css({
+					height : '25%',
+					width : 'auto'
+				});
+				$("#local").css("margin-left", $("#v1").width() - $("#local").width());
+				$("#local").css("margin-top", $("#v1").height() - $("#local").height());
+			}, 1000);
 		}
 	};
 
@@ -243,11 +261,19 @@ function extractIpFromString(string) {
 
 function bindEventsControl(channel) {
 	channel.onopen = function() {
-		if ($("#nav-bar").css("display") == "none") {
-			fullscreen();
+		$("#Fullscreen").show();
+		$("#Fullscreen").css("position", "absolute");
+		$("#Fullscreen").css("zIndex", 1000);
+		if (localrole == "offerer") {
+			setTimeout(function() {
+				$("#Fullscreen").css("margin-top", $("#v1").height() - $("#Fullscreen").height() + $("#chatCreateSignalingId").height());
+			}, 100);
 		} else {
-			$("#Fullscreen").slideDown();
+			setTimeout(function() {
+				$("#Fullscreen").css("margin-top", $("#v1").height() - $("#Fullscreen").height());
+			}, 100);
 		}
+		$("#Fullscreen").css("margin-left", "0.9%");
 		$("#rowSpinner").slideUp();
 		$("#rowInit").slideDown();
 
@@ -313,7 +339,6 @@ function sendfile() {
 function setfile(file) {
 	arrayToStoreChunks.push(file.message);
 	// pushing chunks in array
-	console.log("added chunck");
 
 	if (file.last) {
 		dataURLtoBlob(arrayToStoreChunks.join(''), file.filename);
@@ -451,7 +476,6 @@ function onReadAsDataURL(event, text) {
 		console.log("done sending");
 	}
 	for (var y = 1; y <= i; y++) {
-		console.log("sending chunk");
 		dcControl[y].send(JSON.stringify(data));
 	}
 
@@ -490,8 +514,8 @@ function dataURLtoBlob(dataURL, filename) {
 
 	var ab = new ArrayBuffer(byteString.length);
 	var ia = new Uint8Array(ab);
-	for (var i = 0; i < byteString.length; i++) {
-		ia[i] = byteString.charCodeAt(i);
+	for (var y = 0; y < byteString.length; y++) {
+		ia[y] = byteString.charCodeAt(y);
 	}
 
 	var blob = new Blob([ab], {
@@ -501,52 +525,99 @@ function dataURLtoBlob(dataURL, filename) {
 }
 
 function fullscreen() {
-	$("#nav-bar").hide();
-	$("h1").hide();
-	$("#rowInit").hide();
-	$("#Fullscreen").hide();
-	$("#enteruser").hide();
-	$("#dChatRow").hide();
-	$("#upload").hide();
-	$("#download").hide();
-	$("#sendfile").hide();
-	$("#footer").hide();
-	$("#complementary").attr("class", "col-sm-12");
-	$('body').css("background-color", "#555555");
-	for (var y = 2; y <= i; y++) {
-		$('#v' + y + '').css({
-			width : '100%',
-			height : '100%',
-		});
-	}
-	if (i > 1) {
+	//cancel Full Screen
+	if ($("#nav-bar").css("display") == "none") {
+		$("#nav-bar").show();
+		$("h1").show();
+		if (localrole == 'offerer') {
+			$("#chatCreateSignalingId").show();
+		}
+		$("#enteruser").show();
+		$("#dChatRow").show();
+		$("#upload").show();
+		if ($("#download").attr('href') != undefined) {
+			$("#download").show();
+		}
+		$("#sendfile").show();
+		$("#footer").show();
+		$("#complementary").attr("class", "container");
+		$('body').css("background-color", "#fff");
 		$('#v1').css({
-			width : 'auto',
-			height : $(window).height(),
+			width : '100%',
+			height : 'auto'
 		});
 		$('#local').css({
-			width : 'auto',
-			height : $('#v1').height(),
+			height : '25%',
+			width : 'auto'
 		});
-		$("#local").css("padding-top", "56%");
-		$("#local").css("padding-left", "74.6%");
-		$("#dVideos").css("float", "left");
-		$("#peerVideos").css("float", "right");
+		setTimeout(function() {
+			$("#local").css("margin-left", $("#v1").width() - $("#local").width());
+			$("#local").css("margin-top", $("#v1").height() - $("#local").height());
+		}, 50);
+		$("#dVideos").css("float", "none");
+		$("#peerVideos").css("float", "none");
+		for (var y = 2; y <= i; y++) {
+			$('#v' + y + '').css({
+				width : '25%',
+				height : '25%',
+			});
+		}
 		$('#peerVideos').css({
-			width : "20.5%",
+			width : "100%",
 			height : '100%'
 		});
+		if (localrole == 'offerer') {
+			$("#Fullscreen").css("margin-top", $("#v1").height() - $("#Fullscreen").height() + $("#chatCreateSignalingId").height());
+		} else {
+			$("#Fullscreen").css("margin-top", $("#v1").height() - $("#Fullscreen").height());
+		}
+		$("#Fullscreen").css("margin-left", "0.9%");
 	} else {
-		$('#v1').css({
-			width : 'auto',
-			height : $(window).height(),
-		});
-		$('#local').css({
-			width : 'auto',
-			height : $(window).height(),
-		});
-		$("#local").css("padding-top", "46%");
-		$("#local").css("padding-left", "61%");
+		//Full Screen
+		$("#nav-bar").hide();
+		$("h1").hide();
+		$("#chatCreateSignalingId").hide();
+		$("#enteruser").hide();
+		$("#dChatRow").hide();
+		$("#upload").hide();
+		$("#download").hide();
+		$("#sendfile").hide();
+		$("#footer").hide();
+		$("#complementary").attr("class", "col-sm-12");
+		$('body').css("background-color", "#555555");
+		for (var y = 2; y <= i; y++) {
+			$('#v' + y + '').css({
+				width : '100%',
+				height : '100%',
+			});
+		}
+		if (i > 1) {
+			$('#v1').css({
+				width : 'auto',
+				height : $(window).height(),
+			});
+			$("#dVideos").css("float", "left");
+			$("#peerVideos").css("float", "right");
+			$('#peerVideos').css({
+				width : "20.5%",
+				height : '100%'
+			});
+			setTimeout(function() {
+				$("#local").css("margin-left", $("#v1").width() - $("#local").width());
+				$("#local").css("margin-top", $("#v1").height() - $("#local").height());
+			}, 50);
+		} else {
+			$('#v1').css({
+				width : 'auto',
+				height : $(window).height(),
+			});
+
+			$("#local").css("margin-left", $("#v1").width() - $("#local").width());
+			$("#local").css("margin-top", $("#v1").height() - $("#local").height());
+
+			$("#Fullscreen").css("margin-left", ($("#dVideos").width() - $("#v1").width()) / 1.85);
+		}
+		$("#Fullscreen").css("margin-top", $("#v1").height() - $("#Fullscreen").height());
 	}
 }
 
@@ -556,12 +627,15 @@ $(document).keyup(function(e) {
 		if ($("#nav-bar").css("display") == "none") {
 			$("#nav-bar").show();
 			$("h1").show();
-			$("#rowInit").show();
-			$("#Fullscreen").show();
+			if (localrole == 'offerer') {
+				$("#chatCreateSignalingId").show();
+			}
 			$("#enteruser").show();
 			$("#dChatRow").show();
 			$("#upload").show();
-			$("#download").show();
+			if ($("#download").attr('href') != undefined) {
+				$("#download").show();
+			}
 			$("#sendfile").show();
 			$("#footer").show();
 			$("#complementary").attr("class", "container");
@@ -570,12 +644,10 @@ $(document).keyup(function(e) {
 				width : '100%',
 				height : 'auto'
 			});
-			$('#local').css({
-				width : '100%',
-				height : 'auto'
-			});
-			$("#local").css("padding-left", "80%");
-			$("#local").css("padding-top", "60%");
+			setTimeout(function() {
+				$("#local").css("margin-left", $("#v1").width() - $("#local").width());
+				$("#local").css("margin-top", $("#v1").height() - $("#local").height());
+			}, 50);
 			$("#dVideos").css("float", "none");
 			$("#peerVideos").css("float", "none");
 			for (var y = 2; y <= i; y++) {
@@ -588,6 +660,13 @@ $(document).keyup(function(e) {
 				width : "100%",
 				height : '100%'
 			});
+			if (localrole == 'offerer') {
+				$("#Fullscreen").css("margin-top", $("#v1").height() - $("#Fullscreen").height() + $("#chatCreateSignalingId").height());
+			} else {
+				$("#Fullscreen").css("margin-top", $("#v1").height() - $("#Fullscreen").height());
+			}
+			$("#Fullscreen").css("margin-left", "0.9%");
 		}
 	}
 });
+
