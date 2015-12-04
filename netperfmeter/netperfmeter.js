@@ -485,15 +485,15 @@ function parametersRowAddSamples() {
 	first.find('[name=paramMode]').val('');
 	first.find('[name=paramInterval]').val('0');
 	first.find('[name=paramDelay]').val('1');
-	first.find('[name=paramRuntime]').val('30');
+	first.find('[name=paramRuntime]').val('0');
 
-	/*var second = parametersRowAdd();
+	var second = parametersRowAdd();
 	second.find('[name=paramPktCount]').val('1000');
 	second.find('[name=paramPktSize]').val('uni:512:1536');
 	//second.find('[name=paramMode]').val('ret:2');
 	second.find('[name=paramInterval]').val('uni:5:15');
 	second.find('[name=paramDelay]').val('2');
-	second.find('[name=paramRuntime]').val('30');
+	second.find('[name=paramRuntime]').val('0');
 
 	var third = parametersRowAdd();
 	third.find('[name=paramPktCount]').val('2000');
@@ -502,22 +502,6 @@ function parametersRowAddSamples() {
 	third.find('[name=paramInterval]').val('exp:10');
 	third.find('[name=paramDelay]').val('2');
 	third.find('[name=paramRuntime]').val('30');
-
-	var third = parametersRowAdd();
-	third.find('[name=paramPktCount]').val('2000');
-	third.find('[name=paramPktSize]').val('con:1024');
-	//third.find('[name=paramMode]').val('ret:2');
-	third.find('[name=paramInterval]').val('exp:10');
-	third.find('[name=paramDelay]').val('20');
-	third.find('[name=paramRuntime]').val('30');
-
-	var third = parametersRowAdd();
-	third.find('[name=paramPktCount]').val('2000');
-	third.find('[name=paramPktSize]').val('con:2048');
-	//third.find('[name=paramMode]').val('lft:2');
-	third.find('[name=paramInterval]').val('uni:0:5');
-	third.find('[name=paramDelay]').val('20');
-	third.find('[name=paramRuntime]').val('30');*/
 }
 
 function parametersValidate() {
@@ -1073,10 +1057,9 @@ function generateByteString(count) {
 };
 
 /*
- * conver sizes
+ * convert sizes
  * http://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
  */
-
 function bytesToSize(bytes) {
 	if (bytes <= 0 || !$.isNumeric(bytes))
 		return '-- Bytes';
