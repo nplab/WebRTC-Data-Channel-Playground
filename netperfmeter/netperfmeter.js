@@ -127,7 +127,7 @@ function firebaseOfferExists(signalingID) {
 		exists = snapshot.hasChild(signalingID);
 		alert(exists);
 	});
-	
+
 	return exists;
 
 	//return signalingIDRef.child(signalingID).child('offer').exists();
@@ -203,11 +203,8 @@ function npmConnect() {
 
 		console.log("connect - role: offerer");
 
-		// answerer role
+	// answerer role
 	} else {
-
-		
-
 		// answerer must wait for the data channel
 		pc.ondatachannel = function(event) {
 			bindEvents(event.channel);
@@ -263,7 +260,7 @@ function npmPrepareRole() {
 		$('#statusRole').html(role);
 		$('#npmChannelParametersContainer').hide();
 
-		// role answerer
+	// role answerer
 	} else {
 		role = 'offerer';
 		peerRole = 'answerer';
@@ -278,69 +275,65 @@ function npmPrepareRole() {
 function npmSend(label) {
 
 	if (label == 'control') {
-		alert('control darf das nicht!');
+		alert('Something went wrong - tried to send via control channel');
 	}
 
 	if (channels[label].statistics.t_start == 0) {
 		channels[label].statistics.t_start = new Date().getTime();
 	}
 
-	//try {
-		channels[label].statistics.t_end = new Date().getTime();
-		var runtime = (channels[label].statistics.t_end - channels[label].statistics.t_start);
-		var message = generateByteString(randomWrapper(parameters[label].pktSize));
-		var sendSleep	= randomWrapper(parameters[label].sendInterval);
+	channels[label].statistics.t_end = new Date().getTime();
+	var runtime = (channels[label].statistics.t_end - channels[label].statistics.t_start);
+	var message = generateByteString(randomWrapper(parameters[label].pktSize));
+	var sendSleep	= randomWrapper(parameters[label].sendInterval);
 
-		// check maximum runtime
-		if (runtime <= parameters[label].runtime) {	
-			if (channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit) {
-				if(sendSleep == 0) {
-					var pktCounter = 0;
-					while(channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit && pktCounter < 10000 && (channels[label].statistics.tx_pkts + pktCounter) < parameters[label].pktCount) {
-						channels[label].channel.send(message);
-						pktCounter++;
-					}
+	// check maximum runtime
+	if (runtime <= parameters[label].runtime || parameters[label].runtime == 0) {
+		if (channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit) {
+			if(sendSleep == 0) {
+				var pktCounter = 0;
 
-					channels[label].statistics.tx_pkts += pktCounter;
-					channels[label].statistics.tx_bytes += message.length * pktCounter;
-
-					sendSleep = 10;
-					console.log('npmSend - sleep 0 - reached sending limit');
-					
-				} else {
+				while(channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit && pktCounter < 10000 && (channels[label].statistics.tx_pkts + pktCounter) < parameters[label].pktCount) {
 					channels[label].channel.send(message);
-					channels[label].statistics.tx_pkts++;
-					channels[label].statistics.tx_bytes += message.length;
+					pktCounter++;
 				}
-			} else {
-				console.log('npmSend - bufferedAmount >= limit (' + npmSettings.bufferedAmountLimit + ')');
-			}
 
-			if (channels[label].statistics.tx_pkts < parameters[label].pktCount) {
-				var schedulerObject = {
-					type : 'npmSendTrigger',
-					sleep : sendSleep,
-					data : label
-				};
-				scheduler.postMessage(schedulerObject);
+				channels[label].statistics.tx_pkts += pktCounter;
+				channels[label].statistics.tx_bytes += message.length * pktCounter;
+
+				sendSleep = 10;
+				console.log('npmSend - sleep 0 - reached sending limit');
+
 			} else {
-				console.log('npmSend - channel:' + label + ' - all pkts sent');
-				channelClose(label);
+				channels[label].channel.send(message);
+				channels[label].statistics.tx_pkts++;
+				channels[label].statistics.tx_bytes += message.length;
 			}
 		} else {
-			channelClose(label);
-			console.log('npmSend - channel:' + label + ' - runtime reached');
+			console.log('npmSend - bufferedAmount >= limit (' + npmSettings.bufferedAmountLimit + ')');
 		}
-	/*} catch(e) {
-		alert("Test Aborted!");
-		console.log(e);
-		return;
-	}*/
+
+		if (channels[label].statistics.tx_pkts < parameters[label].pktCount) {
+			var schedulerObject = {
+				type : 'npmSendTrigger',
+				sleep : sendSleep,
+				data : label
+			};
+			scheduler.postMessage(schedulerObject);
+
+		} else {
+			console.log('npmSend - channel:' + label + ' - all pkts sent');
+			channelClose(label);
+
+		}
+	} else {
+		channelClose(label);
+		console.log('npmSend - channel:' + label + ' - runtime reached');
+	}
 };
 
 // run npm - read parameters and create datachannels
 function npmStart() {
-
 	// chef if parameters are correct
 	if (!parametersValidate()) {
 		return;
@@ -368,7 +361,6 @@ function npmStart() {
 	};
 	console.log(npmChannelLabels);
 	channels['control'].channel.send(JSON.stringify(collectStatsMessage));
-
 }
 
 // reset npm for next benchmark
@@ -550,7 +542,6 @@ function parametersValidate() {
 		// pattern: number || const:number || exp:number || uniform:number:number
 		case 'paramInterval':
 		case 'paramPktSize':
-
 			var pattern = /^(\d+|con:\d+|exp:\d+|uni:\d+:\d+)$/g;
 			var string = $(this).val();
 			if (!string.match(pattern)) {
@@ -1044,21 +1035,27 @@ function generateSignalingID() {
 }
 
 // find and return an IPv4 Address from a given string
+// taken from: https://gist.github.com/syzdek/6086792
 function extractIpFromString(string) {
-	var pattern = '(?:25[0-5]|2[0-4][0-9]|1?[0-9][0-9]{1,2}|[0-9]){1,}(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}|0)){3}';
-	var match = string.match(pattern);
-	return match[0];
+	var match;
+	var pattern4 = /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/
+
+	if(match = string.match(pattern4)) {
+		return match[0];
+	}
+
+	var pattern6 = /(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/
+
+	if(match = string.match(pattern6)) {
+		return match[0];
+	}
+
+	return false;
 }
 
 /*
  * generate a string with given length (byte)
  */
-
-/*function generateByteString(length) {
-	var str = new Array(length + 1).join('x');
-	return str;
-}*/
-
 function generateByteString(count) {
     if (count == 0) {
         return "";
@@ -1081,8 +1078,8 @@ function generateByteString(count) {
  */
 
 function bytesToSize(bytes) {
-	if (bytes == 0)
-		return '0 Byte';
+	if (bytes <= 0 || !$.isNumeric(bytes))
+		return '-- Bytes';
 	var k = 1000;
 	var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 	var i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -1127,4 +1124,3 @@ $('#npmChannelParameters').on('change', 'select[name=paramMode]', function(event
 $('#signalingID').change(function() {
 	npmPrepareRole();
 });
-
