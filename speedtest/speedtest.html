@@ -77,36 +77,23 @@
 		</div>
 
 		<div class="row" id="rowInit">
-			<div class="col-sm-4" id="colCreateSignalingId">
+			<div class="col-sm-6" id="colCreateSignalingId">
 				<h3>Create peer ID ...</h3>
-				<button class="btn btn-success btn-block" onclick="speedtestCreateSignalingId();">
+				<button class="btn btn-success btn-block" onclick="connect(true);">
 					<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> create ID
 				</button>
 			</div>
-
-			<div class="col-sm-4 text-center" id="colLocalIceFilter">
-				<h3>filter ice ip</h3>
-				<div class="input-group">
-					<div class="input-group-addon">
-						local ip to offer
-					</div>
-					<input type="text"class="form-control" id="localIceFilter" placeholder="all">
-				</div>
-			</div>
-
-			<div class="col-sm-4 text-right" id="colConnectToSignalingId">
+			<div class="col-sm-6 text-right" id="colConnectToSignalingId">
 				<h3>... or connect to peer</h3>
 				<div class="input-group">
 					<input type="number" min="1" max="99999" class="form-control input" placeholder="peer ID" id="signalingId">
 
 					<span class="input-group-btn">
-						<button class="btn btn-success" onclick="speedtestConnectTosignalingId();">
+						<button class="btn btn-success" onclick="connect(false);">
 							<span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> connect
 						</button> </span>
 				</div><!-- /input-group -->
-
 			</div>
-
 		</div>
 
 
@@ -196,7 +183,7 @@
 		</div>
 	</div>
 
-	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+	<script type='text/javascript' src="https://webrtc.nplab.de/socket.io/socket.io.js"></script>
 	<script type='text/javascript' src="../common/webrtc.common.js"></script>
 	<script type='text/javascript' src="speedtest.js"></script>
 	<script type="text/javascript">

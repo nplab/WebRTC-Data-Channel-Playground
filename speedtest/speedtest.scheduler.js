@@ -25,13 +25,12 @@
  *
  */
 
- onmessage = function(e) {
- 	if(e.data.sleep > 0) {
- 		setTimeout(function(){
- 			postMessage(e.data);
- 		},e.data.sleep);
- 	} else {
- 		postMessage(e.data);
- 	}
- 	
- };
+onmessage = function(e) {
+	if(e.data.sleep > 0) {
+		setTimeout(function(){
+			postMessage(e.data);
+		}, e.data.sleep);
+	} else {
+		postMessage(e.data);
+	}
+};

@@ -93,7 +93,7 @@ pc.onicecandidate = function(event) {
 	console.log('onicecandidate - ip:' + ip);
 };
 
-pc.oniceconnectionstatechange = function(event) { 
+pc.oniceconnectionstatechange = function(event) {
 	console.log("oniceconnectionstatechange - " + pc.iceConnectionState);
 	if (pc.iceConnectionState === 'disconnected') {
 		gyroConnectionLost();
@@ -129,7 +129,7 @@ function gyroConnectTosignalingIdFromUrl() {
 	console.log('connecting to peer:' + signalingId);
 	gyroConnect();
 
-} 
+}
 
 // establish connection to remote peer via webrtc
 function gyroConnect() {
@@ -139,15 +139,15 @@ function gyroConnect() {
 
 	if (role === "offerer") {
 		$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
-		
+
 		new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
-		
+
 		$("#rowSpinner").removeClass('hidden').hide().slideDown();
 
 		dcControl = pc.createDataChannel('control');
 
 		bindEventsControl(dcControl);
-		
+
 
 		// create the offer SDP
 		pc.createOffer(function(offer) {
@@ -209,14 +209,6 @@ function gyroConnect() {
 	});
 }
 
-// find and return an IPv4 Address from a given string
-function extractIpFromString(string) {
-	console.log(string);
-	var pattern = '(?:25[0-5]|2[0-4][0-9]|1?[0-9][0-9]{1,2}|[0-9]){1,}(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}|0)){3}';
-	var match = string.match(pattern);
-	return match[0];
-}
-
 // bind events for control channel
 function bindEventsControl(channel) {
 	channel.onopen = function() {
@@ -253,12 +245,12 @@ function gyroConnectionLost() {
 
 function gyroInit() {
 	//if (window.DeviceOrientationEvent  && 'ontouchstart' in window) {
-	
+
 	if(location.hash.substring(1)){
 		signalingId = location.hash.substring(1);
 		gyroConnectTosignalingIdFromUrl();
 	}
-       
+
 	if (window.DeviceOrientationEvent) {
 		$('#gyrostatus').removeClass('alert-info').addClass('alert-success');
 		// Listen for the deviceorientation event and handle the raw data
@@ -275,7 +267,7 @@ function gyroInit() {
                         if(beta > 255){
                             beta = 510 - beta;
                         }
-                        
+
 			// alpha is the compass direction the device is facing in degrees
 			var alphaRaw = Math.round(event.alpha);
                         if(alpha < 0){
@@ -291,7 +283,7 @@ function gyroInit() {
 				if(!gyroColorFromRemote) {
 					gyroSetColor(alpha,beta,gamma);
 				}
-				
+
 				if(typeof(dcControl.readyState) !== 'undefined' && dcControl.readyState === "open") {
 					//alert('sending');
 
@@ -305,7 +297,7 @@ function gyroInit() {
 					dcControl.send(JSON.stringify(gyroData));
 				}
 			}
-			
+
 			// call our orientation event handler
 		}, false);
 	}
@@ -321,7 +313,7 @@ function gyroSetColor(alpha, beta, gamma) {
 function msgHandleJson(message) {
 	var messageObject = JSON.parse(message);
 	switch(messageObject.type) {
-	
+
 	// peer indicates finish
 	case 'gyro':
 		gyroColorFromRemote = true;
@@ -333,4 +325,3 @@ function msgHandleJson(message) {
 		break;
 	}
 }
-

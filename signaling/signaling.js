@@ -25,7 +25,7 @@
 *
 */
 
-var socket = io("https://webrtc.nplab.de/");
+var socket = io('https://webrtc.nplab.de/');
 var appIdent = 'signaling';
 
 // constraints for the offer SDP - here we don't need audio or video...
@@ -84,7 +84,7 @@ socket.on('signaling', function(msg) {
 				pc.setRemoteDescription(new SessionDescription(msg.payload));
 				console.log('signaling - handle sdp answer');
 			} else {
-				console.log('signaling - unexpected message');
+				console.log('signaling - unexpected sdp message');
 			}
 			break;
 		// we receive an ice candidate
@@ -100,7 +100,6 @@ socket.on('signaling', function(msg) {
 function errorHandler(err) {
 	console.error(err);
 }
-
 
 // handle local ice candidates
 pc.onicecandidate = function(event) {
@@ -118,13 +117,19 @@ function connect(active) {
 	signalingInProgress = true;
 
 	if(active == true) {
-		console.log('connecting actively');
+		console.log('role: offerer');
 		offerer = true;
 		signalingId = generateSignalingId();
 	} else {
-		console.log('connecting passively');
+		console.log('role: answerer');
 		offerer = false;
-		signalingId = $("#signalingId").val();
+		signalingId = $('#signalingId').val();
+
+		// basically chechking the signaling id
+		if(!$.isNumeric(signalingId)) {
+			console.log('Invalid signaling ID - break!');
+			return;
+		}
 	}
 
 	if(signalingId.length === 0) {
@@ -134,10 +139,10 @@ function connect(active) {
 
 	// join room
 	socket.emit('roomJoin', appIdent + signalingId);
-	$("#rowInit").slideUp();
+	$('#rowInit').slideUp();
 
 	if (offerer == true) {
-		$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
+		$('.spinnerStatus').html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
 		//new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
 
 		// create data channel
@@ -159,25 +164,25 @@ function connect(active) {
 			console.log('incoming datachannel');
 		};
 
-		$(".spinnerStatus").text("connecting to peer id: " + signalingId);
+		$('.spinnerStatus').text('connecting to peer id: ' + signalingId);
 		console.log('connect - role answerer');
 	}
-	$("#rowSpinner").hide().removeClass('hidden').slideDown();
+	$('#rowSpinner').hide().removeClass('hidden').slideDown();
 }
 
 // bind events for control channel
 function bindEventsControl(channel) {
 	channel.onopen = function() {
-		$("#rowSpinner").slideUp();
-		$("#rowChat").hide().removeClass('hidden').slideDown();
+		$('#rowSpinner').slideUp();
+		$('#rowChat').hide().removeClass('hidden').slideDown();
 		$('#chatMessages').append('<div class="alert alert-warning" role="alert">Connection up - HTML enabled!</div>');
-		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
+		console.log('Channel Open - Label:' + channel.label + ', ID:' + channel.id);
 	};
 
 	channel.onclose = function(e) {
 		console.log("Channel Close");
 		$('#chatMessages').append('<div class="alert alert-warning" role="alert">Connection lost!</div>');
-		$("#chatControl").slideUp();
+		$('#chatControl').slideUp();
 	};
 
 	window.onbeforeunload = function() {
