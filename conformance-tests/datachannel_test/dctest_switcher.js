@@ -62,7 +62,7 @@ function getMethods(obj) {
 // Create the table with all available tests
 function fillTestList() {
     var testlistHTML = "<tr>";
-    
+
     $.each(availableTestList,function(key,val) {
         testlistHTML += '<td><span class="glyphicon glyphicon-search inspectFunction" aria-hidden="true" data-function="'+val+'"></span> <label><input type="checkbox" name="test" value="' + val + '"> '+ val + '</label></td>';
         // new row every 5 cols
@@ -71,7 +71,7 @@ function fillTestList() {
         }
     });
     testlistHTML += "</tr></table></form>";
-    
+
     $('#testlist').append(testlistHTML);
 }
 
@@ -83,7 +83,7 @@ function generateNewTestList() {
     		selectedTestList.push($(this).prop('value'));
     	}
     });
-    
+
     console.log('new list ist generated: '+selectedTestList.length + ' items');
 }
 
@@ -93,31 +93,28 @@ function setCertainCheckboxes(){
     $.each(selectedTestList,function(key,val) {
         $('#testlist input:checkbox[value='+val+']').prop('checked',true);
      });
-       
 }
 
 function setCookie(name) {
-   	$.cookie(name, JSON.stringify(selectedTestList));
+    localStorage.setItem(name,JSON.stringify(selectedTestList));
     return true;
 }
 
 function loadCookie(name) {
-	var cookie = $.cookie(name);
-	if(cookie != null) {
-		selectedTestList = JSON.parse($.cookie(name));
+    var cookie = localStorage.getItem(name);
+    if(cookie != null) {
+		selectedTestList = JSON.parse(cookie);
 		setCertainCheckboxes();
 	} else {
 		alert("Sorry, no Data!");
 	}
-    
 }
 
 function startSelectedTests() {
-    $('.progressbar').css('width', '0%').attr('aria-valuenow', 0).html('0/'+selectedTestList.length); 
+    $('.progressbar').css('width', '0%').attr('aria-valuenow', 0).html('0/'+selectedTestList.length);
     testSwitcher(0);
     $('#logWrapper').show();
     $('#testWrapper').hide();
-    
 }
 
 // Button - start all Tests
@@ -130,7 +127,7 @@ $('button#btnTestStartAll').click(function() {
 // Button - start selected Tests
 $('button#btnTestStartSelected').click(function() {
     generateNewTestList();
-    
+
     if (selectedTestList.length == 0) {
         alert("Please choose some tests");
     } else {
@@ -148,17 +145,17 @@ $('ul#testGroupSelect li a').click(function(event){
 });
 
 // Button - invert selection
-$('button#btnTestSelectOpposite').click(function(){	
+$('button#btnTestSelectOpposite').click(function(){
 	$("#testlist INPUT[type='checkbox']").each( function() {
     	if($(this).prop('checked', !$(this).prop('checked'))){
-    		
+
     	};
     });
     return false;
 });
 
 // Button - unselect all
-$('button#btnTestUnselect').click(function(){	
+$('button#btnTestUnselect').click(function(){
 	$("#testlist INPUT[type='checkbox']").prop('checked',false);
     return false;
 });
@@ -167,7 +164,6 @@ $('button#btnTestUnselect').click(function(){
 $('button#btnTestLoad').click(function(){
     //alert("hallo");
     loadCookie("test");
-    
 });
 
 // Button - save selection to cookie
@@ -179,4 +175,3 @@ $('button#btnTestSave').click(function(){
 $('button#btnTestLoadPrevious').click(function(){
     loadCookie("previous");
 });
-
