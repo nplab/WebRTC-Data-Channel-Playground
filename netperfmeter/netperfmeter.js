@@ -129,8 +129,6 @@ function firebaseOfferExists(signalingID) {
 	});
 
 	return exists;
-
-	//return signalingIDRef.child(signalingID).child('offer').exists();
 }
 
 // generic error handler
