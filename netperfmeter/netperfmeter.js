@@ -287,11 +287,11 @@ function npmSend(label) {
 
 	// check maximum runtime
 	if (runtime <= parameters[label].runtime || parameters[label].runtime == 0) {
-		if (channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit) {
+		//if (channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit) {
 			if(sendSleep == 0) {
 				var pktCounter = 0;
 
-				while(channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit && pktCounter < 10000 && (channels[label].statistics.tx_pkts + pktCounter) < parameters[label].pktCount) {
+				while((channels[label].statistics.tx_pkts + pktCounter) < parameters[label].pktCount) {
 					channels[label].channel.send(message);
 					pktCounter++;
 				}
@@ -307,9 +307,9 @@ function npmSend(label) {
 				channels[label].statistics.tx_pkts++;
 				channels[label].statistics.tx_bytes += message.length;
 			}
-		} else {
+		/*} else {
 			console.log('npmSend - bufferedAmount >= limit (' + npmSettings.bufferedAmountLimit + ')');
-		}
+		}*/
 
 		if (channels[label].statistics.tx_pkts < parameters[label].pktCount) {
 			var schedulerObject = {
