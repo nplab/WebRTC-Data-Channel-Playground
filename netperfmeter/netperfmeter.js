@@ -478,28 +478,20 @@ function parametersRowCopy(element) {
 // create sample data
 function parametersRowAddSamples() {
 	var first = parametersRowAdd();
-	first.find('[name=paramPktCount]').val('5000');
-	first.find('[name=paramPktSize]').val('1024');
+	first.find('[name=paramPktCount]').val('500');
+	first.find('[name=paramPktSize]').val('10000');
 	first.find('[name=paramMode]').val('');
 	first.find('[name=paramInterval]').val('0');
 	first.find('[name=paramDelay]').val('1');
 	first.find('[name=paramRuntime]').val('0');
 
 	var second = parametersRowAdd();
-	second.find('[name=paramPktCount]').val('1000');
-	second.find('[name=paramPktSize]').val('uni:512:1536');
-	//second.find('[name=paramMode]').val('ret:2');
-	second.find('[name=paramInterval]').val('uni:5:15');
-	second.find('[name=paramDelay]').val('2');
-	second.find('[name=paramRuntime]').val('0');
-
-	var third = parametersRowAdd();
-	third.find('[name=paramPktCount]').val('2000');
-	third.find('[name=paramPktSize]').val('exp:1024');
-	//third.find('[name=paramMode]').val('lft:2');
-	third.find('[name=paramInterval]').val('exp:10');
-	third.find('[name=paramDelay]').val('2');
-	third.find('[name=paramRuntime]').val('30');
+	first.find('[name=paramPktCount]').val('500');
+	first.find('[name=paramPktSize]').val('10000');
+	first.find('[name=paramMode]').val('');
+	first.find('[name=paramInterval]').val('0');
+	first.find('[name=paramDelay]').val('1');
+	first.find('[name=paramRuntime]').val('0');
 }
 
 function parametersValidate() {
