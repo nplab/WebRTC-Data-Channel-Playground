@@ -34,8 +34,7 @@ var sdpConstraints = {
 	}
 };
 
-// Reference to Firebase APP
-var socket = io("https://webrtc.nplab.de/");
+var socket = io("https://webrtc.nplab.de:3001/");
 var appIdent = "speedtest";
 
 var bufferedAmountLimit = 1 * 1024 * 1024;

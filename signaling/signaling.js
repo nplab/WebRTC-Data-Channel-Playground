@@ -25,7 +25,7 @@
 *
 */
 
-var socket = io('https://webrtc.nplab.de/');
+var socket = io('https://webrtc.nplab.de:3001/');
 var appIdent = 'signaling';
 
 // constraints for the offer SDP - here we don't need audio or video...
