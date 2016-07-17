@@ -478,7 +478,7 @@ function parametersRowCopy(element) {
 // create sample data
 function parametersRowAddSamples() {
 	var first = parametersRowAdd();
-	first.find('[name=paramPktCount]').val('500');
+	first.find('[name=paramPktCount]').val('5000');
 	first.find('[name=paramPktSize]').val('10000');
 	first.find('[name=paramMode]').val('');
 	first.find('[name=paramInterval]').val('0');
@@ -486,7 +486,7 @@ function parametersRowAddSamples() {
 	first.find('[name=paramRuntime]').val('0');
 
 	var second = parametersRowAdd();
-	second.find('[name=paramPktCount]').val('500');
+	second.find('[name=paramPktCount]').val('5000');
 	second.find('[name=paramPktSize]').val('10000');
 	second.find('[name=paramMode]').val('');
 	second.find('[name=paramInterval]').val('0');
