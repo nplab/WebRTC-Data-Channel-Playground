@@ -484,14 +484,6 @@ function parametersRowAddSamples() {
 	first.find('[name=paramInterval]').val('0');
 	first.find('[name=paramDelay]').val('1');
 	first.find('[name=paramRuntime]').val('0');
-
-	var second = parametersRowAdd();
-	second.find('[name=paramPktCount]').val('5000');
-	second.find('[name=paramPktSize]').val('10000');
-	second.find('[name=paramMode]').val('');
-	second.find('[name=paramInterval]').val('0');
-	second.find('[name=paramDelay]').val('1');
-	second.find('[name=paramRuntime]').val('0');
 }
 
 function parametersValidate() {
