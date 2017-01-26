@@ -30,10 +30,10 @@ var appIdent = 'signaling';
 
 // constraints for the offer SDP - here we don't need audio or video...
 var sdpConstraints = {
-	'mandatory' : {
-		'offerToReceiveAudio' : false,
-		'offerToReceiveVideo' : false
-	}
+    'mandatory' : {
+        'offerToReceiveAudio' : false,
+        'offerToReceiveVideo' : false
+    }
 };
 
 var pc = new PeerConnection(iceServer);
@@ -49,157 +49,157 @@ socket.on('info', function(msg) {
 
 // handle incoming signaling messages
 socket.on('signaling', function(msg) {
-	if(!signalingInProgress) {
-		console.log('signaling - error: no signaling in progress...');
-		return;
-	}
+    if(!signalingInProgress) {
+        console.log('signaling - error: no signaling in progress...');
+        return;
+    }
 
-	switch(msg.type) {
-		// answerer requests SDP-Offer
-		case 'sdpRequest':
-			if(offerer) {
-				pc.createOffer(function(offer) {
-					pc.setLocalDescription(offer);
-					console.log(JSON.stringify(offer));
-					socket.emit('signaling', {type:'sdp',payload:offer});
-				}, errorHandler, sdpConstraints);
-			} else {
-				console.log('error: got sdpRequest as answerer...');
-			}
-			break;
+    switch(msg.type) {
+        // answerer requests SDP-Offer
+        case 'sdpRequest':
+            if(offerer) {
+                pc.createOffer(function(offer) {
+                    pc.setLocalDescription(offer);
+                    console.log(JSON.stringify(offer));
+                    socket.emit('signaling', {type:'sdp',payload:offer});
+                }, errorHandler, sdpConstraints);
+            } else {
+                console.log('error: got sdpRequest as answerer...');
+            }
+            break;
 
-		// we receive an sdp message
-		case 'sdp':
-			// only process message if it's an offer and we aren't offerer and signaling hasn't finished yet
-			if(msg.payload.type === 'offer' && !offerer) {
-				pc.setRemoteDescription(new SessionDescription(msg.payload));
-				// generate our answer SDP and send it to peer
-				pc.createAnswer(function(answer) {
-					pc.setLocalDescription(answer);
-					socket.emit('signaling', {type:'sdp',payload:answer});
-				}, errorHandler);
-				console.log('signaling - handle sdp offer and send answer');
-			// if we receive a sdp answer, we are the answerer and signaling isn't done yet, process answer
-			} else if(msg.payload.type === 'answer' && offerer) {
-				pc.setRemoteDescription(new SessionDescription(msg.payload));
-				console.log('signaling - handle sdp answer');
-			} else {
-				console.log('signaling - unexpected sdp message');
-			}
-			break;
-		// we receive an ice candidate
-		case 'ice':
-			var peerIceCandidate = new IceCandidate(msg.payload);
-			pc.addIceCandidate(peerIceCandidate);
-			console.log('singaling - remote ice candiate: ' + extractIpFromString(msg.payload.candidate));
-			break;
-	}
+        // we receive an sdp message
+        case 'sdp':
+            // only process message if it's an offer and we aren't offerer and signaling hasn't finished yet
+            if(msg.payload.type === 'offer' && !offerer) {
+                pc.setRemoteDescription(new SessionDescription(msg.payload));
+                // generate our answer SDP and send it to peer
+                pc.createAnswer(function(answer) {
+                    pc.setLocalDescription(answer);
+                    socket.emit('signaling', {type:'sdp',payload:answer});
+                }, errorHandler);
+                console.log('signaling - handle sdp offer and send answer');
+            // if we receive a sdp answer, we are the answerer and signaling isn't done yet, process answer
+            } else if(msg.payload.type === 'answer' && offerer) {
+                pc.setRemoteDescription(new SessionDescription(msg.payload));
+                console.log('signaling - handle sdp answer');
+            } else {
+                console.log('signaling - unexpected sdp message');
+            }
+            break;
+        // we receive an ice candidate
+        case 'ice':
+            var peerIceCandidate = new IceCandidate(msg.payload);
+            pc.addIceCandidate(peerIceCandidate);
+            console.log('singaling - remote ice candiate: ' + extractIpFromString(msg.payload.candidate));
+            break;
+    }
 });
 
 // generic error handler
 function errorHandler(err) {
-	console.error(err);
+    console.error(err);
 }
 
 // handle local ice candidates
 pc.onicecandidate = function(event) {
-	// take the first candidate that isn't null
-	if (!pc || !event || !event.candidate) {
-		return;
-	}
-	// send ice candidate to signaling service
-	socket.emit('signaling', {type:'ice',payload:event.candidate});
-	console.log('local ice candidate:' + extractIpFromString(event.candidate.candidate));
+    // take the first candidate that isn't null
+    if (!pc || !event || !event.candidate) {
+        return;
+    }
+    // send ice candidate to signaling service
+    socket.emit('signaling', {type:'ice',payload:event.candidate});
+    console.log('local ice candidate:' + extractIpFromString(event.candidate.candidate));
 };
 
 // establish connection to remote peer via webrtc
 function connect(active) {
-	signalingInProgress = true;
+    signalingInProgress = true;
 
-	if(active == true) {
-		console.log('role: offerer');
-		offerer = true;
-		signalingId = generateSignalingId();
-	} else {
-		console.log('role: answerer');
-		offerer = false;
-		signalingId = $('#signalingId').val();
+    if(active == true) {
+        console.log('role: offerer');
+        offerer = true;
+        signalingId = generateSignalingId();
+    } else {
+        console.log('role: answerer');
+        offerer = false;
+        signalingId = $('#signalingId').val();
 
-		// basically chechking the signaling id
-		if(!$.isNumeric(signalingId)) {
-			console.log('Invalid signaling ID - break!');
-			return;
-		}
-	}
+        // basically chechking the signaling id
+        if(!$.isNumeric(signalingId)) {
+            console.log('Invalid signaling ID - break!');
+            return;
+        }
+    }
 
-	if(signalingId.length === 0) {
-		console.log('signalingId empty');
-		return;
-	}
+    if(signalingId.length === 0) {
+        console.log('signalingId empty');
+        return;
+    }
 
-	// join room
-	socket.emit('roomJoin', appIdent + signalingId);
-	$('#rowInit').slideUp();
+    // join room
+    socket.emit('roomJoin', appIdent + signalingId);
+    $('#rowInit').slideUp();
 
-	if (offerer == true) {
-		$('.spinnerStatus').html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
-		//new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
+    if (offerer == true) {
+        $('.spinnerStatus').html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
+        //new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
 
-		// create data channel
-		dcControl = pc.createDataChannel('control');
-		bindEventsControl(dcControl);
-		console.log("connect - role: offerer");
-	} else {
-		// request SDP from offerer
-		socket.emit('signaling', {type:'sdpRequest'});
-		// answerer must wait for the data channel
-		pc.ondatachannel = function(event) {
-			// bin incoming control channel
-			if (event.channel.label == "control") {
-				dcControl = event.channel;
-				bindEventsControl(event.channel);
-			} else {
-				alert("error: unknown channel!");
-			}
-			console.log('incoming datachannel');
-		};
+        // create data channel
+        dcControl = pc.createDataChannel('control');
+        bindEventsControl(dcControl);
+        console.log("connect - role: offerer");
+    } else {
+        // request SDP from offerer
+        socket.emit('signaling', {type:'sdpRequest'});
+        // answerer must wait for the data channel
+        pc.ondatachannel = function(event) {
+            // bin incoming control channel
+            if (event.channel.label == "control") {
+                dcControl = event.channel;
+                bindEventsControl(event.channel);
+            } else {
+                alert("error: unknown channel!");
+            }
+            console.log('incoming datachannel');
+        };
 
-		$('.spinnerStatus').text('connecting to peer id: ' + signalingId);
-		console.log('connect - role answerer');
-	}
-	$('#rowSpinner').hide().removeClass('hidden').slideDown();
+        $('.spinnerStatus').text('connecting to peer id: ' + signalingId);
+        console.log('connect - role answerer');
+    }
+    $('#rowSpinner').hide().removeClass('hidden').slideDown();
 }
 
 // bind events for control channel
 function bindEventsControl(channel) {
-	channel.onopen = function() {
-		$('#rowSpinner').slideUp();
-		$('#rowChat').hide().removeClass('hidden').slideDown();
-		$('#chatMessages').append('<div class="alert alert-warning" role="alert">Connection up - HTML enabled!</div>');
-		console.log('Channel Open - Label:' + channel.label + ', ID:' + channel.id);
-	};
+    channel.onopen = function() {
+        $('#rowSpinner').slideUp();
+        $('#rowChat').hide().removeClass('hidden').slideDown();
+        $('#chatMessages').append('<div class="alert alert-warning" role="alert">Connection up - HTML enabled!</div>');
+        console.log('Channel Open - Label:' + channel.label + ', ID:' + channel.id);
+    };
 
-	channel.onclose = function(e) {
-		console.log("Channel Close");
-		$('#chatMessages').append('<div class="alert alert-warning" role="alert">Connection lost!</div>');
-		$('#chatControl').slideUp();
-	};
+    channel.onclose = function(e) {
+        console.log("Channel Close");
+        $('#chatMessages').append('<div class="alert alert-warning" role="alert">Connection lost!</div>');
+        $('#chatControl').slideUp();
+    };
 
-	window.onbeforeunload = function() {
-		channel.close();
-	};
+    window.onbeforeunload = function() {
+        channel.close();
+    };
 
-	channel.onmessage = function(e) {
-		$('#chatMessages').append('<div class="alert alert-info text-right" role="alert">' + e.data + '</div>');
-	};
+    channel.onmessage = function(e) {
+        $('#chatMessages').append('<div class="alert alert-info text-right" role="alert">' + e.data + '</div>');
+    };
 }
 
 // Send message to peer
 $('#chatInput').keypress(function (e) {
-	if (e.which == 13) {
-	  	var text = $(this).val();
-		dcControl.send(text);
-		$('#chatMessages').append('<div class="alert alert-success" role="alert">' + text + '</div>');
-    	$(this).val('');
-  	}
+    if (e.which == 13) {
+          var text = $(this).val();
+        dcControl.send(text);
+        $('#chatMessages').append('<div class="alert alert-success" role="alert">' + text + '</div>');
+        $(this).val('');
+      }
 });

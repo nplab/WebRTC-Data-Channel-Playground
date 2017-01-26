@@ -1,119 +1,119 @@
 .footer {
-	margin-top: 20px;
-	padding-top: 5px;
-	border-top: 1px solid #ddd;
+    margin-top: 20px;
+    padding-top: 5px;
+    border-top: 1px solid #ddd;
 }
 
 h1 {
-	font-size: 30px;
+    font-size: 30px;
 }
 
 h2 {
-	font-size: 26px;
+    font-size: 26px;
 }
 
 h3 {
-	font-size: 22px;
+    font-size: 22px;
 }
 
 .progressLabel {
-	float: left;
-	margin-right: 1em;
+    float: left;
+    margin-right: 1em;
 }
 
 .testControls {
-	margin-bottom: 20px;
-	width: 100%;
+    margin-bottom: 20px;
+    width: 100%;
 }
 
 #testlist label {
-	font-weight: 500;
+    font-weight: 500;
 }
 
 progress {
-	height: 20px;
-	border-radius: 9px;
+    height: 20px;
+    border-radius: 9px;
 }
 
 .popover {
-	max-width: 100%;// Max Width of the popover (depending on the container!)
+    max-width: 100%;// Max Width of the popover (depending on the container!)
 }
 
 span.dcStatus-open {
-	color: #3c763d;
+    color: #3c763d;
 }
 
 span.dcStatus-closed {
-	color: #a94442;
+    color: #a94442;
 }
 
 span.dcStatus-connecting, span.dcStatus-closing {
-	color: #337ab7;
+    color: #337ab7;
 }
 
 table#npmChannelParameters td, table#npmChannelParameters th, table#npmChannelParameters input {
-	text-align: center;
-	vertical-align: middle;
+    text-align: center;
+    vertical-align: middle;
 }
 
 #signalingID {
-	font-size: 14px;
-	margin-bottom: 5px;
-	text-align: center;
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-align: center;
 }
 
 #npmChannelParameters th span.glyphicon {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 input.has-error {
-	border: 1px solid #a94442;
-	background-color: #F2DEDE;
+    border: 1px solid #a94442;
+    background-color: #F2DEDE;
 }
 
 table#testlist td, table#npmChannelParameters td {
-	white-space: nowrap;
+    white-space: nowrap;
 }
 
 .row {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
 .spinner {
-	margin: 10px auto;
-	width: 50px;
-	height: 30px;
-	text-align: center;
-	font-size: 10px;
+    margin: 10px auto;
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    font-size: 10px;
 }
 
 .spinner > div {
-	background-color: #666;
-	height: 100%;
-	width: 6px;
-	display: inline-block;
-	-webkit-animation: stretchdelay 1.2s infinite ease-in-out;
-	animation: stretchdelay 1.2s infinite ease-in-out;
+    background-color: #666;
+    height: 100%;
+    width: 6px;
+    display: inline-block;
+    -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+    animation: stretchdelay 1.2s infinite ease-in-out;
 }
 
 .spinner .rect2 {
-	-webkit-animation-delay: -1.1s;
-	animation-delay: -1.1s;
+    -webkit-animation-delay: -1.1s;
+    animation-delay: -1.1s;
 }
 
 .spinner .rect3 {
-	-webkit-animation-delay: -1.0s;
-	animation-delay: -1.0s;
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
 }
 
 .spinner .rect4 {
-	-webkit-animation-delay: -0.9s;
-	animation-delay: -0.9s;
+    -webkit-animation-delay: -0.9s;
+    animation-delay: -0.9s;
 }
 
 .spinner .rect5 {
-	-webkit-animation-delay: -0.8s;
-	animation-delay: -0.8s;
+    -webkit-animation-delay: -0.8s;
+    animation-delay: -0.8s;
 }
 
 @-webkit-keyframes stretchdelay {
@@ -132,7 +132,7 @@ transform: scaleY(1.0);
 }
 
 #dChatTable {
-	width: 100%;
-	height: 200px;
-	overflow: auto;
+    width: 100%;
+    height: 200px;
+    overflow: auto;
 }

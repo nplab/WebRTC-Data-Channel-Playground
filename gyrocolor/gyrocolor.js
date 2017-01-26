@@ -31,10 +31,10 @@ BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
 
 // constraints on the offer SDP.
 var sdpConstraints = {
-	'mandatory' : {
-		'offerToReceiveAudio' : false,
-		'offerToReceiveVideo' : false
-	}
+    'mandatory' : {
+        'offerToReceiveAudio' : false,
+        'offerToReceiveVideo' : false
+    }
 };
 
 // Reference to Firebase APP
@@ -58,270 +58,270 @@ signalingIdRef.child(freshsignalingId).remove();
 
 // wrapper to send data to FireBase
 function firebaseSend(signalingId, key, data) {
-	signalingIdRef.child(signalingId).child(key).set(data);
-	console.log('firebaseSend - ' + key + ' - ' + data);
+    signalingIdRef.child(signalingId).child(key).set(data);
+    console.log('firebaseSend - ' + key + ' - ' + data);
 }
 
 // wrapper function to receive data from FireBase - with callback function
 function firebaseReceive(signalingId, type, cb) {
-	signalingIdRef.child(signalingId).child(type).on("value", function(snapshot, key) {
-		var data = snapshot.val();
-		if (data) {
-			cb(data);
-			console.log('firebaseReceive - ' + type + ' - ' + data);
-		}
-	});
+    signalingIdRef.child(signalingId).child(type).on("value", function(snapshot, key) {
+        var data = snapshot.val();
+        if (data) {
+            cb(data);
+            console.log('firebaseReceive - ' + type + ' - ' + data);
+        }
+    });
 }
 
 // generic error handler
 function errorHandler(err) {
-	console.error(err);
+    console.error(err);
 }
 
 // handle local ice candidates
 pc.onicecandidate = function(event) {
-	// take the first candidate that isn't null
-	if (!pc || !event || !event.candidate) {
-		return;
-	}
+    // take the first candidate that isn't null
+    if (!pc || !event || !event.candidate) {
+        return;
+    }
 
-	var ip = extractIpFromString(event.candidate.candidate);
+    var ip = extractIpFromString(event.candidate.candidate);
 
-	// add local ice candidate to firebase
-	signalingIdRef.child(signalingId).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
+    // add local ice candidate to firebase
+    signalingIdRef.child(signalingId).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
 
-	console.log('onicecandidate - ip:' + ip);
+    console.log('onicecandidate - ip:' + ip);
 };
 
 pc.oniceconnectionstatechange = function(event) {
-	console.log("oniceconnectionstatechange - " + pc.iceConnectionState);
-	if (pc.iceConnectionState === 'disconnected') {
-		gyroConnectionLost();
-	}
+    console.log("oniceconnectionstatechange - " + pc.iceConnectionState);
+    if (pc.iceConnectionState === 'disconnected') {
+        gyroConnectionLost();
+    }
 };
 
 function gyroCreateSignalingId() {
-	console.log('gyroCreateSignalingId');
-	signalingId = freshsignalingId;
-	role = "offerer";
-	peerRole = "answerer";
+    console.log('gyroCreateSignalingId');
+    signalingId = freshsignalingId;
+    role = "offerer";
+    peerRole = "answerer";
 
-	console.log('creating signaling id:' + signalingId);
-	gyroConnect();
+    console.log('creating signaling id:' + signalingId);
+    gyroConnect();
 }
 
 function gyroConnectTosignalingId() {
-	console.log('gyroConnectTosignalingId');
-	signalingId = $("#signalingId").val();
-	role = "answerer";
-	peerRole = "offerer";
+    console.log('gyroConnectTosignalingId');
+    signalingId = $("#signalingId").val();
+    role = "answerer";
+    peerRole = "offerer";
 
-	console.log('connecting to peer:' + signalingId);
-	gyroConnect();
+    console.log('connecting to peer:' + signalingId);
+    gyroConnect();
 
 }
 
 function gyroConnectTosignalingIdFromUrl() {
-	console.log('gyroConnectTosignalingId');
-	role = "answerer";
-	peerRole = "offerer";
+    console.log('gyroConnectTosignalingId');
+    role = "answerer";
+    peerRole = "offerer";
 
-	console.log('connecting to peer:' + signalingId);
-	gyroConnect();
+    console.log('connecting to peer:' + signalingId);
+    gyroConnect();
 
 }
 
 // establish connection to remote peer via webrtc
 function gyroConnect() {
 
-	$("#rowInit").slideUp();
-	$("#rowSpinner").slideDown();
+    $("#rowInit").slideUp();
+    $("#rowSpinner").slideDown();
 
-	if (role === "offerer") {
-		$(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
+    if (role === "offerer") {
+        $(".spinnerStatus").html('waiting for peer<br/>use id: ' + signalingId + '<br/><br/><div id="qrcode"></div>');
 
-		new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
+        new QRCode(document.getElementById("qrcode"), window.location.href + '#' + signalingId);
 
-		$("#rowSpinner").removeClass('hidden').hide().slideDown();
+        $("#rowSpinner").removeClass('hidden').hide().slideDown();
 
-		dcControl = pc.createDataChannel('control');
+        dcControl = pc.createDataChannel('control');
 
-		bindEventsControl(dcControl);
+        bindEventsControl(dcControl);
 
 
-		// create the offer SDP
-		pc.createOffer(function(offer) {
-			pc.setLocalDescription(offer);
+        // create the offer SDP
+        pc.createOffer(function(offer) {
+            pc.setLocalDescription(offer);
 
-			// send the offer SDP to FireBase
-			firebaseSend(signalingId, "offer", JSON.stringify(offer));
+            // send the offer SDP to FireBase
+            firebaseSend(signalingId, "offer", JSON.stringify(offer));
 
-			// wait for an answer SDP from FireBase
-			firebaseReceive(signalingId, "answer", function(answer) {
-				pc.setRemoteDescription(new SessionDescription(JSON.parse(answer)));
-			});
-		}, errorHandler, sdpConstraints);
+            // wait for an answer SDP from FireBase
+            firebaseReceive(signalingId, "answer", function(answer) {
+                pc.setRemoteDescription(new SessionDescription(JSON.parse(answer)));
+            });
+        }, errorHandler, sdpConstraints);
 
-		console.log("connect - role: offerer");
+        console.log("connect - role: offerer");
 
-		// answerer role
-	} else {
-		$(".spinnerStatus").text("connecting - id: " + signalingId);
-		$("#rowSpinner").removeClass('hidden').hide().slideDown();
-		// answerer must wait for the data channel
-		pc.ondatachannel = function(event) {
-			if (event.channel.label == "control") {
-				dcControl = event.channel;
-				bindEventsControl(event.channel);
-			} else {
-				alert("error: unknown channel!");
-			}
+        // answerer role
+    } else {
+        $(".spinnerStatus").text("connecting - id: " + signalingId);
+        $("#rowSpinner").removeClass('hidden').hide().slideDown();
+        // answerer must wait for the data channel
+        pc.ondatachannel = function(event) {
+            if (event.channel.label == "control") {
+                dcControl = event.channel;
+                bindEventsControl(event.channel);
+            } else {
+                alert("error: unknown channel!");
+            }
 
-			console.log('incoming datachannel');
-		};
+            console.log('incoming datachannel');
+        };
 
-		// answerer needs to wait for an offer before generating the answer SDP
-		firebaseReceive(signalingId, "offer", function(offer) {
-			pc.setRemoteDescription(new SessionDescription(JSON.parse(offer)));
+        // answerer needs to wait for an offer before generating the answer SDP
+        firebaseReceive(signalingId, "offer", function(offer) {
+            pc.setRemoteDescription(new SessionDescription(JSON.parse(offer)));
 
-			// now we can generate our answer SDP
-			pc.createAnswer(function(answer) {
-				pc.setLocalDescription(answer);
+            // now we can generate our answer SDP
+            pc.createAnswer(function(answer) {
+                pc.setLocalDescription(answer);
 
-				// send it to FireBase
-				firebaseSend(signalingId, "answer", JSON.stringify(answer));
-			}, errorHandler);
-		});
-		console.log('connect - role answerer');
-	}
+                // send it to FireBase
+                firebaseSend(signalingId, "answer", JSON.stringify(answer));
+            }, errorHandler);
+        });
+        console.log('connect - role answerer');
+    }
 
-	// add handler for peers ice candidates
-	signalingIdRef.child(signalingId).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
-		var childVal = childSnapshot.val();
-		var peerCandidate = JSON.parse(childVal);
+    // add handler for peers ice candidates
+    signalingIdRef.child(signalingId).child(peerRole + '-iceCandidates').on('child_added', function(childSnapshot) {
+        var childVal = childSnapshot.val();
+        var peerCandidate = JSON.parse(childVal);
 
-		var peerIceCandidate = new IceCandidate(peerCandidate);
-		pc.addIceCandidate(new IceCandidate(peerCandidate));
+        var peerIceCandidate = new IceCandidate(peerCandidate);
+        pc.addIceCandidate(new IceCandidate(peerCandidate));
 
-		var peerIp = extractIpFromString(peerIceCandidate.candidate);
+        var peerIp = extractIpFromString(peerIceCandidate.candidate);
 
-		console.log('peerIceCandidate: ' + peerIp);
-	});
+        console.log('peerIceCandidate: ' + peerIp);
+    });
 }
 
 // bind events for control channel
 function bindEventsControl(channel) {
-	channel.onopen = function() {
-		$("#rowSpinner").slideUp();
-		$("#rowControl").slideDown();
-		console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
-	};
+    channel.onopen = function() {
+        $("#rowSpinner").slideUp();
+        $("#rowControl").slideDown();
+        console.log("Channel Open - Label:" + channel.label + ', ID:' + channel.id);
+    };
 
-	channel.onclose = function(e) {
-		console.log("Channel Close");
-		gyroConnectionLost();
+    channel.onclose = function(e) {
+        console.log("Channel Close");
+        gyroConnectionLost();
 
-	};
+    };
 
-	window.onbeforeunload = function() {
-		channel.close();
-	};
+    window.onbeforeunload = function() {
+        channel.close();
+    };
 
-	channel.onmessage = function(e) {
-		msgHandleJson(e.data.toString());
-	};
+    channel.onmessage = function(e) {
+        msgHandleJson(e.data.toString());
+    };
 }
 
 
 function gyroConnectionLost() {
-	speedtestContinueSending = false;
-	$("#rowSpinner").hide();
-	$("#rowMessage").removeClass('hidden');
-	$("#colMessage").html('<div class="alert alert-danger text-center" role="alert"><strong>Error:</strong> Connection to peer lost!</div>');
-	$("#rowInit").hide();
-	gyroSetColor(255,255,255);
+    speedtestContinueSending = false;
+    $("#rowSpinner").hide();
+    $("#rowMessage").removeClass('hidden');
+    $("#colMessage").html('<div class="alert alert-danger text-center" role="alert"><strong>Error:</strong> Connection to peer lost!</div>');
+    $("#rowInit").hide();
+    gyroSetColor(255,255,255);
 
 }
 
 function gyroInit() {
-	//if (window.DeviceOrientationEvent  && 'ontouchstart' in window) {
+    //if (window.DeviceOrientationEvent  && 'ontouchstart' in window) {
 
-	if(location.hash.substring(1)){
-		signalingId = location.hash.substring(1);
-		gyroConnectTosignalingIdFromUrl();
-	}
+    if(location.hash.substring(1)){
+        signalingId = location.hash.substring(1);
+        gyroConnectTosignalingIdFromUrl();
+    }
 
-	if (window.DeviceOrientationEvent) {
-		$('#gyrostatus').removeClass('alert-info').addClass('alert-success');
-		// Listen for the deviceorientation event and handle the raw data
-		window.addEventListener('deviceorientation', function(eventData) {
-			// gamma is the left-to-right tilt in degrees, where right is positive
-			var gammaRaw = Math.round(event.gamma);
+    if (window.DeviceOrientationEvent) {
+        $('#gyrostatus').removeClass('alert-info').addClass('alert-success');
+        // Listen for the deviceorientation event and handle the raw data
+        window.addEventListener('deviceorientation', function(eventData) {
+            // gamma is the left-to-right tilt in degrees, where right is positive
+            var gammaRaw = Math.round(event.gamma);
                         var gamma = Math.round(((((Math.abs(gammaRaw)*4) % 360)/360)*510)%512);
                         if(gamma > 255){
                             gamma = 510 - gamma;
                         }
-			// beta is the front-to-back tilt in degrees, where front is positive
-			var betaRaw = Math.round(event.beta);
-			var beta = Math.round((((Math.abs(betaRaw)*4) % 360)/360)*510);
+            // beta is the front-to-back tilt in degrees, where front is positive
+            var betaRaw = Math.round(event.beta);
+            var beta = Math.round((((Math.abs(betaRaw)*4) % 360)/360)*510);
                         if(beta > 255){
                             beta = 510 - beta;
                         }
 
-			// alpha is the compass direction the device is facing in degrees
-			var alphaRaw = Math.round(event.alpha);
+            // alpha is the compass direction the device is facing in degrees
+            var alphaRaw = Math.round(event.alpha);
                         if(alpha < 0){
                             console.log("Alpha should never be negative: "+alphaRaw);
                         }
-			var alpha = Math.round(((Math.abs(eventData.alpha*4) / 360) * 510) % 510);
-			if(alpha > 255){
+            var alpha = Math.round(((Math.abs(eventData.alpha*4) / 360) * 510) % 510);
+            if(alpha > 255){
                             alpha = 510 - alpha;
                         }
-			if(gammaRaw != 0 && betaRaw != 0 && alphaRaw != 0) {
-				$('#trRaw').html('<td>raw</td><td>'+alphaRaw+'</td><td>'+betaRaw+'</td><td>'+gammaRaw+'</td>');
+            if(gammaRaw != 0 && betaRaw != 0 && alphaRaw != 0) {
+                $('#trRaw').html('<td>raw</td><td>'+alphaRaw+'</td><td>'+betaRaw+'</td><td>'+gammaRaw+'</td>');
 
-				if(!gyroColorFromRemote) {
-					gyroSetColor(alpha,beta,gamma);
-				}
+                if(!gyroColorFromRemote) {
+                    gyroSetColor(alpha,beta,gamma);
+                }
 
-				if(typeof(dcControl.readyState) !== 'undefined' && dcControl.readyState === "open") {
-					//alert('sending');
+                if(typeof(dcControl.readyState) !== 'undefined' && dcControl.readyState === "open") {
+                    //alert('sending');
 
-					var gyroData = {
-						type : 'gyro',
-						alpha : alpha,
-						beta : beta,
-						gamma : gamma
-					};
+                    var gyroData = {
+                        type : 'gyro',
+                        alpha : alpha,
+                        beta : beta,
+                        gamma : gamma
+                    };
 
-					dcControl.send(JSON.stringify(gyroData));
-				}
-			}
+                    dcControl.send(JSON.stringify(gyroData));
+                }
+            }
 
-			// call our orientation event handler
-		}, false);
-	}
+            // call our orientation event handler
+        }, false);
+    }
 }
 
 function gyroSetColor(alpha, beta, gamma) {
-	$('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
-	$('#complementary').css('color','rgb('+(alpha > 128)?255:0+','+(beta > 128)?255:0+','+(gamma > 128)?255:0+')' );
-	$('#trCalc').html('<td>calc</td><td>'+alpha+'</td><td>'+beta+'</td><td>'+gamma+'</td>');
+    $('body').css('background-color','rgb('+alpha+','+beta+','+gamma+')');
+    $('#complementary').css('color','rgb('+(alpha > 128)?255:0+','+(beta > 128)?255:0+','+(gamma > 128)?255:0+')' );
+    $('#trCalc').html('<td>calc</td><td>'+alpha+'</td><td>'+beta+'</td><td>'+gamma+'</td>');
 }
 
 
 function msgHandleJson(message) {
-	var messageObject = JSON.parse(message);
-	switch(messageObject.type) {
+    var messageObject = JSON.parse(message);
+    switch(messageObject.type) {
 
-	// peer indicates finish
-	case 'gyro':
-		gyroColorFromRemote = true;
-		gyroSetColor(messageObject.alpha,messageObject.beta,messageObject.gamma);
-	break;
+    // peer indicates finish
+    case 'gyro':
+        gyroColorFromRemote = true;
+        gyroSetColor(messageObject.alpha,messageObject.beta,messageObject.gamma);
+    break;
 
-	default:
-		alert('Unknown messagetype: ' + messageObject.type);
-		break;
-	}
+    default:
+        alert('Unknown messagetype: ' + messageObject.type);
+        break;
+    }
 }

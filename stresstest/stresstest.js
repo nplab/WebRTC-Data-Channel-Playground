@@ -96,7 +96,7 @@ var availableSettings,
 // Local ID
 var id = "testing";
 
-jQuery(window).load(function(){
+$(function() {
 	loadSettings();
 });
 
