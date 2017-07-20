@@ -176,8 +176,6 @@ function testDC_id007() {
 
     var test = async_test("Set up a DataChannel with the specific id = " + dataChannelOptions.id, {timeout: 10000});
     test.step(function() {
-        if(mozSafeMode)
-            assert_unreached("Mozilla Firefox Safe Mode is activated - This test usually leads to crash ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         try {
@@ -218,8 +216,6 @@ function testDC_id008() {
         test.done();
     }), 2000);
     test.step(function() {
-        if(mozSafeMode)
-            assert_unreached("Mozilla Firefox Safe Mode is activated - This test usually leads to crash ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         try {
@@ -265,8 +261,6 @@ function testDC_id009() {
         testDC32_1.done();
     }), 2000);
     test.step(function() {
-        if(mozSafeMode)
-            assert_unreached("Mozilla Firefox Safe Mode is activated - This test usually leads to crash ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         try {
@@ -312,8 +306,6 @@ function testDC_id010() {
         test.done();
     }), 2000);
     test.step(function() {
-        //if(mozSafeMode)
-        //    assert_unreached("Mozilla Firefox Safe Mode is activated - This test usually leads to crash ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         try {
@@ -380,8 +372,6 @@ function testDC_id012() {
         assert_unreached("No connection established with the channel ID " + localChannel[i].id);
     }), 15000);
     test.step(function() {
-        if(mozSafeMode)
-            assert_unreached("Mozilla Firefox Safe Mode is activated - This test usually leads to crash ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         dcLocal[i] = localPeerConnection.createDataChannel("testDC_id012");
@@ -428,8 +418,6 @@ function testDC_id013() {
         assert_unreached("No connection established with the channel ID " + dcLocal[i].id);
     }), 15000);
     test.step(function() {
-        if(mozSafeMode)
-            assert_unreached("Mozilla Firefox Safe Mode is activated - This test usually leads to crash ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         dcLocal[i] = localPeerConnection.createDataChannel("testDC_id013");
@@ -497,8 +485,6 @@ function testDC_id015() {
     var i = 0;
     var test = async_test("Set up " + (1+max) + " DataChannels - with specific id - starts with id 0 then increase by one", {timeout: 20000});
     test.step(function() {
-        if(mozSafeMode)
-            assert_unreached("Mozilla Firefox Safe Mode is activated - This test usually leads to crash ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         dcLocal[i] = localPeerConnection.createDataChannel("testDC_id015", {
@@ -548,8 +534,6 @@ function testDC_id016() {
         assert_unreached("No connection established with the channel ID " + dcLocal[i].id);
     }), 15000);
     test.step(function() {
-        if(mozSafeMode)
-            assert_unreached("Mozilla Firefox Safe Mode is activated - This test usually leads to crash ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         dcLocal[i] = localPeerConnection.createDataChannel("testDC_id016", {

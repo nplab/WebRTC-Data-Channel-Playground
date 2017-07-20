@@ -480,8 +480,6 @@ function testDC_dict015() {
         timeout : 10000
     });
     test.step(function() {
-        if(mozSafeMode)
-            assert_unreached("Mozilla Firefox Safe Mode is activated - This test usually leads to crash ");
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         try {
