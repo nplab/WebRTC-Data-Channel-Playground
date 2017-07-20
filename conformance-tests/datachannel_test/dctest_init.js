@@ -111,12 +111,6 @@ function testDCPC() {
     }, "testDCPC: Check if RTCPeerConnection is available");
 }
 
-function testDCPCMoz() {
-    test(function() {
-        assert_true(!!window.mozRTCPeerConnection, "You don't use Firefox or a too old version");
-    }, "testDCPCMoz: Check if mozRTCPeerConnection (Firefox) is available");
-}
-
 function testDCPCWebkit() {
     test(function() {
         assert_true(!!window.webkitRTCPeerConnection, "You don't use Google/Opera or a too old version");
