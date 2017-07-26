@@ -106,18 +106,9 @@ function testDC_label003() {
     });
 }
 
-
-/**
-- Peer A: creates a DataChannel with a label of 32 KB length
-- Peer B: waits for the DataChannel 
-- Peer A/B: checks the label
-
- */
-// Label set test with very long label
-// Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
-function testDC_label004() {
-    var label = generateData(15);
-    var test = async_test("testDC_label004: Set up a DataChannel with a label of length " +  label.length + " byte - check the label on both peers", {timeout: 5000});
+function testDC_label003() {
+    var label = "test-label漢字";
+    var test = async_test("testDC_label003: Create a DataChannel with label \"" + label + "\" - check the label on both peers", {timeout: 5000});
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
@@ -132,11 +123,57 @@ function testDC_label004() {
             remoteChannel.onopen = test.step_func(function() {
                 assert_equals(localChannel.label, label, "Wrong label ");
                 assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
-                assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label ");
                 test.done();
             });
-
         });
+    });
+}
+
+function _testDC_label003(test, parameters) {
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel(parameters.label);
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    remotePeerConnection.ondatachannel = test.step_func(function(e) {
+        remoteChannel = e.channel;
+        remoteChannel.onopen = test.step_func(function() {
+            assert_equals(localChannel.label, parameters.label, "Wrong label ");
+            assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
+            test.done();
+        });
+    });
+}
+
+/**
+- Peer A: creates a DataChannel with a label of 32 KB length
+- Peer B: waits for the DataChannel 
+- Peer A/B: checks the label
+
+ */
+// Label set test with very long label
+// Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
+function _testDC_label004() {
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel(label);
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    remotePeerConnection.ondatachannel = test.step_func(function(e) {
+        remoteChannel = e.channel;
+        remoteChannel.onopen = test.step_func(function() {
+            assert_equals(localChannel.label, label, "Wrong label ");
+            assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
+            assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label ");
+            test.done();
+        });
+
     });
 }
 

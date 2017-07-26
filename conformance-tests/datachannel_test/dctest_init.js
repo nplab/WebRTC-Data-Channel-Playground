@@ -111,6 +111,10 @@ function testDCPC() {
     }, "testDCPC: Check if RTCPeerConnection is available");
 }
 
+function _testDCPC() {
+    assert_true(!!testRTCPeerConnection, "RTCPeerConnection not available, musst use prefix");
+}
+
 function testDCPCWebkit() {
     test(function() {
         assert_true(!!window.webkitRTCPeerConnection, "You don't use Google/Opera or a too old version");

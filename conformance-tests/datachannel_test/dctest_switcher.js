@@ -112,7 +112,11 @@ function loadCookie(name) {
 
 function startSelectedTests() {
     $('.progressbar').css('width', '0%').attr('aria-valuenow', 0).html('0/'+selectedTestList.length);
-    testSwitcher(0);
+    //testSwitcher(0);
+    for (var test in dctests) {
+        run_dctest(test, dctests[test]);
+    }
+    done();
     $('#logWrapper').show();
     $('#testWrapper').hide();
 }
@@ -175,3 +179,4 @@ $('button#btnTestSave').click(function(){
 $('button#btnTestLoadPrevious').click(function(){
     loadCookie("previous");
 });
+
