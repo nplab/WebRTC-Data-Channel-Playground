@@ -34,6 +34,15 @@
  * Peer B = remotePeerConnection, remoteChannel 
  */
 
+
+var dctests = {
+    "PC": {
+        "description": "Check if RTCPeerConnection is available",
+        "sync": true,
+        "test_function": _testDCPC
+    }
+};
+
 var showResults = false;
 var testResult = ["Pass", "Fail", "Timeout"];
 var testCounter = 0;

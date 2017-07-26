@@ -121,6 +121,24 @@ function startSelectedTests() {
     $('#testWrapper').hide();
 }
 
+function run_dctest(name, attr) {
+    if (attr.sync) {
+        test(function() {
+                attr.test_function(attr.parameters);
+            }, name + ' - ' + attr.description, {
+                timeout: attr.timeout
+            }
+        );
+    } else {
+        var atest = async_test(name + ' - ' + attr.description, {
+            timeout: attr.timeout}
+        );
+        atest.step(function() {
+            attr.test_function(atest, attr.parameters);
+        });
+    }
+}
+
 // Button - start all Tests
 $('button#btnTestStartAll').click(function() {
     //setCookie("previous");

@@ -33,6 +33,19 @@
  */
 
 
+var dctests_label = {
+    "label003": {
+        "parameters": {
+            "label": "test-label漢字"
+        },
+        get description() {
+            return "Create a DataChannel with label \"" + this.parameters.label + "\" - check the label on both peers";
+        },
+        "sync": false,
+        "test_function": _testDC_label003
+    }
+};
+
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 // FIXME: W3C API: No information about which error should throw (API says parameter label is not optional)
 /**
