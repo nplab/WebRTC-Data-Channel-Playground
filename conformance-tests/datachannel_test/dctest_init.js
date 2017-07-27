@@ -39,7 +39,12 @@ var dctests_init = {
     "PC": {
         "description": "Check if RTCPeerConnection is available",
         "sync": true,
-        "test_function": _testDCPC
+        "test_function": testDCPC
+    },
+    "PCWebkit": {
+        "description": "Check if webkitRTCPeerConnection (Google/Opera) is available",
+        "sync": true,
+        "test_function": testDCPCWebkit
     }
 };
 
@@ -115,17 +120,9 @@ function completion_callback(allRes, status) {
  * Test whether prefixes are used
  */
 function testDCPC() {
-    test(function() {
-        assert_true(!!testRTCPeerConnection, "RTCPeerConnection not available, musst use prefix");
-    }, "testDCPC: Check if RTCPeerConnection is available");
-}
-
-function _testDCPC() {
     assert_true(!!testRTCPeerConnection, "RTCPeerConnection not available, musst use prefix");
 }
 
 function testDCPCWebkit() {
-    test(function() {
-        assert_true(!!window.webkitRTCPeerConnection, "You don't use Google/Opera or a too old version");
-    }, "testDCPCWebkit: Check if webkitRTCPeerConnection (Google/Opera) is available");
+    assert_true(!!window.webkitRTCPeerConnection, "You don't use Google/Opera or a too old version");
 }

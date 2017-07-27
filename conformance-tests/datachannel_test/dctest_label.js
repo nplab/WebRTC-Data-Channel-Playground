@@ -34,6 +34,36 @@
 
 
 var dctests_label = {
+    "label001": {
+        "description": "Call .createDataChannel() without parameters - should throw an error",
+        "timeout": 5000,
+        "sync": true,
+        "references": [
+            "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
+            "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8"
+        ],
+        "test_function": testDC_label001
+    },
+    "label002": {
+        "parameters": {
+            "label": "test-label"
+        },
+        get description() {
+            return "Create a DataChannel with label \"" + this.parameters.label + "\" - check label on both peers"; 
+        },
+        "scenario": "<ul> \
+            <li>Peer A: creates a DataChannel with a label.</li>\
+            <li>Peer B: waits for the DataChannel</li>\
+            <li>Peer A/B: checks the label.</li>\
+        </ul>",
+        "references": [
+            "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
+            "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8"
+        ],
+        "timeout": 5000,
+        "sync": false,
+        "test_function": testDC_label002
+    },
     "label003": {
         "parameters": {
             "label": "test-label漢字"
@@ -60,12 +90,10 @@ var dctests_label = {
  - Peer A: creates a DataChannel without label parameter 
  */
 function testDC_label001() {
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        assert_throws(null, function() {
-            localChannel = localPeerConnection.createDataChannel();
-        }, "No error was thrown ");
-    }, "testDC_label001: Call .createDataChannel() without parameters - should throw an error", {timeout: 5000});
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    assert_throws(null, function() {
+        localChannel = localPeerConnection.createDataChannel();
+    }, "No error was thrown ");
 }
 
 /**
@@ -74,25 +102,21 @@ function testDC_label001() {
 - Peer A/B: checks the label
  */
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
-function testDC_label002() {
-    var label = "test-label";
-    var test = async_test("testDC_label002: Create a DataChannel with label \"" + label + "\" - check label on both peers", {timeout: 5000});
-    test.step(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        remotePeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel(label);
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        createIceCandidatesAndOffer();
-        remotePeerConnection.ondatachannel = test.step_func(function(e) {
-            remoteChannel = e.channel;
-            remoteChannel.onopen = test.step_func(function() {
-                assert_equals(localChannel.label, label, "Wrong label ");
-                assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
-                test.done();
-            });
+function testDC_label002(test, parameters) {
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel(parameters.label);
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    remotePeerConnection.ondatachannel = test.step_func(function(e) {
+        remoteChannel = e.channel;
+        remoteChannel.onopen = test.step_func(function() {
+            assert_equals(localChannel.label, parameters.label, "Wrong label ");
+            assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
+            test.done();
         });
     });
 }

@@ -31,6 +31,7 @@
 var availableTestList = [];
 var availableDcTests = {};
 var selectedTestList = [];
+var selectedDcTests = [];
 
 
 // Run the next test
@@ -102,7 +103,7 @@ function fillDcTestTable() {
         for (var testName in availableDcTests[testCategory]) {
             var test = availableDcTests[testCategory][testName];
             testlistHTML += '<tr><td>';
-            testlistHTML += '<span class="glyphicon glyphicon-search inspectFunction" aria-hidden="true" data-function="'+htmlEncode(test.test_function.toString())+'"></span> <label><input type="checkbox" name="test" value="' + testName + '"> '+ testName + ' - ' + test.description + '</label>';
+            testlistHTML += '<span class="glyphicon glyphicon-search inspectFunction" aria-hidden="true" data-function="'+htmlEncode(test.test_function.toString())+'"></span> <label><input type="checkbox" name="test" value="' + testCategory + '.' + testName + '"> '+ testName + ' - ' + test.description + '</label>';
             if (test.references !== undefined) {
                 for (var i=0; i<test.references.length; i++) {
                     testlistHTML += ' <a href="' + test.references[i] + '">' + (i+1) + '</a>'; 
@@ -132,6 +133,22 @@ function generateNewTestList() {
     $('#testlist input:checkbox').each(function(){
     	if($(this).prop('checked')) {
     		selectedTestList.push($(this).prop('value'));
+    	}
+    });
+
+    console.log('new list ist generated: '+selectedTestList.length + ' items');
+}
+
+// Create new TestList with only selected Tests
+function generateNewDcTestList() {
+    selectedDcTests = {};
+    $('#testlist input:checkbox').each(function(){
+    	if($(this).prop('checked')) {
+            testParts = $(this).prop('value').split(".");
+            if (selectedDcTests[testParts[0]] === undefined) {
+                selectedDcTests[testParts[0]] = {};
+            }
+            selectedDcTests[testParts[0]][testParts[1]] = availableDcTests[testParts[0]][testParts[1]];
     	}
     });
 
@@ -172,6 +189,19 @@ function startSelectedTests() {
     $('#testWrapper').hide();
 }
 
+function startTests(tests) {
+    $('.progressbar').css('width', '0%').attr('aria-valuenow', 0).html('0/'+selectedTestList.length);
+    for (var testCategory in tests) {
+        for (var testName in tests[testCategory]) {
+            var test = tests[testCategory][testName];
+            run_dctest(testName, test);
+        }
+    }
+    done();
+    $('#logWrapper').show();
+    $('#testWrapper').hide();
+}
+
 function run_dctest(name, attr) {
     if (attr.sync) {
         test(function() {
@@ -199,13 +229,14 @@ $('button#btnTestStartAll').click(function() {
 
 // Button - start selected Tests
 $('button#btnTestStartSelected').click(function() {
-    generateNewTestList();
+    //generateNewTestList();
+    generateNewDcTestList();
 
-    if (selectedTestList.length == 0) {
+    if (selectedDcTests.length === 0) {
         alert("Please choose some tests");
     } else {
         setCookie("previous");
-        startSelectedTests();
+        startTests(selectedDcTests);
     }
 });
 
