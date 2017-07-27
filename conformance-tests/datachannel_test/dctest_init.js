@@ -35,7 +35,7 @@
  */
 
 
-var dctests = {
+var dctests_init = {
     "PC": {
         "description": "Check if RTCPeerConnection is available",
         "sync": true,

@@ -202,15 +202,18 @@
         <script src="datachannel_test/dctest_send.js" type="text/javascript"></script>
         <script type="text/javascript">
             getBrowserInformation();
-            getMethods(window);
-            fillTestList();
-
+            //getMethods(window);
+            getDcTests(window);
+            //fillTestList();
+            fillDcTestTable();
+            
             $('.inspectFunction').popover({
                 html : true,
                 placement : 'auto',
                 content : function() {
-                    var functionName = $(this).data('function');
-                    return '<pre><code class="js">' + eval(functionName + '.toString();') + '</code></pre>';
+                    //var functionName = $(this).data('function');
+                    //return '<pre><code class="js">' + eval(functionName + '.toString();') + '</code></pre>';
+                    return '<pre><code class="js">' + $(this).data('function') + '</code></pre>';
                 }
             });
 

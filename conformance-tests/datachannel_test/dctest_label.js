@@ -41,6 +41,14 @@ var dctests_label = {
         get description() {
             return "Create a DataChannel with label \"" + this.parameters.label + "\" - check the label on both peers";
         },
+        "scenario": "<ul> \
+            <li>Peer A: creates a DataChannel with special characters (UTF-8) in the label.</li>\
+            <li>Peer B: waits for the DataChannel</li><li>Peer A/B: checks the label.</li>\
+        </ul>",
+        "references": [
+            "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
+            "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8"
+        ],
         "sync": false,
         "test_function": _testDC_label003
     }

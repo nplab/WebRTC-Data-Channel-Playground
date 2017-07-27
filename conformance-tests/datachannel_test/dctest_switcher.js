@@ -29,6 +29,7 @@
  */
 
 var availableTestList = [];
+var availableDcTests = {};
 var selectedTestList = [];
 
 
@@ -49,6 +50,7 @@ function testSwitcher(count) {
 function getMethods(obj) {
     var tests = [];
     for (var m in obj) {
+        console.log(m + " - " + obj[m] + " is " + (typeof obj[m] === "object"));
         if ( typeof obj[m] === "function") {
             if (m.search("testDC") != -1) {
                 tests.push(m);
@@ -57,6 +59,20 @@ function getMethods(obj) {
     }
     $('#badgeTestcount').html(tests.length);
     availableTestList = tests;
+}
+
+function getDcTests(obj) {
+    var dctests = {};
+    for (var o in obj) {
+        if ( typeof obj[o] === "object") {
+            var oParts = o.split("_");
+            if (oParts.length === 2 && oParts[0] === "dctests") {
+                dctests[oParts[1]] = obj[o];
+            }
+        }
+    }
+    $('#badgeTestcount').html(dctests.length);
+    availableDcTests = dctests;
 }
 
 // Create the table with all available tests
@@ -73,6 +89,41 @@ function fillTestList() {
     testlistHTML += "</tr></table></form>";
 
     $('#testlist').append(testlistHTML);
+}
+
+// Create the table with all available tests
+function fillDcTestTable() {
+    var testlistHTML = "<tr>";
+
+    for (var testCategory in availableDcTests) {
+        testlistHTML += '<tr>';
+        testlistHTML += '<td><b> '+ testCategory + '</b></td>';
+        testlistHTML += '</tr>';
+        for (var testName in availableDcTests[testCategory]) {
+            var test = availableDcTests[testCategory][testName];
+            testlistHTML += '<tr><td>';
+            testlistHTML += '<span class="glyphicon glyphicon-search inspectFunction" aria-hidden="true" data-function="'+htmlEncode(test.test_function.toString())+'"></span> <label><input type="checkbox" name="test" value="' + testName + '"> '+ testName + ' - ' + test.description + '</label>';
+            if (test.references !== undefined) {
+                for (var i=0; i<test.references.length; i++) {
+                    testlistHTML += ' <a href="' + test.references[i] + '">' + (i+1) + '</a>'; 
+                }
+            }
+            if (test.scenario !== undefined) {
+                testlistHTML += test.scenario;
+            }
+            testlistHTML += '</td></tr>';
+        }
+            
+    }
+    //testlistHTML += "</table></form>";
+
+    $('#testlist').append(testlistHTML);
+}
+
+function htmlEncode(value){
+  // Create a in-memory div, set its inner text (which jQuery automatically encodes)
+  // Then grab the encoded contents back out. The div never exists on the page.
+  return $('<div/>').text(value).html().replace(/"/g, '&quot;');
 }
 
 // Create new TestList with only selected Tests
