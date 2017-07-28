@@ -51,11 +51,11 @@ var dctests_label = {
         get description() {
             return "Create a DataChannel with label \"" + this.parameters.label + "\" - check label on both peers"; 
         },
-        "scenario": "<ul> \
+        "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with a label.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8"
@@ -71,11 +71,11 @@ var dctests_label = {
         get description() {
             return "Create a DataChannel with label \"" + this.parameters.label + "\" - check the label on both peers";
         },
-        "scenario": "<ul> \
+        "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with special characters (UTF-8) in the label.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8"
@@ -91,11 +91,11 @@ var dctests_label = {
         get description() {
             return "Set up a DataChannel with a label of length " +  this.parameters.label.length + " byte - check the label on both peers";
         },
-        "scenario": "<ul> \
+        "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with a label of 32 KB length.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8"
@@ -109,11 +109,11 @@ var dctests_label = {
             "label": generateData(16)
         },
         "description": "Set up a DataChannel with a label of length 65535 Byte - check the label on both peers (should be the maximum length",
-        "scenario": "<ul> \
+        "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with a 65535 Byte (64 KB - 1 Byte) label length.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8",
@@ -128,11 +128,11 @@ var dctests_label = {
             "label": generateData(16)
         },
         "description": "Create a DataChannel with a label of length 65536 Byte label length - check if an error is thrown",
-        "scenario": "<ul> \
+        "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with label of 64 KB length.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8",
@@ -144,11 +144,11 @@ var dctests_label = {
     },
     "label007": {
         "description": "Set up a DataChannel with an empty label string - check label on both peers",
-        "scenario": "<ul> \
+        "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with an empty label string \“\"</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8"
@@ -164,12 +164,12 @@ var dctests_label = {
         get description() {
             return "Create multiple DataChannels with the same label -  try " + this.parameters.maxChannelCount + " DataChannels with the same label";
         },
-        "scenario": "<ul> \
+        "scenario": "The procedure runs 8 times with the same label.\
+        <ol> \
             <li>Peer A: creates a DataChannel with specific label.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
-            <li>The procedure runs 8 times with the same label.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8"
@@ -185,12 +185,12 @@ var dctests_label = {
         get description() {
             return "Create multiple DataChannels with the same label -  try " + this.parameters.maxChannelCount + " DataChannels with the same label";
         },
-        "scenario": "<ul> \
+        "scenario": "The procedure runs 16 times with the same label.\
+        <ol> \
             <li>Peer A: creates a DataChannel with specific label.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
-            <li>The procedure runs 16 times with the same label.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8"
@@ -201,11 +201,11 @@ var dctests_label = {
     },
     "label010": {
         "description": "Create a DataChannel with label = NULL (Object) - check the label on both peers - should be the empty string",
-        "scenario": "<ul> \
+        "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with label NULL (Object).</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label – should be empty string \“\”.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#rtcpeerconnection-interface-extensions",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
@@ -217,11 +217,11 @@ var dctests_label = {
     },
     "label011": {
         "description": "Create a DataChannel with a label of length 65535 (3x21845) Byte due special characters - check the label on both peers (should be maximum length)",
-        "scenario": "<ul> \
+        "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with 65535 Byte label length.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8",
@@ -233,11 +233,11 @@ var dctests_label = {
     },
     "label012": {
         "description": "Create a DataChannel with a label of length 65538 (3x21846) Byte due special characters - check the label on both peers (should be maximum length)",
-        "scenario": "<ul> \
+        "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with 65538 Byte label length.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
-        </ul>",
+        </ol>",
         "references": [
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#methods-3",
             "https://www.w3.org/TR/2016/WD-webrtc-20160128/#attributes-8",
