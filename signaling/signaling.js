@@ -30,10 +30,8 @@ var appIdent = 'signaling';
 
 // constraints for the offer SDP - here we don't need audio or video...
 var sdpConstraints = {
-    'mandatory' : {
-        'offerToReceiveAudio' : false,
-        'offerToReceiveVideo' : false
-    }
+    OfferToReceiveAudio : false,
+    OfferToReceiveVideo : false
 };
 
 var pc = new PeerConnection(iceServer);
@@ -197,7 +195,7 @@ function bindEventsControl(channel) {
 // Send message to peer
 $('#chatInput').keypress(function (e) {
     if (e.which == 13) {
-          var text = $(this).val();
+        var text = $(this).val();
         dcControl.send(text);
         $('#chatMessages').append('<div class="alert alert-success" role="alert">' + text + '</div>');
         $(this).val('');

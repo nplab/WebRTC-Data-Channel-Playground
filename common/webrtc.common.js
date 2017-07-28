@@ -7,12 +7,6 @@ var iceServer = {
         urls : 'stun:stun.l.google.com:19302'
     }, {
         urls : 'stun:stun1.l.google.com:19302'
-    }, {
-        urls : 'stun:stun2.l.google.com:19302'
-    }, {
-        urls : 'stun:stun3.l.google.com:19302'
-    }, {
-        urls : 'stun:stun4.l.google.com:19302'
     }]
 };
 
@@ -34,7 +28,7 @@ function extractIpFromString(string) {
 
 var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
 var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
-var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.RTCSessionDescription;
+var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
 
 // generate a unique-ish string for storage in firebase
 function generateSignalingId() {
