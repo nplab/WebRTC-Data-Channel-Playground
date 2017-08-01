@@ -91,7 +91,7 @@ var dctests_dict = {
         "test_function": testDC_dict004
     },
     "dict005a": {
-        "description": "testDC_dict005a: Create a DataChannel and check the attribute - maxRetransmits - initialized to 10000",
+        "description": "Create a DataChannel and check the attribute - maxRetransmits - initialized to 10000",
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel  with maxRetransmits = 1000.</li>\
             <li>Peer A: checks maxRetransmits.</li>\
