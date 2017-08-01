@@ -23,6 +23,104 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+
+var dctests_event = {
+    "event001": {
+        "description": "Set up a DataChannel - Close the DataChannel (both) and check whether the EventHandler \"onclose\" is called",
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel.</li>\
+            <li>Peer B: waits for the DataChannel</li>\
+            <li>Peer A&B:  closes the DataChannel.</li>\
+            <li>Wait 3 seconds.</li>\
+            <li>Peer A&B:  checks if the onclose EventHandler was called.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_event001
+    },
+    "event002": {
+        "description": "Set up a DataChannel - Close the DataChannel (local) and check whether the EventHandler \"onclose\" is called",
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A:  closes the DataChannel.</li>\
+            <li>Wait 3 seconds.</li>\
+            <li>Peer A&B:  checks if the onclose EventHandler was called.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_event002
+    },
+    "event003": {
+        "description": "Set up a DataChannel - Close the DataChannel (remote) and check whether the EventHandler \"onclose\" is called",
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer B:  closes the DataChannel.</li>\
+            <li>Wait 3 seconds.</li>\
+            <li>Peer A&B:  checks if the onclose EventHandler was called.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_event003
+    },
+    "event004": {
+        "description": "Set up a DataChannel - send a message in both directions and check whether the EventHandler \"onmessage\" is called",
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A/B:  sends a message.</li>\
+            <li>Wait 3 seconds.</li>\
+            <li>Peer A/B:  checks if the onmessage EventHandler was called.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_event004
+    },
+    "event005": {
+        "description": "Set up a DataChannel - check whether the EventHandler \"onopen\" is called",
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Wait 3 seconds.</li>\
+            <li>Peer A/B:  checks if the onopen EventHandler was called.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_event005
+    },
+    "event006": {
+        "description": "Set up a DataChannel - close the DataChannel (method close) - check readyState should be \"closing\" or \"closed\"",
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A:  closes the DataChannel.</li>\
+            <li>Peer A/B:  checks new readyState, should be “closing” or “closed”.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_event006
+    },
+}
+
 /**
 - Peer A: creates a DataChannel  
 - Peer B: waits for the DataChannel
@@ -32,42 +130,37 @@
 
  */
 // Origin: W3C - 5.2.1 Attributes - onclose - type EventHandler
-function testDC_event001() {
-    var test = async_test("Set up a DataChannel - Close the DataChannel (both) and check whether the EventHandler \"onclose\" is called ", {
-        timeout : 10000
-    });
+function testDC_event001(test) {
     var isDCRemoteClose = false;
     var isDCLocalClose = false;
     var waitTime = 3000;
-    test.step(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        remotePeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_evten001");
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        createIceCandidatesAndOffer();
-        localChannel.onclose = function() {
-            isDCLocalClose = true;
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_evten001");
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    localChannel.onclose = function() {
+        isDCLocalClose = true;
+    };
+    remotePeerConnection.ondatachannel = function(e) {
+        remoteChannel = e.channel;
+        remoteChannel.onclose = function() {
+            isDCRemoteClose = true;
         };
-        remotePeerConnection.ondatachannel = function(e) {
-            remoteChannel = e.channel;
-            remoteChannel.onclose = function() {
-                isDCRemoteClose = true;
-            };
 
-            remoteChannel.onopen = function() {
-                localChannel.close();
-                remoteChannel.close();
-            };
-            setTimeout(test.step_func(function() {
-                if (!(isDCRemoteClose && isDCLocalClose))
-                    assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
-                test.done();
-            }), waitTime);
+        remoteChannel.onopen = function() {
+            localChannel.close();
+            remoteChannel.close();
         };
-    });
+        setTimeout(test.step_func(function() {
+            if (!(isDCRemoteClose && isDCLocalClose))
+                assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
+            test.done();
+        }), waitTime);
+    };
 }
 
 /**
@@ -79,41 +172,36 @@ function testDC_event001() {
 
  */
 // Origin: W3C - 5.2.1 Attributes - onclose - type EventHandler
-function testDC_event002() {
-    var test = async_test("Set up a DataChannel - Close the DataChannel (local) and check whether the EventHandler \"onclose\" is called ", {
-        timeout : 10000
-    });
+function testDC_event002(test) {
     var isDCRemoteClose = false;
     var isDCLocalClose = false;
     var waitTime = 3000;
-    test.step(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        remotePeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_evten001");
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        createIceCandidatesAndOffer();
-        localChannel.onclose = function() {
-            isDCLocalClose = true;
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_evten001");
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    localChannel.onclose = function() {
+        isDCLocalClose = true;
+    };
+    remotePeerConnection.ondatachannel = function(e) {
+        remoteChannel = e.channel;
+        remoteChannel.onclose = function() {
+            isDCRemoteClose = true;
         };
-        remotePeerConnection.ondatachannel = function(e) {
-            remoteChannel = e.channel;
-            remoteChannel.onclose = function() {
-                isDCRemoteClose = true;
-            };
 
-            remoteChannel.onopen = function() {
-                localChannel.close();
-            };
-            setTimeout(test.step_func(function() {
-                if (!(isDCRemoteClose && isDCLocalClose))
-                    assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
-                test.done();
-            }), waitTime);
+        remoteChannel.onopen = function() {
+            localChannel.close();
         };
-    });
+        setTimeout(test.step_func(function() {
+            if (!(isDCRemoteClose && isDCLocalClose))
+                assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
+            test.done();
+        }), waitTime);
+    };
 }
 
 /**
@@ -125,41 +213,36 @@ function testDC_event002() {
 
  */
 // Origin: W3C - 5.2.1 Attributes - onclose - type EventHandler
-function testDC_event003() {
-    var test = async_test("Set up a DataChannel - Close the DataChannel (remote) and check whether the EventHandler \"onclose\" is called ", {
-        timeout : 10000
-    });
+function testDC_event003(test) {
     var isDCRemoteClose = false;
     var isDCLocalClose = false;
     var waitTime = 3000;
-    test.step(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        remotePeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_evten001");
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        createIceCandidatesAndOffer();
-        localChannel.onclose = function() {
-            isDCLocalClose = true;
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_evten001");
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    localChannel.onclose = function() {
+        isDCLocalClose = true;
+    };
+    remotePeerConnection.ondatachannel = function(e) {
+        remoteChannel = e.channel;
+        remoteChannel.onclose = function() {
+            isDCRemoteClose = true;
         };
-        remotePeerConnection.ondatachannel = function(e) {
-            remoteChannel = e.channel;
-            remoteChannel.onclose = function() {
-                isDCRemoteClose = true;
-            };
 
-            remoteChannel.onopen = function() {
-                remoteChannel.close();
-            };
-            setTimeout(test.step_func(function() {
-                if (!(isDCRemoteClose && isDCLocalClose))
-                    assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
-                test.done();
-            }), waitTime);
+        remoteChannel.onopen = function() {
+            remoteChannel.close();
         };
-    });
+        setTimeout(test.step_func(function() {
+            if (!(isDCRemoteClose && isDCLocalClose))
+                assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
+            test.done();
+        }), waitTime);
+    };
 }
 
 /**
@@ -171,45 +254,40 @@ function testDC_event003() {
 
  */
 // Origin: W3C - 5.2.1 Attributes - onmessage - type EventHandler
-function testDC_event004() {
+function testDC_event004(test) {
     var isLocalMessage = false, isRemoteMessage = false;
-    var test = async_test("Set up a DataChannel - send a message in both directions and check whether the EventHandler \"onmessage\" is called", {
-        timeout : 10000
-    });
     var waitTime = 3000;
-    test.step(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        remotePeerConnection = new RTCPeerConnection(iceServers);
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
 
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_evten002");
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        createIceCandidatesAndOffer();
-        remotePeerConnection.ondatachannel = function(e) {
-            remoteChannel = e.channel;
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_evten002");
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    remotePeerConnection.ondatachannel = function(e) {
+        remoteChannel = e.channel;
 
-            remoteChannel.onopen = function() {
-                localChannel.send("message");
-                remoteChannel.send("message");
-            };
-            localChannel.onmessage = function() {
-                isLocalMessage = true;
-            };
-            remoteChannel.onmessage = function() {
-                isRemoteMessage = true;
-            };
-
-            setTimeout(test.step_func(function() {
-                if (!(isLocalMessage && isRemoteMessage))
-                    assert_unreached("onmessage function was not called after " + waitTime + " sec.");
-
-                test.done();
-            }), waitTime);
-
+        remoteChannel.onopen = function() {
+            localChannel.send("message");
+            remoteChannel.send("message");
         };
-    });
+        localChannel.onmessage = function() {
+            isLocalMessage = true;
+        };
+        remoteChannel.onmessage = function() {
+            isRemoteMessage = true;
+        };
+
+        setTimeout(test.step_func(function() {
+            if (!(isLocalMessage && isRemoteMessage))
+                assert_unreached("onmessage function was not called after " + waitTime + " sec.");
+
+            test.done();
+        }), waitTime);
+
+    };
 }
 
 /**
@@ -220,37 +298,32 @@ function testDC_event004() {
 
  */
 // Origin: W3C - 5.2.1 Attributes - onopen - type EventHandler
-function testDC_event005() {
+function testDC_event005(test) {
     var isLocalOpen = false, isRemoteOpen = false;
-    var test = async_test("Set up a DataChannel - check whether the EventHandler \"onopen\" is called", {
-        timeout : 10000
-    });
     var waitTime = 3000;
-    test.step(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        remotePeerConnection = new RTCPeerConnection(iceServers);
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
 
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_evten003");
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        createIceCandidatesAndOffer();
-        localChannel.onopen = function() {
-            isLocalOpen = true;
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_evten003");
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    localChannel.onopen = function() {
+        isLocalOpen = true;
+    };
+    remotePeerConnection.ondatachannel = function(e) {
+        remoteChannel = e.channel;
+        remoteChannel.onopen = function() {
+            isRemoteOpen = true;
         };
-        remotePeerConnection.ondatachannel = function(e) {
-            remoteChannel = e.channel;
-            remoteChannel.onopen = function() {
-                isRemoteOpen = true;
-            };
-        };
-        setTimeout(test.step_func(function() {
-            if (!(isLocalOpen && isRemoteOpen))
-                assert_unreached("onclose function was not called");
-            test.done();
-        }), waitTime);
-    });
+    };
+    setTimeout(test.step_func(function() {
+        if (!(isLocalOpen && isRemoteOpen))
+            assert_unreached("onclose function was not called");
+        test.done();
+    }), waitTime);
 }
 
 
@@ -262,37 +335,31 @@ function testDC_event005() {
 
  */
 // Origin: W3C - 5.2.2 Methods - close
-function testDC_event006() {
+function testDC_event006(test) {
     var readyStates = "";
-    var test = async_test("Set up a DataChannel - close the DataChannel (method close) - check readyState should be \"closing\" or \"closed\"", {
-        timeout : 10000
-    });
 
-    test.step(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        remotePeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_evten004");
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        createIceCandidatesAndOffer();
-        remotePeerConnection.ondatachannel = test.step_func(function(e) {
-            remoteChannel = e.channel;
-            remoteChannel.onopen = function() {
-                // regardless which channel initiated the connection
-                remoteChannel.close();
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_evten004");
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    remotePeerConnection.ondatachannel = test.step_func(function(e) {
+        remoteChannel = e.channel;
+        remoteChannel.onopen = function() {
+            // regardless which channel initiated the connection
+            remoteChannel.close();
+            readyStates += remoteChannel.readyState + localChannel.readyState;
+            localChannel.close();
+            readyStates += remoteChannel.readyState + localChannel.readyState;
+            setTimeout(test.step_func(function() {
                 readyStates += remoteChannel.readyState + localChannel.readyState;
-                localChannel.close();
-                readyStates += remoteChannel.readyState + localChannel.readyState;
-                setTimeout(test.step_func(function() {
-                    readyStates += remoteChannel.readyState + localChannel.readyState;
-                    assert_true(((readyStates.search("closed") != -1) || (readyStates.search("closing") != -1)), "ReadyState 'closing' or 'closed' not set");
-                    test.done();
-                }), 1000);
-            };
-        });
-
+                assert_true(((readyStates.search("closed") != -1) || (readyStates.search("closing") != -1)), "ReadyState 'closing' or 'closed' not set");
+                test.done();
+            }), 1000);
+        };
     });
 }
 
