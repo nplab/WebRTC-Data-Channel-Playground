@@ -210,32 +210,33 @@ function testDC_create002() {
  */
 // Origin: W3C - 5.1.2 Methods: 7
 function testDC_create003(test) {
-    var dataChannelOptions = {
-        id : 4
-    };
-    var localChannel2;
-    var remoteChannel2;
-    // Create Peer Connection
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    localChannel = localPeerConnection.createDataChannel("testDC_create003", dataChannelOptions);
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        try {
-            localChannel2 = localPeerConnection.createDataChannel("testDC_create003", dataChannelOptions);
-        } catch(e) {
-            assert_equals(e.name, "ResourceInUse", "Wrong error was thrown: ");
-            test.done();
-        }
+    test.step(function() {
+        var dataChannelOptions = {
+            id : 4
+        };
+        var localChannel2;
+        var remoteChannel2;
+        // Create Peer Connection
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        localChannel = localPeerConnection.createDataChannel("testDC_create003", dataChannelOptions);
+        createIceCandidatesAndOffer();
         remotePeerConnection.ondatachannel = test.step_func(function(e) {
-            remoteChannel2 = e.channel;
-            assert_true(false, "Can create 2 DataChannels with same ID: Channel1-ID: " + localChannel.id + "/" + remoteChannel.id + " Channel2-ID: " + localChannel2.id + "/" + remoteChannel2.id);
-            localChannel2.close();
-            remoteChannel2.close();
-            test.done();
+            remoteChannel = e.channel;
+            try {
+                localChannel2 = localPeerConnection.createDataChannel("testDC_create003", dataChannelOptions);
+            } catch(e) {
+                assert_equals(e.name, "ResourceInUse", "Wrong error was thrown: ");
+                test.done();
+            }
+            remotePeerConnection.ondatachannel = test.step_func(function(e) {
+                remoteChannel2 = e.channel;
+                assert_true(false, "Can create 2 DataChannels with same ID: Channel1-ID: " + localChannel.id + "/" + remoteChannel.id + " Channel2-ID: " + localChannel2.id + "/" + remoteChannel2.id);
+                localChannel2.close();
+                remoteChannel2.close();
+                test.done();
+            });
         });
-
     });
 }
 
@@ -269,26 +270,28 @@ function testDC_create004() {
 // Origin: W3C - 5.2 RTCDataChannel - DataChannel state created with createDataChannel() or dispatched via a RTCDataChannelEvent, MUST initially be in the connectiong state
 // If underlying data transport is ready, the user agent must announce the RTCDataChannel as open
 function testDC_create005(test) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
 
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_create005");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    assert_equals(localChannel.readyState, "connecting", "RTCDatachannelEvent 'connecting' initially wrong");
-    createIceCandidatesAndOffer();
-    localChannel.onopen = test.step_func(function() {
-        assert_equals(localChannel.readyState, "open", "RTCDatachannelEvent 'open' initially wrong ");
-    });
-    // DataChannel created with event
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = function() {
-            assert_equals(remoteChannel.readyState, "open", "RTCDatachannelEvent 'open' initially wrong ");
-            test.done();
-        };
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_create005");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        assert_equals(localChannel.readyState, "connecting", "RTCDatachannelEvent 'connecting' initially wrong");
+        createIceCandidatesAndOffer();
+        localChannel.onopen = test.step_func(function() {
+            assert_equals(localChannel.readyState, "open", "RTCDatachannelEvent 'open' initially wrong ");
+        });
+        // DataChannel created with event
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = function() {
+                assert_equals(remoteChannel.readyState, "open", "RTCDatachannelEvent 'open' initially wrong ");
+                test.done();
+            };
+        });
     });
 }
 
@@ -313,25 +316,27 @@ function testDC_create005(test) {
  */
 function testDC_create006() {
     var waitTime = 3000;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_create006");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = function() {
-            localPeerConnection.close();
-            setTimeout(test.step_func(function() {
-                assert_equals(localChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (localChannel) ");
-                assert_equals(remoteChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (remoteChannel) ");
-                assert_equals(remoteChannel.readyState, localChannel.readyState, "Wrong readyState: ");
-                test.done();
-            }), waitTime);
-        };
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_create006");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = function() {
+                localPeerConnection.close();
+                setTimeout(test.step_func(function() {
+                    assert_equals(localChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (localChannel) ");
+                    assert_equals(remoteChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (remoteChannel) ");
+                    assert_equals(remoteChannel.readyState, localChannel.readyState, "Wrong readyState: ");
+                    test.done();
+                }), waitTime);
+            };
+        });
     });
 }
 
@@ -356,26 +361,27 @@ function testDC_create006() {
  */
 function testDC_create007() {
     var waitTime = 3000;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_create007");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = function() {
-            remotePeerConnection.close();
-            setTimeout(test.step_func(function() {
-                assert_equals(localChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (localChannel) ");
-                assert_equals(remoteChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (remoteChannel) ");
-                assert_equals(remoteChannel.readyState, localChannel.readyState, "Wrong readyState: ");
-                test.done();
-            }), waitTime);
-        };
-
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_create007");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = function() {
+                remotePeerConnection.close();
+                setTimeout(test.step_func(function() {
+                    assert_equals(localChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (localChannel) ");
+                    assert_equals(remoteChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (remoteChannel) ");
+                    assert_equals(remoteChannel.readyState, localChannel.readyState, "Wrong readyState: ");
+                    test.done();
+                }), waitTime);
+            };
+        });
     });
 }
 
@@ -400,26 +406,27 @@ function testDC_create007() {
  */
 function testDC_create008() {
     var waitTime = 3000;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_create006");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = function() {
-            localChannel.close();
-            setTimeout(test.step_func(function() {
-                assert_equals(localChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (localChannel) ");
-                assert_equals(remoteChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (remoteChannel) ");
-                assert_equals(remoteChannel.readyState, localChannel.readyState, "Wrong readyState: ");
-                test.done();
-            }), waitTime);
-        };
-
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_create006");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = function() {
+                localChannel.close();
+                setTimeout(test.step_func(function() {
+                    assert_equals(localChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (localChannel) ");
+                    assert_equals(remoteChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (remoteChannel) ");
+                    assert_equals(remoteChannel.readyState, localChannel.readyState, "Wrong readyState: ");
+                    test.done();
+                }), waitTime);
+            };
+        });
     });
 }
 
@@ -444,24 +451,26 @@ function testDC_create008() {
  */
 function testDC_create009() {
     var waitTime = 3000;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_create007");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = function() {
-            remoteChannel.close();
-            setTimeout(test.step_func(function() {
-                assert_equals(localChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (localChannel) ");
-                assert_equals(remoteChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (remoteChannel) ");
-                assert_equals(remoteChannel.readyState, localChannel.readyState, "Wrong readyState: ");
-                test.done();
-            }), waitTime);
-        };
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_create007");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = function() {
+                remoteChannel.close();
+                setTimeout(test.step_func(function() {
+                    assert_equals(localChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (localChannel) ");
+                    assert_equals(remoteChannel.readyState, "closed", "Wrong readyState - User Agent normaly must change state to closed (remoteChannel) ");
+                    assert_equals(remoteChannel.readyState, localChannel.readyState, "Wrong readyState: ");
+                    test.done();
+                }), waitTime);
+            };
+        });
     });
 }
