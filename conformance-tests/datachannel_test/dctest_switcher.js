@@ -182,9 +182,12 @@ function run_dctest(name, attr) {
         var atest = async_test(name + ' - ' + attr.description, {
             timeout: attr.timeout}
         );
+        /*
         atest.step(function() {
             attr.test_function(atest, attr.parameters);
         });
+        */
+       attr.test_function(atest, attr.parameters);
     }
 }
 
