@@ -267,20 +267,22 @@ function testDC_label001() {
  */
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 function testDC_label002(test, parameters) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel(parameters.label);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = test.step_func(function() {
-            assert_equals(localChannel.label, parameters.label, "Wrong label ");
-            assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
-            test.done();
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel(parameters.label);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = test.step_func(function() {
+                assert_equals(localChannel.label, parameters.label, "Wrong label ");
+                assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
+                test.done();
+            });
         });
     });
 }
@@ -293,20 +295,22 @@ function testDC_label002(test, parameters) {
 // DataChannel Label Test - with special characters
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 function testDC_label003(test, parameters) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel(parameters.label);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = test.step_func(function() {
-            assert_equals(localChannel.label, parameters.label, "Wrong label ");
-            assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
-            test.done();
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel(parameters.label);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = test.step_func(function() {
+                assert_equals(localChannel.label, parameters.label, "Wrong label ");
+                assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
+                test.done();
+            });
         });
     });
 }
@@ -320,23 +324,24 @@ function testDC_label003(test, parameters) {
 // Label set test with very long label
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 function testDC_label004(test, parameters) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel(parameters.label);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = test.step_func(function() {
-            assert_equals(localChannel.label, parameters.label, "Wrong label ");
-            assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
-            assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label ");
-            test.done();
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel(parameters.label);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = test.step_func(function() {
+                assert_equals(localChannel.label, parameters.label, "Wrong label ");
+                assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
+                assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label ");
+                test.done();
+            });
         });
-
     });
 }
 
@@ -352,25 +357,26 @@ function testDC_label004(test, parameters) {
 function testDC_label005(test, parameters) {
     var label = parameters.label;
     label = label.substring(0, (label.length - 1))
-    assert_equals(label.length, 65535, "Wrong label length ");
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel(label);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = test.step_func(function() {
-            assert_equals(localChannel.label, label, "Wrong label ");
-            assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
-            assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label ");
-            test.done();
+    test.step(function() {
+        assert_equals(label.length, 65535, "Wrong label length ");
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel(label);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = test.step_func(function() {
+                assert_equals(localChannel.label, label, "Wrong label ");
+                assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
+                assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label ");
+                test.done();
+            });
         });
     });
-
 }
 
 
@@ -386,12 +392,14 @@ function testDC_label005(test, parameters) {
 // Origin: http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-07#section-5.1  -   DC Open Message: Label Length 2^16
 // FIXME @W3C what shoul the user agent do, throw an error...
 function testDC_label006(test, parameters) {
-    assert_equals(parameters.label.length, 65536, "Wrong label length ");
-    localPeerConnection = new RTCPeerConnection(iceServers);
+    test.step(function() {
+        assert_equals(parameters.label.length, 65536, "Wrong label length ");
+        localPeerConnection = new RTCPeerConnection(iceServers);
 
-    assert_throws(null, function(){
-            localChannel = localPeerConnection.createDataChannel(parameters.label);
-    }, " Exception for exceeding label length");
+        assert_throws(null, function(){
+                localChannel = localPeerConnection.createDataChannel(parameters.label);
+        }, " Exception for exceeding label length");
+    });
 }
 
 
@@ -403,23 +411,25 @@ function testDC_label006(test, parameters) {
  */
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 function testDC_label007(test) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        test.done();
-    }
-    createIceCandidatesAndOffer();
-
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-
-        remoteChannel.onopen = test.step_func(function() {
-            assert_equals(localChannel.label, "");
-            assert_equals(remoteChannel.label, localChannel.label);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
             test.done();
+        }
+        createIceCandidatesAndOffer();
+
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+
+            remoteChannel.onopen = test.step_func(function() {
+                assert_equals(localChannel.label, "");
+                assert_equals(remoteChannel.label, localChannel.label);
+                test.done();
+            });
         });
     });
 }
@@ -437,53 +447,54 @@ function testDC_label008(test, parameters) {
     var label = "same label";
     var localChannel = new Array(), remoteChannel = new Array();
     var errorMessage = "", isError = false;
-    
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    function tryCreateChannel() {
-        try {
-            localChannel[channelCount] = localPeerConnection.createDataChannel(label);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        function tryCreateChannel() {
+            try {
+                localChannel[channelCount] = localPeerConnection.createDataChannel(label);
 
-        } catch(e) {
-            isError = true;
-            errorMessage = e.name + ": " + e.message;
+            } catch(e) {
+                isError = true;
+                errorMessage = e.name + ": " + e.message;
+            }
+            tryConnection();
         }
-        tryConnection();
-    }
 
-    function tryConnection() {
-        if (isError) {
-            assert_unreached("An error was thrown " + errorMessage + " creating the " + channelCount + " Channel");
-            test.done();
-        } else {
-            test.step(function() {
+        function tryConnection() {
+            if (isError) {
+                assert_unreached("An error was thrown " + errorMessage + " creating the " + channelCount + " Channel");
+                test.done();
+            } else {
+                test.step(function() {
 
-                remotePeerConnection.ondatachannel = function(e) {
-                    remoteChannel[channelCount] = e.channel;
-                    remoteChannel[channelCount].onopen = test.step_func(function() {
-                        assert_equals(localChannel[channelCount].label, label);
-                        assert_equals(remoteChannel[channelCount].label, localChannel[channelCount].label);
-                        channelCount++;
-                        if (channelCount == parameters.maxChannelCount) {
-                            for(var i = 0; i < parameters.maxChannelCount; i++){
-                                localChannel[i].close();
-                                remoteChannel[i].close();
+                    remotePeerConnection.ondatachannel = function(e) {
+                        remoteChannel[channelCount] = e.channel;
+                        remoteChannel[channelCount].onopen = test.step_func(function() {
+                            assert_equals(localChannel[channelCount].label, label);
+                            assert_equals(remoteChannel[channelCount].label, localChannel[channelCount].label);
+                            channelCount++;
+                            if (channelCount == parameters.maxChannelCount) {
+                                for(var i = 0; i < parameters.maxChannelCount; i++){
+                                    localChannel[i].close();
+                                    remoteChannel[i].close();
+                                }
+                                console.log(localChannel);
+                                test.done();
+                            } else {
+                                test.step(function() {
+                                    tryCreateChannel();
+                                });
                             }
-                            console.log(localChannel);
-                            test.done();
-                        } else {
-                            test.step(function() {
-                                tryCreateChannel();
-                            });
-                        }
-                    });
-                };
-            });
+                        });
+                    };
+                });
+            }
         }
-    }
 
-    tryCreateChannel();
-    createIceCandidatesAndOffer();
+        tryCreateChannel();
+        createIceCandidatesAndOffer();
+    });
 }
 
 /**
@@ -500,50 +511,52 @@ function testDC_label009(test, parameters) {
     var label = "same label";
     var localChannel = new Array(), remoteChannel = new Array();
     var errorMessage = "", isError = false;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    function tryCreateChannel() {
-        try {
-            localChannel[channelCount] = localPeerConnection.createDataChannel(label);
-        } catch(e) {
-            isError = true;
-            errorMessage = e.name + ": " + e.message;
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        function tryCreateChannel() {
+            try {
+                localChannel[channelCount] = localPeerConnection.createDataChannel(label);
+            } catch(e) {
+                isError = true;
+                errorMessage = e.name + ": " + e.message;
+            }
+            tryConnection();
         }
-        tryConnection();
-    }
 
-    function tryConnection() {
-        if (isError) {
-            assert_unreached("An error was thrown " + errorMessage + " creating the " + channelCount + " Channel");
-            test.done();
-        } else {
-            test.step(function() {                  
-                remotePeerConnection.ondatachannel = function(e) {
-                    remoteChannel[channelCount] = e.channel;
-                    remoteChannel[channelCount].onopen = test.step_func(function() {
-                        assert_equals(localChannel[channelCount].label, label);
-                        assert_equals(remoteChannel[channelCount].label, localChannel[channelCount].label);
-                        channelCount++;
-                        if (channelCount == parameters.maxChannelCount) {
-                            for(var i = 0; i < parameters.maxChannelCount; i++){
-                                localChannel[i].close();
-                                remoteChannel[i].close();
+        function tryConnection() {
+            if (isError) {
+                assert_unreached("An error was thrown " + errorMessage + " creating the " + channelCount + " Channel");
+                test.done();
+            } else {
+                test.step(function() {                  
+                    remotePeerConnection.ondatachannel = function(e) {
+                        remoteChannel[channelCount] = e.channel;
+                        remoteChannel[channelCount].onopen = test.step_func(function() {
+                            assert_equals(localChannel[channelCount].label, label);
+                            assert_equals(remoteChannel[channelCount].label, localChannel[channelCount].label);
+                            channelCount++;
+                            if (channelCount == parameters.maxChannelCount) {
+                                for(var i = 0; i < parameters.maxChannelCount; i++){
+                                    localChannel[i].close();
+                                    remoteChannel[i].close();
+                                }
+                                console.log(localChannel);
+                                test.done();
+                            } else {
+                                test.step(function() {
+                                    tryCreateChannel();
+                                });
                             }
-                            console.log(localChannel);
-                            test.done();
-                        } else {
-                            test.step(function() {
-                                tryCreateChannel();
-                            });
-                        }
-                    });
-                };
-            });
+                        });
+                    };
+                });
+            }
         }
-    }
 
-    tryCreateChannel();
-    createIceCandidatesAndOffer();
+        tryCreateChannel();
+        createIceCandidatesAndOffer();
+    });
 }
 
 /**
@@ -555,20 +568,22 @@ function testDC_label009(test, parameters) {
 // Origin: W3C -  5.1 RTCPeerConnection Interface Extensions - [TreatNullAs=EmptyString] DOMString label, 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 function testDC_label010(test) {
     var label = null;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel(label);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = test.step_func(function() {
-            assert_equals(localChannel.label, "", "Wrong label ");
-            assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
-            test.done();
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel(label);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = test.step_func(function() {
+                assert_equals(localChannel.label, "", "Wrong label ");
+                assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
+                test.done();
+            });
         });
     });
 }
@@ -584,23 +599,25 @@ function testDC_label010(test) {
 function testDC_label011(test) {
     var charCount = 21845;
     var label = generateLinearDataChar("€",charCount);
-    assert_equals(label.length, charCount, "Wrong label length ");
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel(label);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = test.step_func(function() {
+    test.step(function() {
+        assert_equals(label.length, charCount, "Wrong label length ");
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel(label);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = test.step_func(function() {
 
-            assert_equals(localChannel.label, label, "Wrong label ");
-            assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
-            assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label ");
-            test.done();
+                assert_equals(localChannel.label, label, "Wrong label ");
+                assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
+                assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label ");
+                test.done();
+            });
         });
     });
 }
@@ -616,11 +633,13 @@ function testDC_label011(test) {
 function testDC_label012(test) {
     var charCount = 21846;
     var label = generateLinearDataChar("€",charCount);
-    assert_equals(label.length, charCount, "Wrong label length ");
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    assert_throws(null, function(){
-            localChannel = localPeerConnection.createDataChannel(label);
-    }, " Exception for exceeding label length");
-            test.done();
+    test.step(function() {
+        assert_equals(label.length, charCount, "Wrong label length ");
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        assert_throws(null, function(){
+                localChannel = localPeerConnection.createDataChannel(label);
+        }, " Exception for exceeding label length");
+                test.done();
+    });
 }
 
