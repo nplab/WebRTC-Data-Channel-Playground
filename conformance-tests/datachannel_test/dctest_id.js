@@ -24,6 +24,324 @@
  * SUCH DAMAGE.
  */
 
+var dctests_id = {
+    "id001": {
+        "description": "Set up a DataChannel and check the id",
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel.</li>\
+            <li>Peer B: waits for the DataChannel</li>\
+            <li>Peer A/B: checks id (Is id a number and equal).</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 5000,
+        "sync": false,
+        "test_function": testDC_id001
+    },
+    "id002": {
+        "parameters": {
+            "id": 1022
+        },
+        get description() {
+            return "Call .createDataChannel() with the specific id = " + this.parameters.id;
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 1022.</li>\
+            <li>Peer A: checks id.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 5000,
+        "sync": true,
+        "test_function": testDC_id002
+    },
+    "id003": {
+        "parameters": {
+            "id": 1023
+        },
+        get description() {
+            return "Call .createDataChannel() with the specific id = " + this.parameters.id;
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 1023.</li>\
+            <li>Peer A: checks id</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 5000,
+        "sync": true,
+        "test_function": testDC_id003
+    },
+    "id004": {
+        "parameters": {
+            "id": 1024
+        },
+        get description() {
+            return "Call .createDataChannel() with the specific id = " + this.parameters.id;
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 1024.</li>\
+            <li>Peer A: checks id.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6",
+            "https://code.google.com/p/webrtc/issues/detail?id=3150"
+        ],
+        "timeout": 5000,
+        "sync": true,
+        "test_function": testDC_id004
+    },
+    "id005": {
+        "parameters": {
+            "id": 65535
+        },
+        get description() {
+            return "Call .createDataChannel() with the specific id = " + this.parameters.id;
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 65535 (maximum id value).</li>\
+            <li>Peer A: checks id.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 5000,
+        "sync": true,
+        "test_function": testDC_id005
+    },
+    "id006": {
+        "parameters": {
+            "id": 100000
+        },
+        get description() {
+            return "Call .createDataChannel() with the specific id = " + this.parameters.id + " - exceeds maximum value of id (2^16) - the user agent should set another id";
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 100000 (exceeds maximum id value).</li>\
+            <li>Peer A: checks id – must be smaller than 65536.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 5000,
+        "sync": true,
+        "test_function": testDC_id006
+    },
+    "id007": {
+        "parameters": {
+            "id": 1022
+        },
+        get description() {
+            return "Set up a DataChannel with the specific id = " + this.parameters.id;
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 1022.</li>\
+            <li>Peer B: waits for the DataChannel</li>\
+            <li>Peer A/B:  checks id.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_id007
+    },
+    "id008": {
+        "parameters": {
+            "id": 1023
+        },
+        get description() {
+            return "Set up a DataChannel with the specific id = " + this.parameters.id;
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 1023.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A/B:  checks id.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_id008
+    },
+    "id009": {
+        "parameters": {
+            "id": 1024
+        },
+        get description() {
+            return "Set up a DataChannel with the specific id = " + this.parameters.id;
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 1024.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A/B:  checks id.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_id009
+    },
+    "id010": {
+        "parameters": {
+            "id": 65534
+        },
+        get description() {
+            return "Set up a DataChannel with the specific id = " + this.parameters.id + " (maximum stream ID)";
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 65534 (stream ID).</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A/B:  checks id.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_id010
+    },
+    "id011": {
+        "parameters": {
+            "max": 70000
+        },
+        get description() {
+            return "Call .createDataChannel() " + (this.parameters.max) + " times on a PeerConnection";
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates 70000 DataChannel  on a PeerConnection.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 20000,
+        "sync": true,
+        "test_function": testDC_id011
+    },
+    "id012": {
+        "parameters": {
+            "max": 511
+        },
+        get description() {
+            return "Set up " + (this.parameters.max) + " DataChannels - with user agent (Browser) generated IDs";
+        },
+        "scenario": "The procedure runs 511 times\
+        <ol> \
+            <li>Peer A: creates a DataChannel.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A/B: waits until the DataChannel is open.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 20000,
+        "sync": false,
+        "test_function": testDC_id012
+    },
+    "id013": {
+        "parameters": {
+            "max": 512
+        },
+        get description() {
+            return "Set up " + (this.parameters.max) + " DataChannels - with user agent (Browser) generated IDs";
+        },
+        "scenario": "The procedure runs 512 times\
+        <ol> \
+            <li>Peer A: creates a DataChannel.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A/B: waits until the DataChannel is open.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 20000,
+        "sync": false,
+        "test_function": testDC_id013
+    },
+    "id014": {
+        "parameters": {
+            "max": 65535
+        },
+        get description() {
+            return "Call .createDataChannel() " + this.parameters.max + " times with specific id on a PeerConnection – starts with id 0 then increase by one";
+        },
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 0.</li>\
+            <li>Repeats 65535 times and increase the id by one.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 20000,
+        "sync": true,
+        "test_function": testDC_id014
+    },
+    "id015": {
+        "parameters": {
+            "max": 1022
+        },
+        get description() {
+            return "Set up " + (1+this.parameters.max) + " DataChannels - with specific id - starts with id 0 then increase by one";
+        },
+        "scenario": "The procedure runs 1023 times, the id starts with 0 then increased by one and ends with id 1022\
+        <ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 0.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A/B: waits until the DataChannel is open.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 20000,
+        "sync": false,
+        "test_function": testDC_id015
+    },
+    "id016": {
+        "parameters": {
+            "max": 1023
+        },
+        get description() {
+            return "Set up " + (1+this.parameters.max) + " DataChannels - with specific id - starts with id 0 then increase by one";
+        },
+        "scenario": "The procedure runs 1024 times, the id starts with 0 then increased by one and ends with id 1023\
+        <ol> \
+            <li>Peer A: creates a DataChannel  with specific id = 0.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A/B: waits until the DataChannel is open.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+        ],
+        "timeout": 20000,
+        "sync": false,
+        "test_function": testDC_id016
+    },
+    "id017": {
+        "description": "Set up a DataChannel with a specific id - close the DataChannel - set up DataChannel with the same id (reuse id)",
+        "scenario": "<ol> \
+            <li>Peer A: creates a DataChannel  with specific id .</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A/B:  closes the DataChannel.</li>\
+            <li>Wait 2 seconds.</li>\
+            <li>Peer A: creates a new DataChannel with same id.</li>\
+            <li>Peer B: waits for the DataChannel.</li>\
+            <li>Peer A/B: checks connection.</li>\
+        </ol>",
+        "references": [
+            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6",
+            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.7"
+        ],
+        "timeout": 10000,
+        "sync": false,
+        "test_function": testDC_id017
+    }
+}
+
 /**
 - Peer A: creates a DataChannel  
 - Peer B: waits for the DataChannel 
@@ -31,23 +349,20 @@
 
  */
 // Origin: W3C - 5.2.1 Attributes
-function testDC_id001() {
-    var test = async_test("Set up a DataChannel and check the id ", {timeout: 5000});
-    test.step(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        remotePeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_id001");
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        createIceCandidatesAndOffer();
-        remotePeerConnection.ondatachannel = test.step_func(function(e) {
-            remoteChannel = e.channel;
-            assert_true( typeof (localChannel.id) === "number");
-            assert_equals(localChannel.id, remoteChannel.id, "id not set correct: ");
-            test.done();
-        });
+function testDC_id001(test) {
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_id001");
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    remotePeerConnection.ondatachannel = test.step_func(function(e) {
+        remoteChannel = e.channel;
+        assert_true( typeof (localChannel.id) === "number");
+        assert_equals(localChannel.id, remoteChannel.id, "id not set correct: ");
+        test.done();
     });
 }
 
@@ -57,19 +372,17 @@ function testDC_id001() {
 
  */
 // Origin: W3C - 5.2.1 Attributes
-function testDC_id002() {
+function testDC_id002(parameters) {
     var dataChannelOptions = {
-        id : 1022
+        id : parameters.id
     };
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_id002", dataChannelOptions);
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        assert_equals(localChannel.id, dataChannelOptions.id, "Wrong id ");
-    }, "Call .createDataChannel() with the specific id = " + dataChannelOptions.id, {timeout: 5000});
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_id002", dataChannelOptions);
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    assert_equals(localChannel.id, dataChannelOptions.id, "Wrong id ");
 }
 
 /**
@@ -78,20 +391,18 @@ function testDC_id002() {
 
  */
 // Origin: W3C - 5.2.1 Attributes
-function testDC_id003() {
+function testDC_id003(parameters) {
     var dataChannelOptions = {
-        id : 1023
+        id : parameters.id
     };
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_id003", dataChannelOptions);
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        //alert(localChannel.id);
-        assert_equals(localChannel.id, dataChannelOptions.id, "Wrong id ");
-    }, "Call .createDataChannel() with the specific id = " + dataChannelOptions.id, {timeout: 5000});
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_id003", dataChannelOptions);
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    //alert(localChannel.id);
+    assert_equals(localChannel.id, dataChannelOptions.id, "Wrong id ");
 }
 
 /**
@@ -101,19 +412,17 @@ function testDC_id003() {
  */
 // Origin: W3C - 5.2.1 Attributes
 // https://code.google.com/p/webrtc/issues/detail?id=3150
-function testDC_id004() {
+function testDC_id004(parameters) {
     var dataChannelOptions = {
-        id : 1024
+        id : parameters.id
     };
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_id004", dataChannelOptions);
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        assert_equals(localChannel.id, dataChannelOptions.id, "Wrong id ");
-    }, "Call .createDataChannel() with the specific id = " + dataChannelOptions.id, {timeout: 5000});
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_id004", dataChannelOptions);
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    assert_equals(localChannel.id, dataChannelOptions.id, "Wrong id ");
 }
 
 /**
@@ -122,19 +431,17 @@ function testDC_id004() {
 
  */
 // Origin: W3C - 5.2.1 Attributes
-function testDC_id005() {
+function testDC_id005(parameters) {
     var dataChannelOptions = {
-        id : 65535
+        id : parameters.id
     };
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_id005", dataChannelOptions);
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        assert_equals(localChannel.id, dataChannelOptions.id, "Wrong id ");
-    }, "Call .createDataChannel() with the specific id = " + dataChannelOptions.id, {timeout: 5000});
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_id005", dataChannelOptions);
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    assert_equals(localChannel.id, dataChannelOptions.id, "Wrong id ");
 }
 
 /**
@@ -145,20 +452,18 @@ function testDC_id005() {
 // Origin: W3C - 5.2.1 Attributes
 // FIXME: @ W3C what happens if id exceeds the maximum vaule
 // INFO Firefox: If id exceeds the unsigned short value (0-65535): The new id = id % 2^16 
-function testDC_id006() {
+function testDC_id006(parameters) {
     var dataChannelOptions = {
-        id : 100000
+        id : parameters.id
     };
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_id006", dataChannelOptions);
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        assert_not_equals(localChannel.id, dataChannelOptions.id, "id exceeds maximum value of unsigned short: 2^16");
-        assert_true((localChannel.id< ((2^16)-1)), "id exceeds maximum value of unsigned short: 2^16");
-    }, "Call .createDataChannel() with the specific id = " + dataChannelOptions.id + " - exceeds maximum value of id (2^16) - the user agent should set another id", {timeout: 5000});
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_id006", dataChannelOptions);
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    assert_not_equals(localChannel.id, dataChannelOptions.id, "id exceeds maximum value of unsigned short: 2^16");
+    assert_true((localChannel.id< ((2^16)-1)), "id exceeds maximum value of unsigned short: 2^16");
 }
 
 
@@ -169,27 +474,24 @@ function testDC_id006() {
 
  */
 // Origin: W3C - 5.2.1 Attributes
-function testDC_id007() {
+function testDC_id007(test, parameters) {
     var dataChannelOptions = {
-        id : 1022
+        id : parameters.id
     };
 
-    var test = async_test("Set up a DataChannel with the specific id = " + dataChannelOptions.id, {timeout: 10000});
-    test.step(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        remotePeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_id007", dataChannelOptions);
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        createIceCandidatesAndOffer();
-        remotePeerConnection.ondatachannel = test.step_func(function(e) {
-            remoteChannel = e.channel;
-            assert_equals(localChannel.id, dataChannelOptions.id, "id not set correct: ");
-            assert_equals(localChannel.id, remoteChannel.id, "id not set correct: ");
-            test.done();
-        });
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    remotePeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_id007", dataChannelOptions);
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    createIceCandidatesAndOffer();
+    remotePeerConnection.ondatachannel = test.step_func(function(e) {
+        remoteChannel = e.channel;
+        assert_equals(localChannel.id, dataChannelOptions.id, "id not set correct: ");
+        assert_equals(localChannel.id, remoteChannel.id, "id not set correct: ");
+        test.done();
     });
 }
 
@@ -201,12 +503,11 @@ function testDC_id007() {
  */
 // Origin: W3C - 5.2.1 Attributes
 // TODO: Chrome: 1023 firefox failed, create DataChannel works, but no connection can be established the other side gets no DataChannel (Stream)
-function testDC_id008() {
+function testDC_id008(test, parameters) {
     var dataChannelOptions = {
-        id : 1023
+        id : parameters.id
     };
 
-    var test = async_test("Set up a DataChannel with the specific id = " + dataChannelOptions.id, {timeout: 10000});
     var timeoutTime = setTimeout(test.step_func(function() {
         if (dataChannelOptions.id == localChannel.id) {
             assert_unreached("No associated datachannel was created with the id: " + dataChannelOptions.id);
@@ -246,12 +547,11 @@ function testDC_id008() {
 // Origin: W3C - 5.2.1 Attributes
 // DataChannel: Attribute - id - unsigned short -> set and get test
 // FIXME: Chrome failed: IF id exceeds the negotiated max stream count for the SCTP connection it throws an error ( 1024 by default)
-function testDC_id009() {
+function testDC_id009(test, parameters) {
     var dataChannelOptions = {
-        id : 1024
+        id : parameters.id
     };
 
-    var test = async_test("Set up a DataChannel with the specific id = " + dataChannelOptions.id, {timeout: 10000});
     var timeoutTime = setTimeout(test.step_func(function() {
         if (dataChannelOptions.id == localChannel.id) {
             assert_unreached("No associated datachannel was created with the id: " + dataChannelOptions.id);
@@ -291,12 +591,11 @@ function testDC_id009() {
 // Origin: W3C - 5.2.1 Attributes
 // DataChannel: Attribute - id - unsigned short -> set and get test
 // FIXME: 1023 firefox failed: IF id exceeds the negotiated max stream count for the SCTP connection it throws an error ( 1024 by default)
-function testDC_id010() {
+function testDC_id010(test, parameters) {
     var dataChannelOptions = {
-        id : 65534
+        id : parameters.id
     };
 
-    var test = async_test("Set up a DataChannel with the specific id = " + dataChannelOptions.id + " (maximum stream ID)", {timeout: 10000});
     var timeoutTime = setTimeout(test.step_func(function() {
         if (dataChannelOptions.id == localChannel.id) {
             assert_unreached("No associated datachannel was created with the id: " + dataChannelOptions.id);
@@ -330,25 +629,23 @@ function testDC_id010() {
 - Peer A: creates 70000 DataChannel  on a PeerConnection
  */
 // Origin: W3C - 5.2.1 Attributes
-function testDC_id011() {
-    var max = 70000;
+function testDC_id011(parameters) {
+    var max = parameters.max;
     var localChannels = new Array();
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        var i;
-        for ( i = 0; i < max; i++) {
-            try {
-                localChannels[i] = localPeerConnection.createDataChannel("testDC_id011_" + i);
-                if (i % 1000 == 0)
-                    console.log("DC " + i + "  DC ID: " + localChannels[i].id);
-            } catch(e) {
-                assert_unreached(true, "Could only generate " + i + " DataChannels");
-            }
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    var i;
+    for ( i = 0; i < max; i++) {
+        try {
+            localChannels[i] = localPeerConnection.createDataChannel("testDC_id011_" + i);
+            if (i % 1000 == 0)
+                console.log("DC " + i + "  DC ID: " + localChannels[i].id);
+        } catch(e) {
+            assert_unreached(true, "Could only generate " + i + " DataChannels");
         }
-        for (i=0; i< max; i++){
-           // localChannels[i].close();
-        }
-    }, "Call .createDataChannel() " + (max) + " times on a PeerConnection", {timeout: 20000});
+    }
+    for (i=0; i< max; i++){
+       // localChannels[i].close();
+    }
 }
 
 
@@ -362,12 +659,11 @@ function testDC_id011() {
 // Origin: W3C - 5.2.1 Attributes
 // FIXME: Firefox crashed 
 // The Last ID created is 1021
-function testDC_id012() {
+function testDC_id012(test, parameters) {
     var dcLocal = new Array();
     var dcRemote = new Array();
-    var max = 511;
-    var i = 0;   
-    var test = async_test("Set up " + (max) + " DataChannels - with user agent (Browser) generated IDs ", {timeout: 20000});
+    var max = parameters.max;
+    var i = 0;
     setTimeout(test.step_func(function() {
         assert_unreached("No connection established with the channel ID " + localChannel[i].id);
     }), 15000);
@@ -409,11 +705,10 @@ function testDC_id012() {
 // Origin: W3C - 5.2.1 Attributes
 // FIXME: Firefox crashed 
 // The last ID created is 1023 - no connection established in Chrome 
-function testDC_id013() {
+function testDC_id013(test, parameters) {
     var dcLocal = new Array(), dcRemote = new Array();
-    var max = 512;
-    var i = 0;    
-    var test = async_test("Set up " + (max) + " DataChannels - with user agent (Browser) generated IDs ", {timeout: 20000});
+    var max = parameters;
+    var i = 0;
     setTimeout(test.step_func(function() {
         assert_unreached("No connection established with the channel ID " + dcLocal[i].id);
     }), 15000);
@@ -452,21 +747,19 @@ function testDC_id013() {
 // Origin: W3C - 5.2.1 Attributes
 // FIXME: No Information from W3C whats the maximum ID
 // FIXME: Firefox crashed 
-function testDC_id014() {
-    var max = 65535;
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        var i;
-        for ( i = 0; i < max; i++) {
-            try {
-                localChannel = localPeerConnection.createDataChannel("testDC_id014" + i, {
-                    id : i
-                });
-            } catch(e) {
-                assert_unreached("Could only generate " + i + " DataChannels! " +e.name+ ": "+ e.message);
-            }
+function testDC_id014(parameters) {
+    var max = parameters.max;
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    var i;
+    for ( i = 0; i < max; i++) {
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_id014" + i, {
+                id : i
+            });
+        } catch(e) {
+            assert_unreached("Could only generate " + i + " DataChannels! " +e.name+ ": "+ e.message);
         }
-    }, "Call .createDataChannel() " + max + " times with specific id on a PeerConnection – starts with id 0 then increase by one", {timeout: 20000});
+    }
 }
 
 
@@ -479,11 +772,10 @@ function testDC_id014() {
  */
 // Origin: W3C - 5.2.1 Attributes
 // FIXME: Firefox crashed by creating more than 16 datachannels
-function testDC_id015() {
+function testDC_id015(test, parameters) {
     var dcLocal = new Array(), dcRemote = new Array();
-    var max = 1022;
+    var max = parameters.max;
     var i = 0;
-    var test = async_test("Set up " + (1+max) + " DataChannels - with specific id - starts with id 0 then increase by one", {timeout: 20000});
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
@@ -525,11 +817,10 @@ function testDC_id015() {
 
 // Origin: W3C - 5.2.1 Attributes
 // FIXME: Firefox crashed by creating more than 16 datachannels
-function testDC_id016() {
+function testDC_id016(test, parameters) {
     var dcLocal = new Array(), dcRemote = new Array();
-    var max = 1023;
+    var max = parameters.max;
     var i = 0;
-    var test = async_test("Set up " + (1+max) + " DataChannels - with specific id - starts with id 0 then increase by one", {timeout: 20000});
     setTimeout(test.step_func(function() {
         assert_unreached("No connection established with the channel ID " + dcLocal[i].id);
     }), 15000);
@@ -578,11 +869,10 @@ function testDC_id016() {
 // Origin: W3C - 5.2.1 Attributes
 // http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.7
 // Streams are available for reuse after a reset has been performed
-function testDC_id017() {
+function testDC_id017(test) {
     var dataChannelOptions = {
         id : 4
     };
-    var test = async_test("Set up a DataChannel with a specific id - close the DataChannel - set up DataChannel with the same id (reuse id)", {timeout: 10000});
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
