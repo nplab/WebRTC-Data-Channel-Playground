@@ -350,19 +350,21 @@ var dctests_id = {
  */
 // Origin: W3C - 5.2.1 Attributes
 function testDC_id001(test) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_id001");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        assert_true( typeof (localChannel.id) === "number");
-        assert_equals(localChannel.id, remoteChannel.id, "id not set correct: ");
-        test.done();
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_id001");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            assert_true( typeof (localChannel.id) === "number");
+            assert_equals(localChannel.id, remoteChannel.id, "id not set correct: ");
+            test.done();
+        });
     });
 }
 
@@ -479,19 +481,21 @@ function testDC_id007(test, parameters) {
         id : parameters.id
     };
 
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_id007", dataChannelOptions);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        assert_equals(localChannel.id, dataChannelOptions.id, "id not set correct: ");
-        assert_equals(localChannel.id, remoteChannel.id, "id not set correct: ");
-        test.done();
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_id007", dataChannelOptions);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            assert_equals(localChannel.id, dataChannelOptions.id, "id not set correct: ");
+            assert_equals(localChannel.id, remoteChannel.id, "id not set correct: ");
+            test.done();
+        });
     });
 }
 
