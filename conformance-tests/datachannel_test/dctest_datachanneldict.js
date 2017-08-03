@@ -395,22 +395,24 @@ var dctests_dict = {
  */
 // Origin: W3C - 5.2.1 RTCDataChannel Attributes
 function testDC_dict001(test) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
 
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict001");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        assert_equals(localChannel.maxPacketLifeTime, remoteChannel.maxPacketLifeTime, "maxPacketLifeTime not set correct: ");
-        // Zero or null oninit 
-        assert_true(localChannel.maxPacketLifeTime === 0 || localChannel.maxPacketLifeTime === null, "maxPacketLifeTime is not set to null by default got " + localChannel.maxPacketLifeTime + " - ");
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict001");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            assert_equals(localChannel.maxPacketLifeTime, remoteChannel.maxPacketLifeTime, "maxPacketLifeTime not set correct: ");
+            // Zero or null oninit 
+            assert_true(localChannel.maxPacketLifeTime === 0 || localChannel.maxPacketLifeTime === null, "maxPacketLifeTime is not set to null by default got " + localChannel.maxPacketLifeTime + " - ");
 
-        test.done();
+            test.done();
+        });
     });
 }
 
@@ -469,22 +471,24 @@ function testDC_dict003(parameters) {
  */
 // Origin: W3C - 5.2.1 RTCDataChannel Attributes
 function testDC_dict004(test) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
 
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict004");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        assert_equals(localChannel.maxRetransmits, remoteChannel.maxRetransmits, "maxRetransmits not set correct: ");
-        // Check if the value is null or zero 0 
-        assert_true(localChannel.maxRetransmits === 0 || localChannel.maxRetransmits === null, "maxRetransmits is not set to null by default got " + localChannel.maxRetransmits + " - ");
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict004");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            assert_equals(localChannel.maxRetransmits, remoteChannel.maxRetransmits, "maxRetransmits not set correct: ");
+            // Check if the value is null or zero 0 
+            assert_true(localChannel.maxRetransmits === 0 || localChannel.maxRetransmits === null, "maxRetransmits is not set to null by default got " + localChannel.maxRetransmits + " - ");
 
-        test.done();
+            test.done();
+        });
     });
 }
 
@@ -517,20 +521,22 @@ function testDC_dict005a(test) {
     var dataChannelOptions = {
         maxRetransmits : 1000
     };
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
 
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict005a",dataChannelOptions);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        assert_equals(localChannel.maxRetransmits, dataChannelOptions.maxRetransmits, "maxRetransmits not set on localChannel: ");
-        assert_equals(localChannel.maxRetransmits, remoteChannel.maxRetransmits, "maxRetransmits not set on remoteChannel: ");
-        test.done();
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict005a",dataChannelOptions);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            assert_equals(localChannel.maxRetransmits, dataChannelOptions.maxRetransmits, "maxRetransmits not set on localChannel: ");
+            assert_equals(localChannel.maxRetransmits, remoteChannel.maxRetransmits, "maxRetransmits not set on remoteChannel: ");
+            test.done();
+        });
     });
 }
 
@@ -637,19 +643,21 @@ function testDC_dict009(parameters) {
  */
 // Origin: W3C - 5.2.1 Attributes - ordered - must be initialized to true by default
 function testDC_dict010(test) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict010");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        assert_equals(localChannel.ordered, remoteChannel.ordered, "ordered not set correct: ");
-        assert_equals(localChannel.ordered, true, "ordered init wrong: ");
-        test.done();
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict010");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            assert_equals(localChannel.ordered, remoteChannel.ordered, "ordered not set correct: ");
+            assert_equals(localChannel.ordered, true, "ordered init wrong: ");
+            test.done();
+        });
     });
 }
 
@@ -661,24 +669,26 @@ function testDC_dict010(test) {
  */
 // Origin: W3C - 5.2.1 Attributes
 function testDC_dict011(test) {
-    var dataChannelOptions = {
-        ordered : false,
-    };
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict011", dataChannelOptions);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        test.done();
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = test.step_func(function() {
-            assert_false(localChannel.ordered, "Ordered value is not set correct");
-            assert_equals(localChannel.ordered, remoteChannel.ordered, "Ordered value is not set correct");
+    test.step(function() {
+        var dataChannelOptions = {
+            ordered : false,
+        };
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict011", dataChannelOptions);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
             test.done();
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = test.step_func(function() {
+                assert_false(localChannel.ordered, "Ordered value is not set correct");
+                assert_equals(localChannel.ordered, remoteChannel.ordered, "Ordered value is not set correct");
+                test.done();
+            });
         });
     });
 }
@@ -711,25 +721,27 @@ function testDC_dict012() {
  */
 // Origin: W3C - 5.2.1 Attributes - negotiated - boolean - negotiated value retrunes true if the channel was negotiated by the application or false otherwise
 function testDC_dict013(test) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
 
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict013");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        // can get negotiated Value
-        if ( typeof localChannel.negotiated == "undefined") {
-            assert_unreached("Can't get the value of negotiated get " + localChannel.negotiated + ": ");
-        } else {
-            assert_equals(localChannel.negotiated, remoteChannel.negotiated, "negotiated not set correct: ");
-            assert_equals(localChannel.negotiated, false, "negotiated init wrong: ");
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict013");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
         }
-        test.done();
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            // can get negotiated Value
+            if ( typeof localChannel.negotiated == "undefined") {
+                assert_unreached("Can't get the value of negotiated get " + localChannel.negotiated + ": ");
+            } else {
+                assert_equals(localChannel.negotiated, remoteChannel.negotiated, "negotiated not set correct: ");
+                assert_equals(localChannel.negotiated, false, "negotiated init wrong: ");
+            }
+            test.done();
+        });
     });
 }
 
@@ -741,24 +753,26 @@ function testDC_dict013(test) {
  */
 // Origin: W3C - 5.1.2 dataChannelDict optional set, check init
 function testDC_dict014(test) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict014");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = test.step_func(function() {
-            assert_true(localChannel.ordered, "Ordered value is not correct ");
-            assert_equals(localChannel.ordered, remoteChannel.ordered, "Ordered value is not correct ");
-            assert_equals(localChannel.protocol, "", "Negotiated value is not correct ");
-            assert_equals(localChannel.protocol, remoteChannel.protocol, "Negotiated value is not correct ");
-            assert_false(localChannel.negotiated, "Negotiated value is not correct ");
-            assert_equals(localChannel.negotiated, remoteChannel.negotiated, "Negotiated value is not correct ");
-            test.done();
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict014");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = test.step_func(function() {
+                assert_true(localChannel.ordered, "Ordered value is not correct ");
+                assert_equals(localChannel.ordered, remoteChannel.ordered, "Ordered value is not correct ");
+                assert_equals(localChannel.protocol, "", "Negotiated value is not correct ");
+                assert_equals(localChannel.protocol, remoteChannel.protocol, "Negotiated value is not correct ");
+                assert_false(localChannel.negotiated, "Negotiated value is not correct ");
+                assert_equals(localChannel.negotiated, remoteChannel.negotiated, "Negotiated value is not correct ");
+                test.done();
+            });
         });
     });
 }
@@ -776,25 +790,27 @@ function testDC_dict015(test, parameters) {
         id : parameters.id,
         maxRetransmits : parameters.maxRetransmits
     };
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict015", dataChannelOptions);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict015", dataChannelOptions);
 
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = test.step_func(function() {
-            assert_equals(localChannel.ordered, dataChannelOptions.ordered, "Can't set ordered: ");
-            assert_equals(localChannel.id, dataChannelOptions.id, "Can't set id: ");
-            assert_equals(localChannel.maxRetransmits, dataChannelOptions.maxRetransmits, "Can't set maxRetransmits: ");
-            assert_equals(remoteChannel.ordered, dataChannelOptions.ordered, "Can't set ordered: ");
-            assert_equals(remoteChannel.id, dataChannelOptions.id, "Can't set id: ");
-            assert_equals(remoteChannel.maxRetransmits, dataChannelOptions.maxRetransmits, "Can't set maxRetransmits: ");
-            test.done();
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = test.step_func(function() {
+                assert_equals(localChannel.ordered, dataChannelOptions.ordered, "Can't set ordered: ");
+                assert_equals(localChannel.id, dataChannelOptions.id, "Can't set id: ");
+                assert_equals(localChannel.maxRetransmits, dataChannelOptions.maxRetransmits, "Can't set maxRetransmits: ");
+                assert_equals(remoteChannel.ordered, dataChannelOptions.ordered, "Can't set ordered: ");
+                assert_equals(remoteChannel.id, dataChannelOptions.id, "Can't set id: ");
+                assert_equals(remoteChannel.maxRetransmits, dataChannelOptions.maxRetransmits, "Can't set maxRetransmits: ");
+                test.done();
+            });
         });
     });
 }
@@ -837,22 +853,24 @@ function testDC_dict016() {
  */
 // Origin: W3C -  5.1.2 Methods: 7, If id attribute is uninitialized (not set via the dictionary) initialize it to a value generated by the user Agent, according to the WebRTC DataChannel Protocol specification
 function testDC_dict017(test) {
-    // 2 ^16 unsigned short  65536 = 0 - 65535
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict017");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = test.step_func(function() {
-            assert_true((localChannel.id >= 0) && localChannel.id < 65536, "datachannel id not set correct");
-            assert_true((remoteChannel.id >= 0) && remoteChannel.id < 65536, "datachannel id not set correct");
-            assert_equals(remoteChannel.id, localChannel.id, "DataChannel id are not equal");
-            test.done();
+    test.step(function() {
+        // 2 ^16 unsigned short  65536 = 0 - 65535
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict017");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = test.step_func(function() {
+                assert_true((localChannel.id >= 0) && localChannel.id < 65536, "datachannel id not set correct");
+                assert_true((remoteChannel.id >= 0) && remoteChannel.id < 65536, "datachannel id not set correct");
+                assert_equals(remoteChannel.id, localChannel.id, "DataChannel id are not equal");
+                test.done();
+            });
         });
     });
 }
@@ -866,20 +884,22 @@ function testDC_dict017(test) {
 // Origin: W3C - 5.2.1 Attributes
 // DataChannel: Attribute - protocol - DOMString
 function testDC_dict018(test) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
 
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict018");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        assert_equals(localChannel.protocol, remoteChannel.protocol, "protocol not set correct: ");
-        assert_equals(localChannel.protocol, "", "protocol init wrong: ");
-        test.done();
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict018");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            assert_equals(localChannel.protocol, remoteChannel.protocol, "protocol not set correct: ");
+            assert_equals(localChannel.protocol, "", "protocol init wrong: ");
+            test.done();
+        });
     });
 }
 
@@ -894,42 +914,44 @@ function testDC_dict018(test) {
 // Origin: W3C - 5.2 RTCDataChannel - The properties of a channel cannot change after the channel has been created (Unchangeable: label, maxPacketLifeTime, maxRetransmits, negotiated, ordered, protocoll)
 // FIXME: BROWSER  - Firefox has no value maxRetransmit after channel creation, so if you want to change it a new value added to the dataChannel object
 function testDC_dict019(test) {
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict019");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict019");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
 
-        localChannel.ordered = false;
-        remoteChannel.ordered = false;
-        assert_equals(localChannel.ordered, true, "ordered  is changeable!");
-
-
-        var mR = localChannel.maxRetransmits;
-        localChannel.maxRetransmits = 500;
-        remoteChannel.maxRetransmits = 500;
-        assert_equals(localChannel.maxRetransmits, mR, "maxRetransmits is changeable");
-
-        localChannel.negotiated = true;
-        remoteChannel.negotiated = true;
-        assert_equals(localChannel.negotiated, false, "negotiated  is changeable!");
-
-        var label = localChannel.label;
-        localChannel.label = "neu";
-        remoteChannel.label = "neu";
-        assert_equals(localChannel.label, label, "label  is changeable!");
+            localChannel.ordered = false;
+            remoteChannel.ordered = false;
+            assert_equals(localChannel.ordered, true, "ordered  is changeable!");
 
 
-        assert_equals(localChannel.ordered, remoteChannel.ordered, "ordered value ist different ");
-        assert_equals(localChannel.maxRetransmits, remoteChannel.maxRetransmits, "maxRetransmits value is different ");
-        assert_equals(localChannel.negotiated, remoteChannel.negotiated, "ordered value ist different ");
-        assert_equals(localChannel.label, remoteChannel.label, "ordered value ist different ");
-        test.done();
+            var mR = localChannel.maxRetransmits;
+            localChannel.maxRetransmits = 500;
+            remoteChannel.maxRetransmits = 500;
+            assert_equals(localChannel.maxRetransmits, mR, "maxRetransmits is changeable");
+
+            localChannel.negotiated = true;
+            remoteChannel.negotiated = true;
+            assert_equals(localChannel.negotiated, false, "negotiated  is changeable!");
+
+            var label = localChannel.label;
+            localChannel.label = "neu";
+            remoteChannel.label = "neu";
+            assert_equals(localChannel.label, label, "label  is changeable!");
+
+
+            assert_equals(localChannel.ordered, remoteChannel.ordered, "ordered value ist different ");
+            assert_equals(localChannel.maxRetransmits, remoteChannel.maxRetransmits, "maxRetransmits value is different ");
+            assert_equals(localChannel.negotiated, remoteChannel.negotiated, "ordered value ist different ");
+            assert_equals(localChannel.label, remoteChannel.label, "ordered value ist different ");
+            test.done();
+        });
     });
 }
 
@@ -952,23 +974,25 @@ function testDC_dict020(test) {
         negotiated : true,
         id :5 
     };
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict020", dataChannelOptions1 );
-        remoteChannel = remotePeerConnection.createDataChannel("testDC_dict020", dataChannelOptions2);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    setTimeout(createIceCandidatesAndOffer, 1000);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict020", dataChannelOptions1 );
+            remoteChannel = remotePeerConnection.createDataChannel("testDC_dict020", dataChannelOptions2);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        setTimeout(createIceCandidatesAndOffer, 1000);
 
-    localChannel.onmessage = test.step_func(function(e) {
-        assert_unreached("Can establish a DataChannel connection between two peers with different negotiated value "); 
-        test.done();
+        localChannel.onmessage = test.step_func(function(e) {
+            assert_unreached("Can establish a DataChannel connection between two peers with different negotiated value "); 
+            test.done();
+        });
+        remoteChannel.onopen = test.step_func(function() {
+            remoteChannel.send("noo");
+        }); 
     });
-    remoteChannel.onopen = test.step_func(function() {
-        remoteChannel.send("noo");
-    }); 
 }
 
 
@@ -991,22 +1015,24 @@ function testDC_dict021(test) {
         negotiated : false,
         id :5 
     };
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_dict021", dataChannelOptions1 );
-        remoteChannel = remotePeerConnection.createDataChannel("testDC_dict021", dataChannelOptions2);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    setTimeout(createIceCandidatesAndOffer, 1000);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_dict021", dataChannelOptions1 );
+            remoteChannel = remotePeerConnection.createDataChannel("testDC_dict021", dataChannelOptions2);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        setTimeout(createIceCandidatesAndOffer, 1000);
 
-    localChannel.onmessage = test.step_func(function(e) {
-        assert_unreached("Can establish a DataChannel connection between two peers by creating dataChannel with same id and negotiated = false "); 
-        test.done();
-    });
-    remoteChannel.onopen = test.step_func(function() {
-        remoteChannel.send("noo");
+        localChannel.onmessage = test.step_func(function(e) {
+            assert_unreached("Can establish a DataChannel connection between two peers by creating dataChannel with same id and negotiated = false "); 
+            test.done();
+        });
+        remoteChannel.onopen = test.step_func(function() {
+            remoteChannel.send("noo");
+        });
     });
 }
 
@@ -1024,27 +1050,29 @@ function testDC_dict021(test) {
 // FIXME: Browser - Firefox Negotiated is undefined but it works, cant get negotiated value after channel creation
 function testDC_dict022(test) {
     var data = "test";
-    var dataChannelOptions = {
-        id : 2,
-        negotiated : true
-    };
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    // Create two DataChannels
-    // First local
-    try {
-        localChannel = localPeerConnection.createDataChannel("negotiated channel", dataChannelOptions);
-        remoteChannel = remotePeerConnection.createDataChannel("negotiated channel", dataChannelOptions);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remoteChannel.onmessage = test.step_func(function(e) {
-        assert_equals(e.data, data, "Rec: wrong Data ");
-        test.done();
-    });
-    localChannel.onopen = test.step_func(function() {
-        localChannel.send(data);
+    test.step(function() {
+        var dataChannelOptions = {
+            id : 2,
+            negotiated : true
+        };
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        // Create two DataChannels
+        // First local
+        try {
+            localChannel = localPeerConnection.createDataChannel("negotiated channel", dataChannelOptions);
+            remoteChannel = remotePeerConnection.createDataChannel("negotiated channel", dataChannelOptions);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remoteChannel.onmessage = test.step_func(function(e) {
+            assert_equals(e.data, data, "Rec: wrong Data ");
+            test.done();
+        });
+        localChannel.onopen = test.step_func(function() {
+            localChannel.send(data);
+        });
     });
 }
 
@@ -1062,37 +1090,39 @@ function testDC_dict022(test) {
 function testDC_dict023(test) {
     // 1 KB
     var data = generateData(10);
-    var dataChannelOptions1 = {
-        id : 2,
-        ordered : false,
-        negotiated : true
-    };
-    var dataChannelOptions2 = {
-        id : 2,
-        ordered : true,
-        negotiated : true
-    };
+    test.step(function() {
+        var dataChannelOptions1 = {
+            id : 2,
+            ordered : false,
+            negotiated : true
+        };
+        var dataChannelOptions2 = {
+            id : 2,
+            ordered : true,
+            negotiated : true
+        };
 
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
 
-    // Create two DataChannels
-    // First local
-    try {
-        localChannel = localPeerConnection.createDataChannel("negotiated channel - local", dataChannelOptions1);
-        remoteChannel = remotePeerConnection.createDataChannel("negotiated channel - remote", dataChannelOptions2);
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remoteChannel.onmessage = test.step_func(function(e) {
-        assert_equals(e.data, data, "Rec: wrong Data ");
-        test.done();
-    });
-    remoteChannel.onopen = test.step_func(function() {
-        assert_not_equals(localChannel.ordered, remoteChannel.ordered, "not set ordered different in both channels");
-        assert_not_equals(localChannel.label, remoteChannel.label, "not set label different in both channels");
-        localChannel.send(data);
+        // Create two DataChannels
+        // First local
+        try {
+            localChannel = localPeerConnection.createDataChannel("negotiated channel - local", dataChannelOptions1);
+            remoteChannel = remotePeerConnection.createDataChannel("negotiated channel - remote", dataChannelOptions2);
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remoteChannel.onmessage = test.step_func(function(e) {
+            assert_equals(e.data, data, "Rec: wrong Data ");
+            test.done();
+        });
+        remoteChannel.onopen = test.step_func(function() {
+            assert_not_equals(localChannel.ordered, remoteChannel.ordered, "not set ordered different in both channels");
+            assert_not_equals(localChannel.label, remoteChannel.label, "not set label different in both channels");
+            localChannel.send(data);
+        });
     });
 }
 
