@@ -118,7 +118,7 @@ var dctests_event = {
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_event006
-    },
+    }
 }
 
 /**
@@ -134,33 +134,35 @@ function testDC_event001(test) {
     var isDCRemoteClose = false;
     var isDCLocalClose = false;
     var waitTime = 3000;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_evten001");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    localChannel.onclose = function() {
-        isDCLocalClose = true;
-    };
-    remotePeerConnection.ondatachannel = function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onclose = function() {
-            isDCRemoteClose = true;
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_evten001");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        localChannel.onclose = function() {
+            isDCLocalClose = true;
         };
+        remotePeerConnection.ondatachannel = function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onclose = function() {
+                isDCRemoteClose = true;
+            };
 
-        remoteChannel.onopen = function() {
-            localChannel.close();
-            remoteChannel.close();
+            remoteChannel.onopen = function() {
+                localChannel.close();
+                remoteChannel.close();
+            };
+            setTimeout(test.step_func(function() {
+                if (!(isDCRemoteClose && isDCLocalClose))
+                    assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
+                test.done();
+            }), waitTime);
         };
-        setTimeout(test.step_func(function() {
-            if (!(isDCRemoteClose && isDCLocalClose))
-                assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
-            test.done();
-        }), waitTime);
-    };
+    });
 }
 
 /**
@@ -176,32 +178,34 @@ function testDC_event002(test) {
     var isDCRemoteClose = false;
     var isDCLocalClose = false;
     var waitTime = 3000;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_evten001");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    localChannel.onclose = function() {
-        isDCLocalClose = true;
-    };
-    remotePeerConnection.ondatachannel = function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onclose = function() {
-            isDCRemoteClose = true;
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_evten001");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        localChannel.onclose = function() {
+            isDCLocalClose = true;
         };
+        remotePeerConnection.ondatachannel = function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onclose = function() {
+                isDCRemoteClose = true;
+            };
 
-        remoteChannel.onopen = function() {
-            localChannel.close();
+            remoteChannel.onopen = function() {
+                localChannel.close();
+            };
+            setTimeout(test.step_func(function() {
+                if (!(isDCRemoteClose && isDCLocalClose))
+                    assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
+                test.done();
+            }), waitTime);
         };
-        setTimeout(test.step_func(function() {
-            if (!(isDCRemoteClose && isDCLocalClose))
-                assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
-            test.done();
-        }), waitTime);
-    };
+    });
 }
 
 /**
@@ -217,32 +221,34 @@ function testDC_event003(test) {
     var isDCRemoteClose = false;
     var isDCLocalClose = false;
     var waitTime = 3000;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_evten001");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    localChannel.onclose = function() {
-        isDCLocalClose = true;
-    };
-    remotePeerConnection.ondatachannel = function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onclose = function() {
-            isDCRemoteClose = true;
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_evten001");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        localChannel.onclose = function() {
+            isDCLocalClose = true;
         };
+        remotePeerConnection.ondatachannel = function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onclose = function() {
+                isDCRemoteClose = true;
+            };
 
-        remoteChannel.onopen = function() {
-            remoteChannel.close();
+            remoteChannel.onopen = function() {
+                remoteChannel.close();
+            };
+            setTimeout(test.step_func(function() {
+                if (!(isDCRemoteClose && isDCLocalClose))
+                    assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
+                test.done();
+            }), waitTime);
         };
-        setTimeout(test.step_func(function() {
-            if (!(isDCRemoteClose && isDCLocalClose))
-                assert_unreached("onclose function was not called " + waitTime + " sec. - local:" + isDCLocalClose + ' / remote:' + isDCRemoteClose);
-            test.done();
-        }), waitTime);
-    };
+    });
 }
 
 /**
@@ -257,37 +263,39 @@ function testDC_event003(test) {
 function testDC_event004(test) {
     var isLocalMessage = false, isRemoteMessage = false;
     var waitTime = 3000;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
 
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_evten002");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = function(e) {
-        remoteChannel = e.channel;
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_evten002");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = function(e) {
+            remoteChannel = e.channel;
 
-        remoteChannel.onopen = function() {
-            localChannel.send("message");
-            remoteChannel.send("message");
+            remoteChannel.onopen = function() {
+                localChannel.send("message");
+                remoteChannel.send("message");
+            };
+            localChannel.onmessage = function() {
+                isLocalMessage = true;
+            };
+            remoteChannel.onmessage = function() {
+                isRemoteMessage = true;
+            };
+
+            setTimeout(test.step_func(function() {
+                if (!(isLocalMessage && isRemoteMessage))
+                    assert_unreached("onmessage function was not called after " + waitTime + " sec.");
+
+                test.done();
+            }), waitTime);
+
         };
-        localChannel.onmessage = function() {
-            isLocalMessage = true;
-        };
-        remoteChannel.onmessage = function() {
-            isRemoteMessage = true;
-        };
-
-        setTimeout(test.step_func(function() {
-            if (!(isLocalMessage && isRemoteMessage))
-                assert_unreached("onmessage function was not called after " + waitTime + " sec.");
-
-            test.done();
-        }), waitTime);
-
-    };
+    });
 }
 
 /**
@@ -301,29 +309,31 @@ function testDC_event004(test) {
 function testDC_event005(test) {
     var isLocalOpen = false, isRemoteOpen = false;
     var waitTime = 3000;
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
 
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_evten003");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    localChannel.onopen = function() {
-        isLocalOpen = true;
-    };
-    remotePeerConnection.ondatachannel = function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = function() {
-            isRemoteOpen = true;
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_evten003");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        localChannel.onopen = function() {
+            isLocalOpen = true;
         };
-    };
-    setTimeout(test.step_func(function() {
-        if (!(isLocalOpen && isRemoteOpen))
-            assert_unreached("onclose function was not called");
-        test.done();
-    }), waitTime);
+        remotePeerConnection.ondatachannel = function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = function() {
+                isRemoteOpen = true;
+            };
+        };
+        setTimeout(test.step_func(function() {
+            if (!(isLocalOpen && isRemoteOpen))
+                assert_unreached("onclose function was not called");
+            test.done();
+        }), waitTime);
+    });
 }
 
 
@@ -338,28 +348,30 @@ function testDC_event005(test) {
 function testDC_event006(test) {
     var readyStates = "";
 
-    localPeerConnection = new RTCPeerConnection(iceServers);
-    remotePeerConnection = new RTCPeerConnection(iceServers);
-    try {
-        localChannel = localPeerConnection.createDataChannel("testDC_evten004");
-    } catch(e) {
-        assert_unreached("An error was thrown " + e.name + ": " + e.message);
-    }
-    createIceCandidatesAndOffer();
-    remotePeerConnection.ondatachannel = test.step_func(function(e) {
-        remoteChannel = e.channel;
-        remoteChannel.onopen = function() {
-            // regardless which channel initiated the connection
-            remoteChannel.close();
-            readyStates += remoteChannel.readyState + localChannel.readyState;
-            localChannel.close();
-            readyStates += remoteChannel.readyState + localChannel.readyState;
-            setTimeout(test.step_func(function() {
+    test.step(function() {
+        localPeerConnection = new RTCPeerConnection(iceServers);
+        remotePeerConnection = new RTCPeerConnection(iceServers);
+        try {
+            localChannel = localPeerConnection.createDataChannel("testDC_evten004");
+        } catch(e) {
+            assert_unreached("An error was thrown " + e.name + ": " + e.message);
+        }
+        createIceCandidatesAndOffer();
+        remotePeerConnection.ondatachannel = test.step_func(function(e) {
+            remoteChannel = e.channel;
+            remoteChannel.onopen = function() {
+                // regardless which channel initiated the connection
+                remoteChannel.close();
                 readyStates += remoteChannel.readyState + localChannel.readyState;
-                assert_true(((readyStates.search("closed") != -1) || (readyStates.search("closing") != -1)), "ReadyState 'closing' or 'closed' not set");
-                test.done();
-            }), 1000);
-        };
+                localChannel.close();
+                readyStates += remoteChannel.readyState + localChannel.readyState;
+                setTimeout(test.step_func(function() {
+                    readyStates += remoteChannel.readyState + localChannel.readyState;
+                    assert_true(((readyStates.search("closed") != -1) || (readyStates.search("closing") != -1)), "ReadyState 'closing' or 'closed' not set");
+                    test.done();
+                }), 1000);
+            };
+        });
     });
 }
 
