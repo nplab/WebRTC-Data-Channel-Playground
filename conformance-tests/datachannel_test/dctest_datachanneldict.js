@@ -619,20 +619,15 @@ function testDC_dict009(parameters) {
         maxRetransmits : parameters.maxRetransmits,
         maxPacketLifeTime : parameters.maxPacketLifeTime
     };
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_dict009", dataChannelOptions);
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        // Type is unsigned short = 0
-        assert_true(localChannel.maxPacketLifeTime === 0 || localChannel.maxPacketLifeTime === null, "maxPacketLifeTime is not set to null by default got " + localChannel.maxPacketLifeTime + " - ");
-        assert_true(localChannel.maxRetransmits === 0 || localChannel.maxRetransmits === null, "maxRetransmits is not set to null by default got " + localChannel.maxRetransmits + " - ");
-
-    }, "testDC_dict009: Call .createDataChannel() with the attribute maxRetransmits = " + dataChannelOptions.maxRetransmits + " and maxPacketLifeTime = " + dataChannelOptions.maxPacketLifeTime, {
-        timeout : 5000
-    });
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_dict009", dataChannelOptions);
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    // Type is unsigned short = 0
+    assert_true(localChannel.maxPacketLifeTime === 0 || localChannel.maxPacketLifeTime === null, "maxPacketLifeTime is not set to null by default got " + localChannel.maxPacketLifeTime + " - ");
+    assert_true(localChannel.maxRetransmits === 0 || localChannel.maxRetransmits === null, "maxRetransmits is not set to null by default got " + localChannel.maxRetransmits + " - ");
 }
 
 /**
