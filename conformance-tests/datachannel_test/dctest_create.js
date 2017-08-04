@@ -247,17 +247,13 @@ function testDC_create003(test) {
  */
 // Origin: W3C - 5.2 RTCDataChannel - DataChannel state created with createDataChannel() or dispatched via a RTCDataChannelEvent, MUST initially be in the connectiong state
 function testDC_create004() {
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        try {
-            localChannel = localPeerConnection.createDataChannel("testDC_create004");
-        } catch(e) {
-            assert_unreached("An error was thrown " + e.name + ": " + e.message);
-        }
-        assert_equals(localChannel.readyState, "connecting", "RTCDatachannelEvent initially wrong");
-    }, "Call .createDataChannel() and check readyState - must initially be in the connecting state", {
-        timeout : 5000
-    });
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    try {
+        localChannel = localPeerConnection.createDataChannel("testDC_create004");
+    } catch(e) {
+        assert_unreached("An error was thrown " + e.name + ": " + e.message);
+    }
+    assert_equals(localChannel.readyState, "connecting", "RTCDatachannelEvent initially wrong");
 }
 
 /**
@@ -314,7 +310,7 @@ function testDC_create005(test) {
  * outgoing stream.  When the peer sees that an incoming stream was
  * reset, it also resets its corresponding outgoing stream.
  */
-function testDC_create006() {
+function testDC_create006(test) {
     var waitTime = 3000;
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
@@ -359,7 +355,7 @@ function testDC_create006() {
  * outgoing stream.  When the peer sees that an incoming stream was
  * reset, it also resets its corresponding outgoing stream.
  */
-function testDC_create007() {
+function testDC_create007(test) {
     var waitTime = 3000;
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
@@ -404,7 +400,7 @@ function testDC_create007() {
  * outgoing stream.  When the peer sees that an incoming stream was
  * reset, it also resets its corresponding outgoing stream.
  */
-function testDC_create008() {
+function testDC_create008(test) {
     var waitTime = 3000;
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
@@ -449,7 +445,7 @@ function testDC_create008() {
  * outgoing stream.  When the peer sees that an incoming stream was
  * reset, it also resets its corresponding outgoing stream.
  */
-function testDC_create009() {
+function testDC_create009(test) {
     var waitTime = 3000;
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
