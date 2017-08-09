@@ -777,14 +777,10 @@ var dctests_send = {
 // Origin: W3C - 5.2.3 - send() - send data while readystate = connecting, throw an InvalidStateError
 // If channel's readyState attribute is connecting, throw an InvalidStateError exception and abort these steps
 function testDC_send001() {
-    test(function() {
-        localPeerConnection = new RTCPeerConnection(iceServers);
-        localChannel = localPeerConnection.createDataChannel("testDC1_2");
-        assert_throws("InvalidStateError", function() {
-            localChannel.send("Throw an InvalidState Error");
-        });
-    }, "Call .createDataChannel() - send data while readystate = connecting -  throw an InvalidStateError", {
-        timeout : 5000
+    localPeerConnection = new RTCPeerConnection(iceServers);
+    localChannel = localPeerConnection.createDataChannel("testDC1_2");
+    assert_throws("InvalidStateError", function() {
+        localChannel.send("Throw an InvalidState Error");
     });
 }
 
