@@ -155,7 +155,7 @@ function fillDcTestTable() {
             }
             if (test.references !== undefined) {
                 for (var i=0; i<test.references.length; i++) {
-                    testlistHTML += ' <a href="' + test.references[i] + '">' + (i+1) + '</a>'; 
+                    testlistHTML += ' <a href="#ref' + test.references[i] + '">[' + test.references[i] + ']</a>'; 
                 }
             }
             if (test.scenario !== undefined) {
@@ -174,10 +174,10 @@ function fillDcTestRefsTable() {
     var testrefsHTML;
     for (var number in dctestrefs) {
         testrefsHTML += '\
-        <tr>\
+        <tr id="ref' + number + '">\
         <td class="text-right">' + number + '. </td>\
         <td>\
-        <a id="ref' + number + '" href="' + dctestrefs[number].url + '">' + dctestrefs[number].title + '</a>. \
+        <a href="' + dctestrefs[number].url + '">' + dctestrefs[number].title + '</a>. \
         ' + dctestrefs[number].author + ((dctestrefs[number].author === "") ? "" : ". ") + '\
         ' + dctestrefs[number].status + ((dctestrefs[number].status === "") ? "" : ". ") + '\
         ' + dctestrefs[number].date + '\
