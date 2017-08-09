@@ -30,7 +30,7 @@ var dctests_create = {
         "timeout": 5000,
         "sync": true,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2"
+            1
         ],
         "test_function": testDC_create001
     },
@@ -42,7 +42,7 @@ var dctests_create = {
             <li>Must throw an ResourceInUse exception.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2"
+            1
         ],
         "timeout": 5000,
         "sync": true,
@@ -57,7 +57,7 @@ var dctests_create = {
             <li>Throw an ResourceInUse exception.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2"
+            1
         ],
         "timeout": 10000,
         "sync": false,
@@ -70,7 +70,7 @@ var dctests_create = {
             <li>Peer A: checks readyState, must initially be in the connecting state.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+            2
         ],
         "timeout": 5000,
         "sync": true,
@@ -85,7 +85,7 @@ var dctests_create = {
             <li>Peer A/B: checks readyState - should be \“open\”.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+            2
         ],
         "timeout": 10000,
         "sync": false,
@@ -101,8 +101,8 @@ var dctests_create = {
             <li>Peer A/B: checks readyState.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.7"
+            2,
+            9
         ],
         "timeout": 10000,
         "sync": false,
@@ -118,8 +118,8 @@ var dctests_create = {
             <li>Peer A/B: checks readyState.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.7"
+            2,
+            9
         ],
         "timeout": 10000,
         "sync": false,
@@ -136,8 +136,8 @@ var dctests_create = {
             <li>Peer A/B: checks readyState.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.7"
+            2,
+            9
         ],
         "timeout": 10000,
         "sync": false,
@@ -153,8 +153,8 @@ var dctests_create = {
             <li>Peer A/B: checks readyState.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.7"
+            2,
+            9
         ],
         "timeout": 10000,
         "sync": false,

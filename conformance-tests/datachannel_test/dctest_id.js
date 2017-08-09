@@ -33,7 +33,7 @@ var dctests_id = {
             <li>Peer A/B: checks id (Is id a number and equal).</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": false,
@@ -51,7 +51,7 @@ var dctests_id = {
             <li>Peer A: checks id.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": true,
@@ -69,7 +69,7 @@ var dctests_id = {
             <li>Peer A: checks id</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": true,
@@ -87,8 +87,8 @@ var dctests_id = {
             <li>Peer A: checks id.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6",
-            "https://code.google.com/p/webrtc/issues/detail?id=3150"
+            3,
+            10
         ],
         "timeout": 5000,
         "sync": true,
@@ -106,7 +106,7 @@ var dctests_id = {
             <li>Peer A: checks id.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": true,
@@ -124,7 +124,7 @@ var dctests_id = {
             <li>Peer A: checks id – must be smaller than 65536.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": true,
@@ -143,7 +143,7 @@ var dctests_id = {
             <li>Peer A/B:  checks id.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 10000,
         "sync": false,
@@ -162,7 +162,7 @@ var dctests_id = {
             <li>Peer A/B:  checks id.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 10000,
         "sync": false,
@@ -181,7 +181,7 @@ var dctests_id = {
             <li>Peer A/B:  checks id.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 10000,
         "sync": false,
@@ -200,7 +200,7 @@ var dctests_id = {
             <li>Peer A/B:  checks id.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 10000,
         "sync": false,
@@ -217,7 +217,7 @@ var dctests_id = {
             <li>Peer A: creates 70000 DataChannel  on a PeerConnection.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 20000,
         "sync": true,
@@ -237,7 +237,7 @@ var dctests_id = {
             <li>Peer A/B: waits until the DataChannel is open.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 20000,
         "sync": false,
@@ -257,7 +257,7 @@ var dctests_id = {
             <li>Peer A/B: waits until the DataChannel is open.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 20000,
         "sync": false,
@@ -275,7 +275,7 @@ var dctests_id = {
             <li>Repeats 65535 times and increase the id by one.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 20000,
         "sync": true,
@@ -295,7 +295,7 @@ var dctests_id = {
             <li>Peer A/B: waits until the DataChannel is open.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 20000,
         "sync": false,
@@ -315,7 +315,7 @@ var dctests_id = {
             <li>Peer A/B: waits until the DataChannel is open.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 20000,
         "sync": false,
@@ -333,8 +333,8 @@ var dctests_id = {
             <li>Peer A/B: checks connection.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.7"
+            3,
+            9
         ],
         "timeout": 10000,
         "sync": false,

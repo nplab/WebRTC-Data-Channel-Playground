@@ -35,7 +35,7 @@ var dctests_event = {
             <li>Peer A&B:  checks if the onclose EventHandler was called.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 10000,
         "sync": false,
@@ -51,7 +51,7 @@ var dctests_event = {
             <li>Peer A&B:  checks if the onclose EventHandler was called.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 10000,
         "sync": false,
@@ -67,7 +67,7 @@ var dctests_event = {
             <li>Peer A&B:  checks if the onclose EventHandler was called.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 10000,
         "sync": false,
@@ -83,7 +83,7 @@ var dctests_event = {
             <li>Peer A/B:  checks if the onmessage EventHandler was called.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 10000,
         "sync": false,
@@ -98,7 +98,7 @@ var dctests_event = {
             <li>Peer A/B:  checks if the onopen EventHandler was called.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 10000,
         "sync": false,
@@ -113,7 +113,7 @@ var dctests_event = {
             <li>Peer A/B:  checks new readyState, should be “closing” or “closed”.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 10000,
         "sync": false,

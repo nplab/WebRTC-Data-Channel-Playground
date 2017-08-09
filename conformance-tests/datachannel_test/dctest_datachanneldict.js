@@ -35,7 +35,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "test_function": testDC_dict001
     },
@@ -53,7 +53,7 @@ var dctests_dict = {
         "timeout": 5000,
         "sync": true,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "test_function": testDC_dict002
     },
@@ -71,8 +71,8 @@ var dctests_dict = {
         "timeout": 5000,
         "sync": true,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+            3,
+            2
         ],
         "test_function": testDC_dict003
     },
@@ -86,7 +86,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "test_function": testDC_dict004
     },
@@ -99,7 +99,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "test_function": testDC_dict005a
     },
@@ -117,8 +117,8 @@ var dctests_dict = {
         "timeout": 5000,
         "sync": true,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+            1,
+            2
         ],
         "test_function": testDC_dict006
     },
@@ -144,7 +144,7 @@ var dctests_dict = {
         "timeout": 5000,
         "sync": true,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2"
+            1
         ],
         "test_function": testDC_dict008
     },
@@ -163,7 +163,7 @@ var dctests_dict = {
         "timeout": 5000,
         "sync": true,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "test_function": testDC_dict009
     },
@@ -177,7 +177,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "test_function": testDC_dict010
     },
@@ -191,7 +191,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "test_function": testDC_dict011
     },
@@ -204,7 +204,7 @@ var dctests_dict = {
         "timeout": 5000,
         "sync": true,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "test_function": testDC_dict012
     },
@@ -218,7 +218,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "test_function": testDC_dict013
     },
@@ -232,7 +232,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2"
+            1
         ],
         "test_function": testDC_dict014
     },
@@ -253,8 +253,8 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            1,
+            3
         ],
         "test_function": testDC_dict015
     },
@@ -268,7 +268,7 @@ var dctests_dict = {
         "timeout": 5000,
         "sync": true,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+            2
         ],
         "test_function": testDC_dict016
     },
@@ -282,7 +282,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2"
+            1
         ],
         "test_function": testDC_dict017
     },
@@ -296,7 +296,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "test_function": testDC_dict018
     },
@@ -311,7 +311,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+            2
         ],
         "test_function": testDC_dict019
     },
@@ -325,7 +325,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+            2
         ],
         "test_function": testDC_dict020
     },
@@ -339,7 +339,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+            2
         ],
         "test_function": testDC_dict021
     },
@@ -355,7 +355,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+            2
         ],
         "test_function": testDC_dict022
     },
@@ -372,7 +372,7 @@ var dctests_dict = {
         "timeout": 10000,
         "sync": false,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+            2
         ],
         "test_function": testDC_dict023
     },

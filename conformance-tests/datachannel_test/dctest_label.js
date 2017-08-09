@@ -39,8 +39,8 @@ var dctests_label = {
         "timeout": 5000,
         "sync": true,
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            1,
+            3
         ],
         "test_function": testDC_label001
     },
@@ -57,8 +57,8 @@ var dctests_label = {
             <li>Peer A/B: checks the label.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            1,
+            3
         ],
         "timeout": 5000,
         "sync": false,
@@ -77,8 +77,8 @@ var dctests_label = {
             <li>Peer A/B: checks the label.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            1,
+            3
         ],
         "timeout": 5000,
         "sync": false,
@@ -97,8 +97,8 @@ var dctests_label = {
             <li>Peer A/B: checks the label.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            1,
+            3
         ],
         "timeout": 5000,
         "sync": false,
@@ -115,9 +115,9 @@ var dctests_label = {
             <li>Peer A/B: checks the label.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-07#section-5.1"
+            1,
+            3,
+            7
         ],
         "timeout": 5000,
         "sync": false,
@@ -134,9 +134,9 @@ var dctests_label = {
             <li>Peer A/B: checks the label.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-07#section-5.1"
+            1,
+            3,
+            7
         ],
         "timeout": 5000,
         "sync": false,
@@ -150,8 +150,8 @@ var dctests_label = {
             <li>Peer A/B: checks the label.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            1,
+            3
         ],
         "timeout": 5000,
         "sync": false,
@@ -171,8 +171,8 @@ var dctests_label = {
             <li>Peer A/B: checks the label.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            1,
+            3
         ],
         "timeout": 10000,
         "sync": false,
@@ -192,8 +192,8 @@ var dctests_label = {
             <li>Peer A/B: checks the label.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            1,
+            3
         ],
         "timeout": 20000,
         "sync": false,
@@ -207,8 +207,8 @@ var dctests_label = {
             <li>Peer A/B: checks the label – should be empty string \“\”.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            1,
+            3
         ],
         "timeout": 5000,
         "sync": false,
@@ -222,9 +222,9 @@ var dctests_label = {
             <li>Peer A/B: checks the label.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-07#section-5.1"
+            1,
+            3,
+            7
         ],
         "timeout": 5000,
         "sync": false,
@@ -238,9 +238,9 @@ var dctests_label = {
             <li>Peer A/B: checks the label.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2",
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-07#section-5.1"
+            1,
+            3,
+            7
         ],
         "timeout": 5000,
         "sync": false,

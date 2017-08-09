@@ -33,7 +33,7 @@ var dctests_send = {
             <li>Throw InvalidStateError.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#dictionary-rtcdatachannelinit-members"
+            5
         ],
         "timeout": 5000,
         "sync": true,
@@ -54,7 +54,7 @@ var dctests_send = {
             <li>Peer B: checks received data.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#dictionary-rtcdatachannelinit-members"
+            5
         ],
         "timeout": 10000,
         "sync": false,
@@ -69,7 +69,7 @@ var dctests_send = {
             <li>Peer A: sends data, throw an Error exception.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#dictionary-rtcdatachannelinit-members"
+            5
         ],
         "timeout": 10000,
         "sync": false,
@@ -82,7 +82,7 @@ var dctests_send = {
             <li>Peer A: checks binaryType (initialized to string \“blob\”).</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": true,
@@ -96,7 +96,7 @@ var dctests_send = {
             <li>Peer A: checks binaryType.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": true,
@@ -110,7 +110,7 @@ var dctests_send = {
             <li>Peer A: checks binaryType.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": true,
@@ -126,7 +126,7 @@ var dctests_send = {
             <li>Peer A: checks binaryType.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": true,
@@ -140,7 +140,7 @@ var dctests_send = {
             <li>Throw a SyntaxError.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": true,
@@ -154,7 +154,7 @@ var dctests_send = {
             <li>Throw SyntaxError.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": true,
@@ -168,7 +168,7 @@ var dctests_send = {
             <li>Peer A/B:  checks bufferedAmount value should be 0.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 5000,
         "sync": false,
@@ -182,7 +182,7 @@ var dctests_send = {
             <li>Peer A: sends data quick until bufferedAmount increases.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 15000,
         "sync": false,
@@ -199,7 +199,7 @@ var dctests_send = {
             <li>Peer A: checks whether bufferedAmount increases after closing.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 15000,
         "sync": false,
@@ -216,7 +216,7 @@ var dctests_send = {
             <li>Peer A: checks whether bufferedAmount not decrease.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+            3
         ],
         "timeout": 15000,
         "sync": false,
@@ -231,7 +231,7 @@ var dctests_send = {
             <li>Peer A: checks type and data from received message.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -246,7 +246,7 @@ var dctests_send = {
             <li>Peer A: checks type and data from received message.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -267,7 +267,7 @@ var dctests_send = {
             <li>Peer A: checks type (Blob) and data from received message.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -283,7 +283,7 @@ var dctests_send = {
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -299,7 +299,7 @@ var dctests_send = {
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -320,7 +320,7 @@ var dctests_send = {
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -336,7 +336,7 @@ var dctests_send = {
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -352,7 +352,7 @@ var dctests_send = {
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -373,7 +373,7 @@ var dctests_send = {
             <li>Peer A: checks type (ArrayBuffer) and data from received message</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -394,7 +394,7 @@ var dctests_send = {
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 5000,
         "sync": false,
@@ -409,7 +409,7 @@ var dctests_send = {
             <li>Peer A: should receives 0 Bytes.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -429,7 +429,7 @@ var dctests_send = {
             <li>Peer A: checks received data.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -449,8 +449,8 @@ var dctests_send = {
             <li>Peer A: checks received data, should be \“null\” String.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3",
-            "http://www.w3.org/TR/WebIDL/#es-DOMString"
+            4,
+            6
         ],
         "timeout": 5000,
         "sync": false,
@@ -470,7 +470,7 @@ var dctests_send = {
             <li>Peer B: checks received data.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3",
+            4,
         ],
         "timeout": 180000,
         "sync": false,
@@ -490,8 +490,8 @@ var dctests_send = {
             <li>Peer B: checks received data, should receive message complete (not partial).</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.6"
+            4,
+            8
         ],
         "timeout": 20000,
         "sync": false,
@@ -511,8 +511,8 @@ var dctests_send = {
             <li>Peer B: checks received data, should receive message complete (not partial).</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.6"
+            4,
+            8
         ],
         "timeout": 20000,
         "sync": false,
@@ -532,8 +532,8 @@ var dctests_send = {
             <li>Peer B: checks received data, should receive message complete (not partial).</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3",
-            "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.6"
+            4,
+            8
         ],
         "timeout": 20000,
         "sync": false,
@@ -549,7 +549,7 @@ var dctests_send = {
             <li>Peer A: sends data, throw an Error exception.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#dictionary-rtcdatachannelinit-members"
+            5
         ],
         "timeout": 10000,
         "sync": false,
@@ -570,7 +570,7 @@ var dctests_send = {
             <li>Peer B: checks received data and binaryType.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 180000,
         "sync": false,
@@ -591,7 +591,7 @@ var dctests_send = {
             <li>Peer B: checks received data.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 20000,
         "sync": false,
@@ -611,8 +611,8 @@ var dctests_send = {
             <li>Peer A: checks received data, should be “undefined” String.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3",
-            "http://www.w3.org/TR/WebIDL/#es-DOMString"
+            4,
+            6
         ],
         "timeout": 10000,
         "sync": false,
@@ -633,7 +633,7 @@ var dctests_send = {
             <li>Peer A/B: checks received data.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 25000,
         "sync": false,
@@ -653,7 +653,7 @@ var dctests_send = {
             <li>Peer B: checks correct order from received data.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 15000,
         "sync": false,
@@ -674,7 +674,7 @@ var dctests_send = {
             <li>Peer A can receive data randomly.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 500000,
         "sync": false,
@@ -697,7 +697,7 @@ var dctests_send = {
             <li>Peer B: checks received data.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 80000,
         "sync": false,
@@ -717,7 +717,7 @@ var dctests_send = {
             <li>Peer B: checks received data.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -737,7 +737,7 @@ var dctests_send = {
             <li>Peer B: checks received data.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 10000,
         "sync": false,
@@ -760,7 +760,7 @@ var dctests_send = {
             <li>Peer B: checks received data.</li>\
         </ol>",
         "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+            4
         ],
         "timeout": 30000,
         "sync": false,
