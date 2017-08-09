@@ -132,6 +132,8 @@
                 </div>
                 <div class="table-responsive">
                     <table id="testlist" class="table table-condensed table-striped"></table>
+                    <h2>References</h2>
+                    <table id="testrefs" class="table table-condensed table-striped"></table>
                 </div>
 
             </div>
@@ -206,6 +208,7 @@
             getDcTests(window);
             //fillTestList();
             fillDcTestTable();
+            fillDcTestRefsTable();
             
             $('.inspectFunction').popover({
                 html : true,

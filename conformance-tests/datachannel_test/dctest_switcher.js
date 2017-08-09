@@ -28,6 +28,79 @@
  * This file takes care of the test excecution
  */
 
+var dctestrefs = {
+    1: {
+        "author": "W3C",
+        "title": "WebRTC 1.0: Real-time Communication Between Browsers - RTCPeerConnection Methods",
+        "status": "Working Draft",
+        "date": "2015-02-10",
+        "url": "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2"
+    },
+    2: {
+        "author": "W3C",
+        "title": "WebRTC 1.0: Real-time Communication Between Browsers - RTCDataChannel",
+        "status": "Working Draft",
+        "date": "2015-02-10",
+        "url": "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
+    },
+    3: {
+        "author": "W3C",
+        "title": "WebRTC 1.0: Real-time Communication Between Browsers - RTCDataChannel Attributes",
+        "status": "Working Draft",
+        "date": "2015-02-10",
+        "url": "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
+    },
+    4: {
+        "author": "W3C",
+        "title": "WebRTC 1.0: Real-time Communication Between Browsers - RTCDataChannel Methods",
+        "status": "Working Draft",
+        "date": "2015-02-10",
+        "url": "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
+    },
+    5: {
+        "author": "W3C",
+        "title": "WebRTC 1.0: Real-time Communication Between Browsers - RTCDataChannel Dictionary",
+        "status": "Working Draft",
+        "date": "2015-02-10",
+        "url": "https://www.w3.org/TR/2015/WD-webrtc-20150210/#dictionary-rtcdatachannelinit-members"
+    },
+    6: {
+        "author": "W3C",
+        "title": "WebIDL Level 1 - ECMAScript binding",
+        "status": "Recommendation",
+        "date": "2016-12-15",
+        "url": "http://www.w3.org/TR/WebIDL/#es-DOMString"
+    },
+    7: {
+        "author": "IETF",
+        "title": "WebRTC Data Channel Establishment Protocol - Message Formats",
+        "status": "Internet-Draft",
+        "date": "2014-07-04",
+        "url": "http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-07#section-5.1"
+    },
+    8: {
+        "author": "IETF",
+        "title": "WebRTC Data Channels - Transferring User Data on a Channel",
+        "status": "Internet-Draft",
+        "date": "2014-07-04",
+        "url": "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.6"
+    },
+    9: {
+        "author": "IETF",
+        "title": "WebRTC Data Channels - Closing a Channel",
+        "status": "Internet-Draft",
+        "date": "2014-07-04",
+        "url": "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.7"
+    },
+    10: {
+        "author": "Chromium",
+        "title": "SCTP DataChannel stream id assignment does not respect the negotiated max stream count",
+        "status": "Bug Report",
+        "date": "2014-04-02",
+        "url": "https://code.google.com/p/webrtc/issues/detail?id=3150"
+    }
+};
+        
 var availableDcTests = {};
 var selectedDcTestList = [];
 var selectedDcTestNames = [];
@@ -95,6 +168,25 @@ function fillDcTestTable() {
     //testlistHTML += "</table></form>";
 
     $('#testlist').append(testlistHTML);
+}
+
+function fillDcTestRefsTable() {
+    var testrefsHTML;
+    for (var number in dctestrefs) {
+        testrefsHTML += '\
+        <tr>\
+        <td class="text-right">' + number + '. </td>\
+        <td>\
+        <a id="ref' + number + '" href="' + dctestrefs[number].url + '">' + dctestrefs[number].title + '</a>. \
+        ' + dctestrefs[number].author + ((dctestrefs[number].author === "") ? "" : ". ") + '\
+        ' + dctestrefs[number].status + ((dctestrefs[number].status === "") ? "" : ". ") + '\
+        ' + dctestrefs[number].date + '\
+        </td>\
+        </tr>';
+            
+    }
+
+    $('#testrefs').append(testrefsHTML);
 }
 
 function htmlEncode(value){
