@@ -81,7 +81,7 @@ var dctests_create = {
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
             <li>Peer A: checks readyState - should be \“connecting\”.</li>\
-            <li>Peer B: waits for the DataChannel.</li>\\n\
+            <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B: checks readyState - should be \“open\”.</li>\
         </ol>",
         "references": [

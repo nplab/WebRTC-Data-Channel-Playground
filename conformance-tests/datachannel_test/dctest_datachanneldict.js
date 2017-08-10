@@ -303,7 +303,7 @@ var dctests_dict = {
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
             <li>Peer B: waits for the DataChannel.</li>\
-            <li>Peer A/B: : tries to change attribute ordered, maxRetransmits, negotiated and label.</li>\\n\
+            <li>Peer A/B: : tries to change attribute ordered, maxRetransmits, negotiated and label.</li>\
             <li>Peer A/B:  checks attributes – should be unchangeable.</li>\
         </ol>",
         "timeout": 10000,
