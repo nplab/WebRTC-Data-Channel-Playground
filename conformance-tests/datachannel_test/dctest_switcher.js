@@ -151,7 +151,7 @@ function fillDcTestTable() {
             testlistHTML += '<tr><td>';
             testlistHTML += '<span class="glyphicon glyphicon-search inspectFunction" aria-hidden="true" data-function="'+htmlEncode(test.test_function.toString())+'"></span> <label><input type="checkbox" name="test" value="' + testCategory + '.' + testName + '"> '+ testName + ' - ' + test.description + '</label>';
             if (test.scenario !== undefined) {
-                testlistHTML += ' <a href="#' + testCategory + '_' + testName + '_scenario" data-toggle="collapse" data-target="#' + testCategory + '_' + testName + '_scenario">scenario</a>';
+                testlistHTML += ' <a href="javascript:;" data-target="#' + testCategory + '_' + testName + '_scenario" data-toggle="collapse" data-target="#' + testCategory + '_' + testName + '_scenario">scenario</a>';
             }
             if (test.references !== undefined) {
                 for (var i=0; i<test.references.length; i++) {
