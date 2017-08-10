@@ -130,9 +130,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 5000,
         "sync": true,
-        "references": [
-            "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-5"
-        ],
+        "references": [1],
         "test_function": testDC_dict007
     },
     "dict008": {
