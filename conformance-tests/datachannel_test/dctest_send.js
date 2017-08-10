@@ -41,11 +41,11 @@ var dctests_send = {
     },
     "send002": {
         "parameters": {
-            "expected": generateData(14),
+            "datasize": 14,
             "repeats": 100
         },
         get description() {
-            return "Set up a DataChannel - send " + this.parameters.repeats + "messages of size " + this.parameters.expected.length / 1024 + " KB";
+            return "Set up a DataChannel - send " + this.parameters.repeats + " messages of size " + Math.pow(2, (this.parameters.datasize - 10)) + " KB";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
@@ -458,10 +458,10 @@ var dctests_send = {
     },
     "send027": {
         "parameters": {
-            "data": generateData(25)
+            "datasize": 25
         },
         get description() {
-            return "Set up a DataChannel - send " + this.parameters.data.length / 1024 / 1024 + " MB data packet!";
+            return "Set up a DataChannel - send " + Math.pow(2, (this.parameters.datasize - 20)) + " MB data packet!";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
@@ -478,10 +478,10 @@ var dctests_send = {
     },
     "send028": {
         "parameters": {
-            "data": generateData(17)
+            "datasize": 17
         },
         get description() {
-            return "Set up a DataChannel - send a message of size " + this.parameters.data.length / 1024 + " KB and check whether the other channel receives the complete message (partial delivery) - should receive complete message";
+            return "Set up a DataChannel - send a message of size " + Math.pow(2, (this.parameters.datasize - 10)) + " KB and check whether the other channel receives the complete message (partial delivery) - should receive complete message";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
@@ -499,10 +499,11 @@ var dctests_send = {
     },
     "send029": {
         "parameters": {
-            "data": generateData(16) + generateLinearData(992)
+            "datasize": 16,
+            "datasize_linear": 992
         },
         get description() {
-            return "Set up a DataChannel - send message of size " + this.parameters.data.length + " Bytes and check whether the other channel receives the complete message (partial delivery) - should receive complete message";
+            return "Set up a DataChannel - send message of size " + (Math.pow(2, this.parameters.datasize) + this.parameters.datasize_linear) + " Bytes and check whether the other channel receives the complete message (partial delivery) - should receive complete message";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
@@ -520,10 +521,11 @@ var dctests_send = {
     },
     "send030": {
         "parameters": {
-            "data": generateData(16) + generateLinearData(993)
+            "datasize": 16,
+            "datasize_linear": 993
         },
         get description() {
-            return "Set up a DataChannel - send message of size " + this.parameters.data.length + " Bytes and check whether the other channel receives the complete message (partial delivery) - should receive complete message";
+            return "Set up a DataChannel - send message of size " + (Math.pow(2, this.parameters.datasize) + this.parameters.datasize_linear) + " Bytes and check whether the other channel receives the complete message (partial delivery) - should receive complete message";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
@@ -578,11 +580,11 @@ var dctests_send = {
     },
     "send033": {
         "parameters": {
-            "data": generateData(14),
+            "datasize": 14,
             "repeats": 512
         },
         get description() {
-            return "Set up a DataChannel - send " + (this.parameters.data.length / 1024) + " KB data " + this.parameters.repeats + " times = " + (this.parameters.data.length * this.parameters.repeats / 1024 / 1024) + " MB";
+            return "Set up a DataChannel - send " + Math.pow(2, (this.parameters.datasize - 10)) + " KB data " + this.parameters.repeats + " times = " + (Math.pow(2, (this.parameters.datasize - 10)) * this.parameters.repeats / 1024) + " MB";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
@@ -620,11 +622,11 @@ var dctests_send = {
     },
     "send035": {
         "parameters": {
-            "data": generateData(14),
+            "datasize": 14,
             "repeats": 256
         },
         get description() {
-            return "Set up a DataChannel - send "+ this.parameters.repeats + " messages of size " + (this.parameters.data.length / 1024) + " KB (total of "+ (this.parameters.data.length * this.parameters.repeats / 1024 / 1024) + " MB) and receive - synchronous";
+            return "Set up a DataChannel - send "+ this.parameters.repeats + " messages of size " + Math.pow(2, (this.parameters.datasize - 10)) + " KB (total of "+ (Math.pow(2, (this.parameters.datasize - 10)) * this.parameters.repeats / 1024) + " MB) and receive - synchronous";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
@@ -682,12 +684,12 @@ var dctests_send = {
     },
     "send038": {
         "parameters": {
-            "data": generateData(14),
+            "datasize": 14,
             "repeats": 96,
             "replays": 20
         },
         get description() {
-            return "Set up a DataChannel - send "+ this.parameters.repeats + " messages of size " + (this.parameters.data.length / 1024) + " KB (total of " + (this.parameters.data.length * this.parameters.repeats / 1024 / 1024) + " MB) - wait 2 second and replay " + this.parameters.replays + " times (total of " + ((this.parameters.data.length * this.parameters.repeats / 1024 / 1024) * this.parameters.replays) + " MB)";
+            return "Set up a DataChannel - send "+ this.parameters.repeats + " messages of size " + Math.pow(2, (this.parameters.datasize - 10)) + " KB (total of " + (Math.pow(2, this.parameters.datasize - 10) * this.parameters.repeats / 1024) + " MB) - wait 2 second and replay " + this.parameters.replays + " times (total of " + ((Math.pow(2, this.parameters.datasize - 10) * this.parameters.repeats / 1024) * this.parameters.replays) + " MB)";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
@@ -705,10 +707,10 @@ var dctests_send = {
     },
     "send039": {
         "parameters": {
-            "data": generateData(18)
+            "datasize": 18
         },
         get description() {
-            return "Set up a DataChannel - send a message of size " + this.parameters.data.length / 1024 + " KB (find maximum message size Chrome/Opera)";
+            return "Set up a DataChannel - send a message of size " + Math.pow(2, (this.parameters.datasize - 10)) + " KB (find maximum message size Chrome/Opera)";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
@@ -725,10 +727,10 @@ var dctests_send = {
     },
     "send040": {
         "parameters": {
-            "data": generateData(18)
+            "datasize": 18
         },
         get description() {
-            return "Set up a DataChannel - send a message of size " + this.parameters.data.length / 1024 + " KB + 1 Byte (find maximum message size Chrome/Opera)";
+            return "Set up a DataChannel - send a message of size " + Math.pow(2, (this.parameters.datasize - 10)) + " KB + 1 Byte (find maximum message size Chrome/Opera)";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel.</li>\
@@ -793,7 +795,7 @@ function testDC_send001() {
  */
 // Origin: W3C - 5.2.3
 function testDC_send002(test, parameters) {
-    var expected = parameters.expected;
+    var expected = generateData(parameters.datasize);
     var repeats = parameters.repeats;
     // Look whether data is received partial
     var pM = 0;
@@ -1770,7 +1772,7 @@ function testDC_send026(test, parameters) {
 // Firefox sends and receives the data with increasing the buffered mount value with one big Data
 // FIXME: Chrome cant send more than 512 KB (Failed to excecute send), after Chrome version update from v36 to 37 no error is thrown but both channel where closed
 function testDC_send027(test, parameters) {
-    var data = parameters.data;
+    var data = generateData(parameters.datasize);
     test.step(function() {
         console.log(data.length / 1024 / 1024);
         localPeerConnection = new RTCPeerConnection(iceServers);
@@ -1819,7 +1821,7 @@ function testDC_send027(test, parameters) {
 // FIXME: @ Chrome: Fails receives or send Data Partial
 // http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.6
 function testDC_send028(test, parameters) {
-    var data = parameters.data;
+    var data = generateData(parameters.datasize);
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
@@ -1860,7 +1862,8 @@ function testDC_send028(test, parameters) {
 // FIXME: @ W3C No Information about partial delivery in the api
 // http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.6
 function testDC_send029(test, parameters) {
-    var data = parameters.data;
+    var data = generateData(parameters.datasize);
+    data += generateLinearData(parameters.datasize_linear);
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
@@ -1901,7 +1904,8 @@ function testDC_send029(test, parameters) {
 // FIXME: @ Chrome: Fails receives or send Data Partial
 // http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.6
 function testDC_send030(test, parameters) {
-    var data = parameters.data;
+    var data = generateData(parameters.datasize);
+    data += generateLinearData(parameters.datasize_linear);
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
@@ -2029,7 +2033,7 @@ function testDC_send032(test, parameters) {
  */
 // Origin: W3C - 5.2.2 - Methods send data quick after each other
 function testDC_send033(test, parameters) {
-    var data = parameters.data;
+    var data = generateData(parameters.datasize);
     var repeats = parameters.repeats;
     var receive = 0;
     var i = 0;
@@ -2117,7 +2121,7 @@ function testDC_send034(test, parameters) {
 // Origin: W3C - 5.2.2 - Methods send data quick after each other
 // FIXME: Chrome crashes
 function testDC_send035(test, parameters) {
-    var data = parameters.data;
+    var data = generateData(parameters.datasize);
     var repeats = parameters.repeats;
     var receiveLocal = 0;
     var receiveRemote = 0;
@@ -2316,7 +2320,7 @@ function testDC_send037(test, parameters) {
  */
 // Origin: W3C - 5.2.2 - Methods send data quick after each other
 function testDC_send038(test, parameters) {
-    var data = parameters.data;
+    var data = generateData(parameters.datasize);
     var repeats = parameters.repeats;
     var replays = parameters.replays;
     var replayCount = 0;
@@ -2371,7 +2375,7 @@ function testDC_send038(test, parameters) {
  */
 // Origin: W3C - 5.2.2 - Methods send - Chrome and Opera maximum message size
 function testDC_send039(test, parameters) {
-    var data = parameters.data, partialLength = 0;
+    var data = generateData(parameters.datasize), partialLength = 0;
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
@@ -2411,7 +2415,7 @@ function testDC_send039(test, parameters) {
  */
 // Origin: W3C - 5.2.2 - Methods send - find Chrome and Opera maximum message size
 function testDC_send040(test, parameters) {
-    var data = parameters.data, partialLength = 0;
+    var data = generateData(parameters.datasize), partialLength = 0;
     data += "s";
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);

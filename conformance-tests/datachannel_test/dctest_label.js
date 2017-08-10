@@ -86,58 +86,41 @@ var dctests_label = {
     },
     "label004": {
         "parameters": {
-            "label": generateData(15)
+            "datasize": 15
         },
         get description() {
-            return "Set up a DataChannel with a label of length " +  this.parameters.label.length + " byte - check the label on both peers";
+            return "Set up a DataChannel with a label of length 2^" +  this.parameters.datasize + " byte - check the label on both peers";
         },
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with a label of 32 KB length.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [
-            1,
-            3
-        ],
+        "references": [1, 3],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label004
     },
     "label005": {
-        "parameters": {
-            "label": generateData(16)
-        },
         "description": "Set up a DataChannel with a label of length 65535 Byte - check the label on both peers (should be the maximum length",
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with a 65535 Byte (64 KB - 1 Byte) label length.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [
-            1,
-            3,
-            7
-        ],
+        "references": [1, 3, 7],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label005
     },
     "label006": {
-        "parameters": {
-            "label": generateData(16)
-        },
         "description": "Create a DataChannel with a label of length 65536 Byte label length - check if an error is thrown",
         "scenario": "<ol> \
             <li>Peer A: creates a DataChannel with label of 64 KB length.</li>\
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [
-            1,
-            3,
-            7
-        ],
+        "references": [1, 3, 7],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label006
@@ -324,11 +307,12 @@ function testDC_label003(test, parameters) {
 // Label set test with very long label
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 function testDC_label004(test, parameters) {
+    var label = generateData(parameters.datasize);
     test.step(function() {
         localPeerConnection = new RTCPeerConnection(iceServers);
         remotePeerConnection = new RTCPeerConnection(iceServers);
         try {
-            localChannel = localPeerConnection.createDataChannel(parameters.label);
+            localChannel = localPeerConnection.createDataChannel(label);
         } catch(e) {
             assert_unreached("An error was thrown " + e.name + ": " + e.message);
         }
@@ -336,7 +320,7 @@ function testDC_label004(test, parameters) {
         remotePeerConnection.ondatachannel = test.step_func(function(e) {
             remoteChannel = e.channel;
             remoteChannel.onopen = test.step_func(function() {
-                assert_equals(localChannel.label, parameters.label, "Wrong label ");
+                assert_equals(localChannel.label, label, "Wrong label ");
                 assert_equals(remoteChannel.label, localChannel.label, "Wrong label ");
                 assert_equals(remoteChannel.label.length, localChannel.label.length, "Wrong label ");
                 test.done();
@@ -354,8 +338,8 @@ function testDC_label004(test, parameters) {
  */
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 // Origin: http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-07#section-5.1  -   DC Open Message: Label Length 2^16
-function testDC_label005(test, parameters) {
-    var label = parameters.label;
+function testDC_label005(test) {
+    var label = generateData(16);
     label = label.substring(0, (label.length - 1))
     test.step(function() {
         assert_equals(label.length, 65535, "Wrong label length ");
@@ -391,13 +375,14 @@ function testDC_label005(test, parameters) {
 // Origin: W3C - 5.1.2 Methods: 3 and 5.2.1 Attributes (label)
 // Origin: http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-07#section-5.1  -   DC Open Message: Label Length 2^16
 // FIXME @W3C what shoul the user agent do, throw an error...
-function testDC_label006(test, parameters) {
+function testDC_label006(test) {
+    var label = generateData(16);
     test.step(function() {
-        assert_equals(parameters.label.length, 65536, "Wrong label length ");
+        assert_equals(label.length, 65536, "Wrong label length ");
         localPeerConnection = new RTCPeerConnection(iceServers);
 
         assert_throws(null, function(){
-                localChannel = localPeerConnection.createDataChannel(parameters.label);
+                localChannel = localPeerConnection.createDataChannel(label);
         }, " Exception for exceeding label length");
     });
 }
