@@ -174,9 +174,9 @@ function fillDcTestRefsTable() {
     var testrefsHTML;
     for (var number in dctestrefs) {
         testrefsHTML += '\
-        <tr id="ref' + number + '">\
+        <tr>\
         <td class="text-right">' + number + '. </td>\
-        <td>\
+        <td id="ref' + number + '">\
         <a href="' + dctestrefs[number].url + '">' + dctestrefs[number].title + '</a>. \
         ' + dctestrefs[number].author + ((dctestrefs[number].author === "") ? "" : ". ") + '\
         ' + dctestrefs[number].status + ((dctestrefs[number].status === "") ? "" : ". ") + '\
