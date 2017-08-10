@@ -377,7 +377,7 @@ var dctests_send = {
         ],
         "timeout": 10000,
         "sync": false,
-        "test_function": testDC_send003
+        "test_function": testDC_send022
     },
     "send023": {
         "parameters": {
