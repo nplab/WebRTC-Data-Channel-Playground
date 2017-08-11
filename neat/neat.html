@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="WebRTC Data Channel Playground - Gyrocolor">
+    <meta name="author" content="Felix Weinrank">
+
+    <title>WebRTC Data Channel Playground - WebRTC NEAT</title>
+
+    <link rel="apple-touch-icon" href="../common/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" href="../common/favicon/android-icon-192x192.png">
+    <link rel="manifest" href="../common/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="../common/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- CSS Section -->
+    <link rel="stylesheet" href="../common/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../common/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../common/custom.css">
+
+    <!-- JAVSCRIPT Section -->
+    <script src="../common/jquery.min.js"></script>
+    <script src="../common/bootstrap/js/bootstrap.min.js"></script>
+    <script src="smoothie.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand">WebRTC Data Channel Playground</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="../netperfmeter/netperfmeter.html">Netperfmeter</a>
+                    </li>
+                    <li>
+                        <a href="../stresstest/stresstest.html">Stresstest</a>
+                    </li>
+                    <li>
+                        <a href="../conformance-tests/conformance-tests.html">Browsertest</a>
+                    </li>
+                    <li>
+                        <a href="../gyrocolor/gyrocolor.html">Gyrocolor</a>
+                    </li>
+                    <li>
+                        <a href="../speedtest/speedtest.html">Speedtest</a>
+                    </li>
+                    <li>
+                        <a href="../signaling/signaling.html">Signaling</a>
+                    </li>
+                    <li class="active">
+                        <a href="../neat/neat.html">NEAT</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </nav>
+
+    <div class="container" id="complementary">
+        <h1>WebRTC for NEAT</h1>
+
+        <textarea cols="120" rows="2" class="hidden" id="local-parameters" onclick="this.select();" readonly></textarea>
+        <textarea cols="120" rows="2" class="hidden" id="remote-parameters"></textarea><br />
+
+        <div class="row">
+            <div class="col-sm-4">
+                <canvas id="chart1" style="width:100%; height:200px"></canvas>
+            </div>
+            <div class="col-sm-4">
+                <canvas id="chart2" style="width:100%; height:200px"></canvas>
+            </div>
+            <div class="col-sm-4">
+                <canvas id="chart3" style="width:100%; height:200px"></canvas>
+            </div>
+        </div>
+
+        <div class="footer text-center">
+            &copy; Network Programming Lab of Münster University of Applied Sciences - Felix Weinrank - weinrank@fh-muenster.de - <a href="https://github.com/nplab/WebRTC-Data-Channel-Playground">@GitHub</a>
+        </div>
+    </div>
+
+    <script type='text/javascript' src="https://webrtc.nplab.de:3001/socket.io/socket.io.js"></script>
+    <script type='text/javascript' src="../common/webrtc.common.js"></script>
+    <script type='text/javascript' src="sdp.js"></script>
+    <script type="text/javascript" src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script type='text/javascript' src="webrtc_rawrtc.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            'use strict';
+
+            browsercheck();
+
+
+            var localParameters     = "";
+            var remoteParameters    = "";
+            var socket              = io('https://webrtc.nplab.de:3001/');
+            var gotLocalParameters  = false;
+            var sensorChannel       = null;
+
+            // establish connection to remote peer via webrtc
+            function connectSignaling() {
+                socket.emit("roomJoin", 1207);
+            }
+
+            function setRemoteParameters(peer) {
+                // Parse and apply the remote parameters
+                let parameters = JSON.parse(remoteParameters);
+                console.log('Remote parameters:', parameters);
+                peer.setRemoteParameters(parameters)
+                    .then((parameters) => {
+                        // Generate local parameters if controlled
+                        if (peer instanceof ControlledPeer) {
+                            getLocalParameters(peer);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            };
+
+            function getLocalParameters(peer) {
+                // Generate and show the local parameters
+                peer.getLocalParameters()
+                    .then((parameters) => {
+                        console.log('Local parameters:', parameters);
+                        localParameters = JSON.stringify(parameters);
+                        socket.emit("signaling", JSON.stringify(parameters));
+                        gotLocalParameters = true;
+
+                        if (remoteParameters.length) {
+                            setRemoteParameters(peer);
+                        }
+                    });
+            }
+
+            function createPeer(controllingParameter) {
+                let controlling = controllingParameter == 'true' || controllingParameter == '1';
+                console.log('Role: ICE-Controll' + (controlling ? 'ing' : 'ed'));
+
+                controlling = true;
+
+                // Create peer depending on the role
+                let peer = controlling ? new ControllingPeer() : new ControlledPeer();
+                peer.createPeerConnection();
+
+                sensorChannel = peer.createDataChannel(peer.pc.createDataChannel('sensorChannel', {
+                    ordered: true,
+                    negotiated: true,
+                    id: 0
+                }));
+
+                sensorChannel.onopen = function(event) {
+                    console.log("SensorChannel open!!!!");
+                }
+
+                sensorChannel.onmessage = function(e) {
+                    var enc = new TextDecoder("utf-8");
+                    //console.log(enc.decode(e.data));
+
+                    var string = enc.decode(e.data);
+                    var sensedata = JSON.parse(string);
+
+                    data1.append(new Date().getTime(), sensedata.x);
+                    data2.append(new Date().getTime(), sensedata.y);
+                    data3.append(new Date().getTime(), sensedata.z);
+                };
+
+
+
+                // Create local parameters if we are the controlling peer.
+                // Keep in mind this still uses offer/answer in the background, thus this
+                // limitation which does not exist for ORTC but does for WebRTC.
+                if (controlling) {
+                    //getLocalParameters(peer);
+                }
+
+                return peer;
+            }
+
+            // handle incoming info messages from server
+            socket.on('info', function(msg) {
+                console.log('server info: ' + msg);
+            });
+
+            // handle incoming signaling messages
+            socket.on("signaling", function(msg) {
+
+                console.log("signaling message: " + msg);
+
+                if (msg.localeCompare("READY###") == 0) {
+                    getLocalParameters(peer);
+                } else {
+                    msg = msg.replace(/\0/g, '')
+                    remoteParameters = msg;
+                    if (gotLocalParameters) {
+                        setRemoteParameters(peer);
+                    }
+
+                }
+
+            });
+
+
+            // Create peer
+            // Determine role from GET parameter (?controlling=true|false)
+            let peer = createPeer("0");
+
+            connectSignaling();
+            console.log('ready! :)');
+
+            var data1 = new TimeSeries();
+            var data2 = new TimeSeries();
+            var data3 = new TimeSeries();
+
+            var options = {
+                maxValue : 2,
+                minValue : 0,
+                responsive : true
+            }
+
+            function createTimeline1() {
+                var chart = new SmoothieChart(options);
+                chart.addTimeSeries(data1, { strokeStyle: 'rgba(0, 255, 0, 1)', lineWidth: 2 });
+                chart.streamTo(document.getElementById("chart1"), 500);
+            }
+
+            function createTimeline2() {
+                var chart = new SmoothieChart(options);
+                chart.addTimeSeries(data2, { strokeStyle: 'rgba(0, 255, 0, 1)', lineWidth: 2 });
+                chart.streamTo(document.getElementById("chart2"), 500);
+            }
+
+            function createTimeline3() {
+                var chart = new SmoothieChart(options);
+                chart.addTimeSeries(data3, { strokeStyle: 'rgba(0, 255, 0, 1)', lineWidth: 2 });
+                chart.streamTo(document.getElementById("chart3"), 500);
+            }
+
+            createTimeline1();
+            createTimeline2();
+            createTimeline3();
+        });
+    </script>
+</body>
+
+</html>
