@@ -89,8 +89,9 @@ function result_callback(res) {
     testResults += testResult[res.status] +"<br />";
     testCompleteResults += "<tr><td>"+testCounter+"</td><td>"+res.name+"</td><td>"+testResult[res.status]+"</td><td>"+testMessage(res.message)+"</td></tr>";
 
-
-    logWrite("Test: " + (res.name) + "... done! - \"" + selectedDcTestNames[testCounter] + "\"");    
+    var logMsg = "Test: " + (res.name) + "... done!";
+    if (testCounter < selectedDcTestNames.length) logMsg +=  "- \"" + selectedDcTestNames[testCounter] + "\"";
+    logWrite(logMsg);    
     if (showResults)
         console.log("Result received", res);
         
