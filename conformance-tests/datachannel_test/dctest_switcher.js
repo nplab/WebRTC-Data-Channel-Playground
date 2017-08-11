@@ -29,70 +29,70 @@
  */
 
 var dctestrefs = {
-    1: {
+    "W3CPeerM": {
         "author": "W3C",
         "title": "WebRTC 1.0: Real-time Communication Between Browsers - RTCPeerConnection Methods",
         "status": "Working Draft",
         "date": "2015-02-10",
         "url": "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-2"
     },
-    2: {
+    "W3CData": {
         "author": "W3C",
         "title": "WebRTC 1.0: Real-time Communication Between Browsers - RTCDataChannel",
         "status": "Working Draft",
         "date": "2015-02-10",
         "url": "https://www.w3.org/TR/2015/WD-webrtc-20150210/#rtcdatachannel"
     },
-    3: {
+    "W3CDataA": {
         "author": "W3C",
         "title": "WebRTC 1.0: Real-time Communication Between Browsers - RTCDataChannel Attributes",
         "status": "Working Draft",
         "date": "2015-02-10",
         "url": "https://www.w3.org/TR/2015/WD-webrtc-20150210/#attributes-6"
     },
-    4: {
+    "W3CDataM": {
         "author": "W3C",
         "title": "WebRTC 1.0: Real-time Communication Between Browsers - RTCDataChannel Methods",
         "status": "Working Draft",
         "date": "2015-02-10",
         "url": "https://www.w3.org/TR/2015/WD-webrtc-20150210/#methods-3"
     },
-    5: {
+    "W3CDataD": {
         "author": "W3C",
         "title": "WebRTC 1.0: Real-time Communication Between Browsers - RTCDataChannel Dictionary",
         "status": "Working Draft",
         "date": "2015-02-10",
         "url": "https://www.w3.org/TR/2015/WD-webrtc-20150210/#dictionary-rtcdatachannelinit-members"
     },
-    6: {
+    "W3CDOM": {
         "author": "W3C",
         "title": "WebIDL Level 1 - ECMAScript binding",
         "status": "Recommendation",
         "date": "2016-12-15",
         "url": "http://www.w3.org/TR/WebIDL/#es-DOMString"
     },
-    7: {
+    "IETFDataP": {
         "author": "IETF",
         "title": "WebRTC Data Channel Establishment Protocol - Message Formats",
         "status": "Internet-Draft",
         "date": "2014-07-04",
         "url": "http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-07#section-5.1"
     },
-    8: {
+    "IETFData66": {
         "author": "IETF",
         "title": "WebRTC Data Channels - Transferring User Data on a Channel",
         "status": "Internet-Draft",
         "date": "2014-07-04",
         "url": "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.6"
     },
-    9: {
+    "IETFData67": {
         "author": "IETF",
         "title": "WebRTC Data Channels - Closing a Channel",
         "status": "Internet-Draft",
         "date": "2014-07-04",
         "url": "http://tools.ietf.org/html/draft-ietf-rtcweb-data-channel-11#section-6.7"
     },
-    10: {
+    "ChromeBug": {
         "author": "Chromium",
         "title": "SCTP DataChannel stream id assignment does not respect the negotiated max stream count",
         "status": "Bug Report",
@@ -140,6 +140,12 @@ function getDcTests(obj) {
 // Create the table with all available tests
 function fillDcTestTable() {
     var testlistHTML = "<tr>";
+    var ref2Num = {};
+    var i = 1;
+    for (var key in dctestrefs) {
+        ref2Num[key] = i;
+        i++;
+    }
 
     for (var testCategory in availableDcTests) {
         testlistHTML += '<tr>';
@@ -155,7 +161,7 @@ function fillDcTestTable() {
             }
             if (test.references !== undefined) {
                 for (var i=0; i<test.references.length; i++) {
-                    testlistHTML += ' <a href="#ref' + test.references[i] + '">[' + test.references[i] + ']</a>'; 
+                    testlistHTML += ' <a href="#ref' + test.references[i] + '">[' + ref2Num[test.references[i]] + ']</a>'; 
                 }
             }
             if (test.scenario !== undefined) {
@@ -172,18 +178,19 @@ function fillDcTestTable() {
 
 function fillDcTestRefsTable() {
     var testrefsHTML;
-    for (var number in dctestrefs) {
+    var i = 1;
+    for (var key in dctestrefs) {
         testrefsHTML += '\
         <tr>\
-        <td class="text-right">' + number + '. </td>\
-        <td id="ref' + number + '">\
-        <a href="' + dctestrefs[number].url + '">' + dctestrefs[number].title + '</a>. \
-        ' + dctestrefs[number].author + ((dctestrefs[number].author === "") ? "" : ". ") + '\
-        ' + dctestrefs[number].status + ((dctestrefs[number].status === "") ? "" : ". ") + '\
-        ' + dctestrefs[number].date + '\
+        <td class="text-right">' + i + '. </td>\
+        <td id="ref' + key + '">\
+        <a href="' + dctestrefs[key].url + '">' + dctestrefs[key].title + '</a>. \
+        ' + dctestrefs[key].author + ((dctestrefs[key].author === "") ? "" : ". ") + '\
+        ' + dctestrefs[key].status + ((dctestrefs[key].status === "") ? "" : ". ") + '\
+        ' + dctestrefs[key].date + '\
         </td>\
         </tr>';
-            
+        i++;
     }
 
     $('#testrefs').append(testrefsHTML);

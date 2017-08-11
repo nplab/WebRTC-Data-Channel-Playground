@@ -34,9 +34,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "test_function": testDC_dict001
     },
     "dict002": {
@@ -52,9 +50,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 5000,
         "sync": true,
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "test_function": testDC_dict002
     },
     "dict003": {
@@ -70,10 +66,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 5000,
         "sync": true,
-        "references": [
-            3,
-            2
-        ],
+        "references": ["W3CData", "W3CDataA"],
         "test_function": testDC_dict003
     },
     "dict004": {
@@ -85,9 +78,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "test_function": testDC_dict004
     },
     "dict005a": {
@@ -98,9 +89,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "test_function": testDC_dict005a
     },
     "dict006": {
@@ -116,10 +105,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 5000,
         "sync": true,
-        "references": [
-            1,
-            2
-        ],
+        "references": ["W3CPeerM", "W3CData"],
         "test_function": testDC_dict006
     },
     "dict007": {
@@ -130,7 +116,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 5000,
         "sync": true,
-        "references": [1],
+        "references": ["W3CPeerM"],
         "test_function": testDC_dict007
     },
     "dict008": {
@@ -141,9 +127,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 5000,
         "sync": true,
-        "references": [
-            1
-        ],
+        "references": ["W3CPeerM"],
         "test_function": testDC_dict008
     },
     "dict009": {
@@ -160,9 +144,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 5000,
         "sync": true,
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "test_function": testDC_dict009
     },
     "dict010": {
@@ -174,9 +156,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "test_function": testDC_dict010
     },
     "dict011": {
@@ -188,9 +168,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "test_function": testDC_dict011
     },
     "dict012": {
@@ -201,9 +179,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 5000,
         "sync": true,
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "test_function": testDC_dict012
     },
     "dict013": {
@@ -215,9 +191,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "test_function": testDC_dict013
     },
     "dict014": {
@@ -229,9 +203,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            1
-        ],
+        "references": ["W3CPeerM"],
         "test_function": testDC_dict014
     },
     "dict015": {
@@ -250,10 +222,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            1,
-            3
-        ],
+        "references": ["W3CPeerM", "W3CDataA"],
         "test_function": testDC_dict015
     },
     "dict016": {
@@ -265,9 +234,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 5000,
         "sync": true,
-        "references": [
-            2
-        ],
+        "references": ["W3CData"],
         "test_function": testDC_dict016
     },
     "dict017": {
@@ -279,9 +246,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            1
-        ],
+        "references": ["W3CPeerM"],
         "test_function": testDC_dict017
     },
     "dict018": {
@@ -293,9 +258,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "test_function": testDC_dict018
     },
     "dict019": {
@@ -308,9 +271,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            2
-        ],
+        "references": ["W3CData"],
         "test_function": testDC_dict019
     },
     "dict020": {
@@ -322,9 +283,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            2
-        ],
+        "references": ["W3CData"],
         "test_function": testDC_dict020
     },
     "dict021": {
@@ -336,9 +295,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            2
-        ],
+        "references": ["W3CData"],
         "test_function": testDC_dict021
     },
     "dict022": {
@@ -352,9 +309,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            2
-        ],
+        "references": ["W3CData"],
         "test_function": testDC_dict022
     },
     "dict023": {
@@ -369,9 +324,7 @@ var dctests_dict = {
         </ol>",
         "timeout": 10000,
         "sync": false,
-        "references": [
-            2
-        ],
+        "references": ["W3CData"],
         "test_function": testDC_dict023
     },
     "dict024": {

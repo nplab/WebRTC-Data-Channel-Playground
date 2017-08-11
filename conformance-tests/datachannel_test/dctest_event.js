@@ -34,9 +34,7 @@ var dctests_event = {
             <li>Wait 3 seconds.</li>\
             <li>Peer A&B:  checks if the onclose EventHandler was called.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_event001
@@ -50,9 +48,7 @@ var dctests_event = {
             <li>Wait 3 seconds.</li>\
             <li>Peer A&B:  checks if the onclose EventHandler was called.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_event002
@@ -66,9 +62,7 @@ var dctests_event = {
             <li>Wait 3 seconds.</li>\
             <li>Peer A&B:  checks if the onclose EventHandler was called.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_event003
@@ -82,9 +76,7 @@ var dctests_event = {
             <li>Wait 3 seconds.</li>\
             <li>Peer A/B:  checks if the onmessage EventHandler was called.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_event004
@@ -97,9 +89,7 @@ var dctests_event = {
             <li>Wait 3 seconds.</li>\
             <li>Peer A/B:  checks if the onopen EventHandler was called.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_event005
@@ -112,9 +102,7 @@ var dctests_event = {
             <li>Peer A:  closes the DataChannel.</li>\
             <li>Peer A/B:  checks new readyState, should be “closing” or “closed”.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_event006

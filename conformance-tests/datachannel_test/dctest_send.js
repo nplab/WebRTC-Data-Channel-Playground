@@ -32,9 +32,7 @@ var dctests_send = {
             <li>Peer A: tries to send a message.</li>\
             <li>Throw InvalidStateError.</li>\
         </ol>",
-        "references": [
-            5
-        ],
+        "references": ["W3CDataD"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_send001
@@ -53,9 +51,7 @@ var dctests_send = {
             <li>Peer A: sends 16KB data packets 100 times.</li>\
             <li>Peer B: checks received data.</li>\
         </ol>",
-        "references": [
-            5
-        ],
+        "references": ["W3CDataD"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send002
@@ -68,9 +64,7 @@ var dctests_send = {
             <li>Peer B: closes the PeerConnection.</li>\
             <li>Peer A: sends data, throw an Error exception.</li>\
         </ol>",
-        "references": [
-            5
-        ],
+        "references": ["W3CDataD"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send003
@@ -81,9 +75,7 @@ var dctests_send = {
             <li>Peer A: creates a DataChannel.</li>\
             <li>Peer A: checks binaryType (initialized to string \“blob\”).</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_send004
@@ -95,9 +87,7 @@ var dctests_send = {
             <li>Peer A: change binaryType to \“arraybuffer\”.</li>\
             <li>Peer A: checks binaryType.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_send005
@@ -109,9 +99,7 @@ var dctests_send = {
             <li>Peer A: change binaryType to \“blob\”.</li>\
             <li>Peer A: checks binaryType.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_send006
@@ -125,9 +113,7 @@ var dctests_send = {
             <li>Peer A: change binaryType to \“blob\”.</li>\
             <li>Peer A: checks binaryType.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_send007
@@ -139,9 +125,7 @@ var dctests_send = {
             <li>Peer A: change binaryType to \“unknown\”.</li>\
             <li>Throw a SyntaxError.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_send008
@@ -153,9 +137,7 @@ var dctests_send = {
             <li>Peer A: change binaryType to “” (empty String).</li>\
             <li>Throw SyntaxError.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_send009
@@ -167,9 +149,7 @@ var dctests_send = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B:  checks bufferedAmount value should be 0.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_send010
@@ -181,9 +161,7 @@ var dctests_send = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A: sends data quick until bufferedAmount increases.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 15000,
         "sync": false,
         "test_function": testDC_send011
@@ -198,9 +176,7 @@ var dctests_send = {
             <li>Peer A: sends 1 Byte.</li>\
             <li>Peer A: checks whether bufferedAmount increases after closing.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 15000,
         "sync": false,
         "test_function": testDC_send012
@@ -215,9 +191,7 @@ var dctests_send = {
             <li>Wait 3 seconds.</li>\
             <li>Peer A: checks whether bufferedAmount not decrease.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 15000,
         "sync": false,
         "test_function": testDC_send013
@@ -230,9 +204,7 @@ var dctests_send = {
             <li>Peer B: sends String.</li>\
             <li>Peer A: checks type and data from received message.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send014
@@ -245,9 +217,7 @@ var dctests_send = {
             <li>Peer B: sends Blob.</li>\
             <li>Peer A: checks type and data from received message.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send015
@@ -266,9 +236,7 @@ var dctests_send = {
             <li>Peer B: sends ArrayBuffer (16 KB).</li>\
             <li>Peer A: checks type (Blob) and data from received message.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send016
@@ -282,9 +250,7 @@ var dctests_send = {
             <li>Peer B: sends ArrayBuffer (Int32Array).</li>\
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send017
@@ -298,9 +264,7 @@ var dctests_send = {
             <li>Peer B: sends Blob.</li>\
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send018
@@ -319,9 +283,7 @@ var dctests_send = {
             <li>Peer B: sends ArrayBuffer (64 KB).</li>\
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send019
@@ -335,9 +297,7 @@ var dctests_send = {
             <li>Peer B: sends ArrayBufferView (Int8Array).</li>\
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send020
@@ -351,9 +311,7 @@ var dctests_send = {
             <li>Peer B: sends ArrayBufferView (Int16Array with offset).</li>\
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send021
@@ -372,9 +330,7 @@ var dctests_send = {
             <li>Peer B: sends ArrayBufferView (Uint32Array - 4 KB).</li>\
             <li>Peer A: checks type (ArrayBuffer) and data from received message</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send022
@@ -393,9 +349,7 @@ var dctests_send = {
             <li>Peer B: sends ArrayBufferView (Float32Array - 32 KB).</li>\
             <li>Peer A: checks type (ArrayBuffer) and data from received message.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_send023
@@ -408,9 +362,7 @@ var dctests_send = {
             <li>Peer B: sends \“\” 0 Bytes.</li>\
             <li>Peer A: should receives 0 Bytes.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send024
@@ -428,9 +380,7 @@ var dctests_send = {
             <li>Peer B: sends “¥¥¥¥¥¥” Unicode data.</li>\
             <li>Peer A: checks received data.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send025
@@ -448,10 +398,7 @@ var dctests_send = {
             <li>Peer B: send null (type object).</li>\
             <li>Peer A: checks received data, should be \“null\” String.</li>\
         </ol>",
-        "references": [
-            4,
-            6
-        ],
+        "references": ["W3CDataM", "W3CDOM"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_send026
@@ -469,9 +416,7 @@ var dctests_send = {
             <li>Peer A: send 32 MB message.</li>\
             <li>Peer B: checks received data.</li>\
         </ol>",
-        "references": [
-            4,
-        ],
+        "references": ["W3CDataM"],
         "timeout": 180000,
         "sync": false,
         "test_function": testDC_send027
@@ -489,10 +434,7 @@ var dctests_send = {
             <li>Peer A: sends 128 KB message.</li>\
             <li>Peer B: checks received data, should receive message complete (not partial).</li>\
         </ol>",
-        "references": [
-            4,
-            8
-        ],
+        "references": ["W3CDataM", "IETFData66"],
         "timeout": 20000,
         "sync": false,
         "test_function": testDC_send028
@@ -511,10 +453,7 @@ var dctests_send = {
             <li>Peer A: sends 66528 Byte message.</li>\
             <li>Peer B: checks received data, should receive message complete (not partial).</li>\
         </ol>",
-        "references": [
-            4,
-            8
-        ],
+        "references": ["W3CDataM", "IETFData66"],
         "timeout": 20000,
         "sync": false,
         "test_function": testDC_send029
@@ -533,10 +472,7 @@ var dctests_send = {
             <li>Peer A: sends 66529 Byte message.</li>\
             <li>Peer B: checks received data, should receive message complete (not partial).</li>\
         </ol>",
-        "references": [
-            4,
-            8
-        ],
+        "references": ["W3CDataM", "IETFData66"],
         "timeout": 20000,
         "sync": false,
         "test_function": testDC_send030
@@ -550,9 +486,7 @@ var dctests_send = {
             <li>Wait 1 second.</li>\
             <li>Peer A: sends data, throw an Error exception.</li>\
         </ol>",
-        "references": [
-            5
-        ],
+        "references": ["W3CDataD"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send031
@@ -571,9 +505,7 @@ var dctests_send = {
             <li>Peer A: sends 32 MB ArrayBufferView (Uint32Array).</li>\
             <li>Peer B: checks received data and binaryType.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 180000,
         "sync": false,
         "test_function": testDC_send032
@@ -592,9 +524,7 @@ var dctests_send = {
             <li>Peer A: sends 16 KB data 512 times (8 MB).</li>\
             <li>Peer B: checks received data.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 20000,
         "sync": false,
         "test_function": testDC_send033
@@ -612,10 +542,7 @@ var dctests_send = {
             <li>Peer B: sends undefined (type undefined).</li>\
             <li>Peer A: checks received data, should be “undefined” String.</li>\
         </ol>",
-        "references": [
-            4,
-            6
-        ],
+        "references": ["W3CDataM", "W3CDOM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send034
@@ -634,9 +561,7 @@ var dctests_send = {
             <li>Peer A/B: sends 16 KB data 256 times (4 MB) and receive.</li>\
             <li>Peer A/B: checks received data.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 25000,
         "sync": false,
         "test_function": testDC_send035
@@ -654,9 +579,7 @@ var dctests_send = {
             <li>Peer A: sends data 2048 times.</li>\
             <li>Peer B: checks correct order from received data.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 15000,
         "sync": false,
         "test_function": testDC_send036
@@ -675,9 +598,7 @@ var dctests_send = {
             <li>Peer B must receive data ordered.</li>\
             <li>Peer A can receive data randomly.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 500000,
         "sync": false,
         "test_function": testDC_send037
@@ -698,9 +619,7 @@ var dctests_send = {
             <li>Peer A: repeats the send procedure 20 times.</li>\
             <li>Peer B: checks received data.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 80000,
         "sync": false,
         "test_function": testDC_send038
@@ -718,9 +637,7 @@ var dctests_send = {
             <li>Peer A: sends 256 KB message.</li>\
             <li>Peer B: checks received data.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send039
@@ -738,9 +655,7 @@ var dctests_send = {
             <li>Peer A: send 256 KB  +  1 Byte message.</li>\
             <li>Peer B: checks received data.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_send040
@@ -761,9 +676,7 @@ var dctests_send = {
             <li>Peer A: sends message ( Connection should be open).</li>\
             <li>Peer B: checks received data.</li>\
         </ol>",
-        "references": [
-            4
-        ],
+        "references": ["W3CDataM"],
         "timeout": 30000,
         "sync": false,
         "test_function": testDC_send041

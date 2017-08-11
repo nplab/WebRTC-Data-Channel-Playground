@@ -29,9 +29,7 @@ var dctests_create = {
         "description": "Call .createDataChannel() while PeerConnection is closed - throw an InvalidStateError exception",
         "timeout": 5000,
         "sync": true,
-        "references": [
-            1
-        ],
+        "references": ["W3CPeerM"],
         "test_function": testDC_create001
     },
     "create002": {
@@ -41,9 +39,7 @@ var dctests_create = {
             <li>Peer A: creates another DataChannel  with id = 2.</li>\
             <li>Must throw an ResourceInUse exception.</li>\
         </ol>",
-        "references": [
-            1
-        ],
+        "references": ["W3CPeerM"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_create002
@@ -56,9 +52,7 @@ var dctests_create = {
             <li>After established connection - Peer A: creates another DataChannel with id = 4.</li>\
             <li>Throw an ResourceInUse exception.</li>\
         </ol>",
-        "references": [
-            1
-        ],
+        "references": ["W3CPeerM"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_create003
@@ -69,9 +63,7 @@ var dctests_create = {
             <li>Peer A: creates a DataChannel.</li>\
             <li>Peer A: checks readyState, must initially be in the connecting state.</li>\
         </ol>",
-        "references": [
-            2
-        ],
+        "references": ["W3CData"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_create004
@@ -84,9 +76,7 @@ var dctests_create = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B: checks readyState - should be \“open\”.</li>\
         </ol>",
-        "references": [
-            2
-        ],
+        "references": ["W3CData"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_create005
@@ -100,10 +90,7 @@ var dctests_create = {
             <li>Waiting 3 seconds.</li>\
             <li>Peer A/B: checks readyState.</li>\
         </ol>",
-        "references": [
-            2,
-            9
-        ],
+        "references": ["W3CData", "IETFData67"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_create006
@@ -117,10 +104,7 @@ var dctests_create = {
             <li>Waiting 3 seconds.</li>\
             <li>Peer A/B: checks readyState.</li>\
         </ol>",
-        "references": [
-            2,
-            9
-        ],
+        "references": ["W3CData", "IETFData67"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_create007
@@ -135,10 +119,7 @@ var dctests_create = {
             <li>Waiting 3 seconds.</li>\
             <li>Peer A/B: checks readyState.</li>\
         </ol>",
-        "references": [
-            2,
-            9
-        ],
+        "references": ["W3CData", "IETFData67"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_create008
@@ -152,10 +133,7 @@ var dctests_create = {
             <li>Waiting 3 seconds.</li>\
             <li>Peer A/B: checks readyState.</li>\
         </ol>",
-        "references": [
-            2,
-            9
-        ],
+        "references": ["W3CData", "IETFData67"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_create009

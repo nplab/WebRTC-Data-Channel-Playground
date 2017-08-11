@@ -32,9 +32,7 @@ var dctests_id = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks id (Is id a number and equal).</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_id001
@@ -50,9 +48,7 @@ var dctests_id = {
             <li>Peer A: creates a DataChannel  with specific id = 1022.</li>\
             <li>Peer A: checks id.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_id002
@@ -68,9 +64,7 @@ var dctests_id = {
             <li>Peer A: creates a DataChannel  with specific id = 1023.</li>\
             <li>Peer A: checks id</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_id003
@@ -86,10 +80,7 @@ var dctests_id = {
             <li>Peer A: creates a DataChannel  with specific id = 1024.</li>\
             <li>Peer A: checks id.</li>\
         </ol>",
-        "references": [
-            3,
-            10
-        ],
+        "references": ["W3CDataA", "ChromeBug"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_id004
@@ -105,9 +96,7 @@ var dctests_id = {
             <li>Peer A: creates a DataChannel  with specific id = 65535 (maximum id value).</li>\
             <li>Peer A: checks id.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_id005
@@ -123,9 +112,7 @@ var dctests_id = {
             <li>Peer A: creates a DataChannel  with specific id = 100000 (exceeds maximum id value).</li>\
             <li>Peer A: checks id – must be smaller than 65536.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 5000,
         "sync": true,
         "test_function": testDC_id006
@@ -142,9 +129,7 @@ var dctests_id = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B:  checks id.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_id007
@@ -161,9 +146,7 @@ var dctests_id = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B:  checks id.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_id008
@@ -180,9 +163,7 @@ var dctests_id = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B:  checks id.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_id009
@@ -199,9 +180,7 @@ var dctests_id = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B:  checks id.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_id010
@@ -216,9 +195,7 @@ var dctests_id = {
         "scenario": "<ol> \
             <li>Peer A: creates 70000 DataChannel  on a PeerConnection.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 20000,
         "sync": true,
         "test_function": testDC_id011
@@ -236,9 +213,7 @@ var dctests_id = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B: waits until the DataChannel is open.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 20000,
         "sync": false,
         "test_function": testDC_id012
@@ -256,9 +231,7 @@ var dctests_id = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B: waits until the DataChannel is open.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 20000,
         "sync": false,
         "test_function": testDC_id013
@@ -274,9 +247,7 @@ var dctests_id = {
             <li>Peer A: creates a DataChannel  with specific id = 0.</li>\
             <li>Repeats 65535 times and increase the id by one.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 20000,
         "sync": true,
         "test_function": testDC_id014
@@ -294,9 +265,7 @@ var dctests_id = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B: waits until the DataChannel is open.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 20000,
         "sync": false,
         "test_function": testDC_id015
@@ -314,9 +283,7 @@ var dctests_id = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B: waits until the DataChannel is open.</li>\
         </ol>",
-        "references": [
-            3
-        ],
+        "references": ["W3CDataA"],
         "timeout": 20000,
         "sync": false,
         "test_function": testDC_id016
@@ -332,10 +299,7 @@ var dctests_id = {
             <li>Peer B: waits for the DataChannel.</li>\
             <li>Peer A/B: checks connection.</li>\
         </ol>",
-        "references": [
-            3,
-            9
-        ],
+        "references": ["W3CDataA", "IETFData67"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_id017

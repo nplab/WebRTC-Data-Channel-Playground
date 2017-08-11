@@ -38,10 +38,7 @@ var dctests_label = {
         "description": "Call .createDataChannel() without parameters - should throw an error",
         "timeout": 5000,
         "sync": true,
-        "references": [
-            1,
-            3
-        ],
+        "references": ["W3CPeerM", "W3CDataA"],
         "test_function": testDC_label001
     },
     "label002": {
@@ -56,10 +53,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [
-            1,
-            3
-        ],
+        "references": ["W3CPeerM", "W3CDataA"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label002
@@ -76,10 +70,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [
-            1,
-            3
-        ],
+        "references": ["W3CPeerM", "W3CDataA"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label003
@@ -96,7 +87,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [1, 3],
+        "references": ["W3CPeerM", "W3CDataA"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label004
@@ -108,7 +99,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [1, 3, 7],
+        "references": ["W3CPeerM", "W3CDataA", "IETFDataP"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label005
@@ -120,7 +111,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [1, 3, 7],
+        "references": ["W3CPeerM", "W3CDataA", "IETFDataP"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label006
@@ -132,10 +123,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [
-            1,
-            3
-        ],
+        "references": ["W3CPeerM", "W3CDataA"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label007
@@ -153,10 +141,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [
-            1,
-            3
-        ],
+        "references": ["W3CPeerM", "W3CDataA"],
         "timeout": 10000,
         "sync": false,
         "test_function": testDC_label008
@@ -174,10 +159,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [
-            1,
-            3
-        ],
+        "references": ["W3CPeerM", "W3CDataA"],
         "timeout": 20000,
         "sync": false,
         "test_function": testDC_label009
@@ -189,10 +171,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label – should be empty string \“\”.</li>\
         </ol>",
-        "references": [
-            1,
-            3
-        ],
+        "references": ["W3CPeerM", "W3CDataA"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label010
@@ -204,11 +183,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [
-            1,
-            3,
-            7
-        ],
+        "references": ["W3CPeerM", "W3CDataA", "IETFDataP"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label011
@@ -220,11 +195,7 @@ var dctests_label = {
             <li>Peer B: waits for the DataChannel</li>\
             <li>Peer A/B: checks the label.</li>\
         </ol>",
-        "references": [
-            1,
-            3,
-            7
-        ],
+        "references": ["W3CPeerM", "W3CDataA", "IETFDataP"],
         "timeout": 5000,
         "sync": false,
         "test_function": testDC_label012
