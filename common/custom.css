@@ -36,7 +36,7 @@ progress {
 }
 
 .popover {
-    max-width: 100%;// Max Width of the popover (depending on the container!)
+    max-width: 100%; /* Max Width of the popover (depending on the container!) */
 }
 
 span.dcStatus-open {
@@ -135,4 +135,8 @@ transform: scaleY(1.0);
     width: 100%;
     height: 200px;
     overflow: auto;
+}
+
+td:target {
+    background-color: #e5eecc;
 }

@@ -34,9 +34,24 @@
  * Peer B = remotePeerConnection, remoteChannel 
  */
 
+
+var dctests_init = {
+    "PC": {
+        "description": "Check if RTCPeerConnection is available",
+        "sync": true,
+        "test_function": testDCPC
+    },
+    "PCWebkit": {
+        "description": "Check if webkitRTCPeerConnection (Google/Opera) is available",
+        "sync": true,
+        "test_function": testDCPCWebkit
+    }
+};
+
 var showResults = false;
 var testResult = ["Pass", "Fail", "Timeout"];
 var testCounter = 0;
+var testCount = 1;
 // Stores all test names
 var testNames ="";
 // Stores all test results
@@ -66,7 +81,7 @@ function start_callback() {
 function result_callback(res) {
     // increment Counter and Progressbar
     //progressBar.value++;
-    $('#progressbar').css('width', 100*testCounter/selectedTestList.length+'%').attr('aria-valuenow', 0).html(testCounter+'/'+selectedTestList.length); 
+    $('#progressbar').css('width', 100*testCounter/selectedDcTestList.length+'%').attr('aria-valuenow', 0).html(testCounter+'/'+selectedDcTestList.length); 
     testCounter++;
     
     // Safe Values for logging test information
@@ -74,13 +89,14 @@ function result_callback(res) {
     testResults += testResult[res.status] +"<br />";
     testCompleteResults += "<tr><td>"+testCounter+"</td><td>"+res.name+"</td><td>"+testResult[res.status]+"</td><td>"+testMessage(res.message)+"</td></tr>";
 
-
-    logWrite("Test: " + (res.name) + "... done! - \"" + availableTestList[testCounter] + "\"");    
+    var logMsg = "Test: " + (res.name) + "... done!";
+    if (testCounter < selectedDcTestNames.length) logMsg +=  "- \"" + selectedDcTestNames[testCounter] + "\"";
+    logWrite(logMsg);    
     if (showResults)
         console.log("Result received", res);
         
     //If only runs one test don't close the channels to test with the console
-    if(availableTestList.length != 1)
+    if(selectedDcTestList.length != 1)
     {
         // Close the channels and set to null
         closeRTCPeerConnection();
@@ -88,7 +104,7 @@ function result_callback(res) {
 
     // If test completed start the next test after short break 
     setTimeout(function(){
-        testSwitcher(testCounter);
+        dctestSwitcher(testCounter);
     }, 500);
 }
 
@@ -106,13 +122,9 @@ function completion_callback(allRes, status) {
  * Test whether prefixes are used
  */
 function testDCPC() {
-    test(function() {
-        assert_true(!!testRTCPeerConnection, "RTCPeerConnection not available, musst use prefix");
-    }, "testDCPC: Check if RTCPeerConnection is available");
+    assert_true(!!testRTCPeerConnection, "RTCPeerConnection not available, musst use prefix");
 }
 
 function testDCPCWebkit() {
-    test(function() {
-        assert_true(!!window.webkitRTCPeerConnection, "You don't use Google/Opera or a too old version");
-    }, "testDCPCWebkit: Check if webkitRTCPeerConnection (Google/Opera) is available");
+    assert_true(!!window.webkitRTCPeerConnection, "You don't use Google/Opera or a too old version");
 }
