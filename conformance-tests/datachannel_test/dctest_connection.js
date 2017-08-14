@@ -76,22 +76,26 @@ function setICESuccess(){
 // Handler to be called as soon as the local SDP (Session Description Protocol) is available to the application
 function gotLocalDescription(desc) {
     // Set local SDP as (local/remote) description for both local and remote parties
-    localPeerConnection.setLocalDescription(desc, setDescSuccess, setDescFail);
+    //localPeerConnection.setLocalDescription(desc, setDescSuccess, setDescFail);
+    localPeerConnection.setLocalDescription(desc).then(setDescSuccess, setDescFail);
     if (showSDP)
         console.log('localPeerConnection\'s SDP: \n', desc);
 
-    remotePeerConnection.setRemoteDescription(desc, setDescSuccess, setDescFail);
+    //remotePeerConnection.setRemoteDescription(desc, setDescSuccess, setDescFail);
+    remotePeerConnection.setRemoteDescription(desc).then(setDescSuccess, setDescFail);
     // Create answer from the 'remote party, based on the local SDP
-    remotePeerConnection.createAnswer(gotRemoteDescription, onSignalingError);
+    //remotePeerConnection.createAnswer(gotRemoteDescription, onSignalingError);
+    remotePeerConnection.createAnswer().then(gotRemoteDescription, onSignalingError);
 }
 
 // Handler to be called as soon as the remote SDP is made available to the application
 function gotRemoteDescription(desc) {
     // Set 'remote' SDP as the right (remote/local) description for both local and 'remote' parties
-    remotePeerConnection.setLocalDescription(desc, setDescSuccess, setDescFail);
+    remotePeerConnection.setLocalDescription(desc).then(setDescSuccess, setDescFail);
     if (showSDP)
         console.log('Answer from remotePeerConnection\'s SDP: \n', desc);
-    localPeerConnection.setRemoteDescription(desc, setDescSuccess, setDescFail);
+    //localPeerConnection.setRemoteDescription(desc, setDescSuccess, setDescFail);
+    localPeerConnection.setRemoteDescription(desc).then(setDescSuccess, setDescFail);
 }
 
 function onSignalingError(err) {
@@ -103,7 +107,8 @@ function createIceCandidatesAndOffer() {
     // Associate peer connection with ICE events
     localPeerConnection.onicecandidate = function(e) {
         if (e.candidate) {
-            remotePeerConnection.addIceCandidate(e.candidate, setICESuccess, setICEFail);
+            //remotePeerConnection.addIceCandidate(e.candidate, setICESuccess, setICEFail);
+            remotePeerConnection.addIceCandidate(e.candidate).then(setICESuccess, setICEFail);
             if (showICE)
                 console.log("local ", e.candidate);
         }
@@ -111,7 +116,8 @@ function createIceCandidatesAndOffer() {
 
     remotePeerConnection.onicecandidate = function(e) {
         if (e.candidate) {
-            localPeerConnection.addIceCandidate(e.candidate, setICESuccess, setICEFail);
+            //localPeerConnection.addIceCandidate(e.candidate, setICESuccess, setICEFail);
+            localPeerConnection.addIceCandidate(e.candidate).then(setICESuccess, setICEFail);
             if (showICE)
                 console.log("remote ", e.candidate);
         }
@@ -124,8 +130,8 @@ function createIceCandidatesAndOffer() {
     */
 
     // Now we can negoatiate a session
-    localPeerConnection.createOffer(gotLocalDescription, onSignalingError, constraints);
-
+    //localPeerConnection.createOffer(gotLocalDescription, onSignalingError, constraints);
+    localPeerConnection.createOffer(constraints).then(gotLocalDescription, onSignalingError);
 }
 
 // Close the available RTCPeerConnections
