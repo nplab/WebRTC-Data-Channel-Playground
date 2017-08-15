@@ -168,7 +168,7 @@
 
                 sensorChannel.onmessage = function(e) {
                     var enc = new TextDecoder("utf-8");
-                    //console.log(enc.decode(e.data));
+                    console.log(enc.decode(e.data));
 
                     var string = enc.decode(e.data);
                     var sensedata = JSON.parse(string);
