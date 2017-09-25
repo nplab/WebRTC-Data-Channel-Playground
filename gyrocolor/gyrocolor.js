@@ -42,7 +42,7 @@ var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
 
 var bufferedAmountLimit = 1 * 1024 * 1024;
 
-var pc = new PeerConnection(iceServer);
+var pc = new RTCPeerConnection(iceServer);
 var peerRole = "offerer";
 var role = "answerer";
 var signalingId;
@@ -147,7 +147,7 @@ function gyroConnect() {
 			firebaseSend(signalingId, "offer", JSON.stringify(offer));
 			// wait for an answer SDP from FireBase
 			firebaseReceive(signalingId, "answer", function(answer) {
-				pc.setRemoteDescription(new SessionDescription(JSON.parse(answer)));
+				pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
 			});
 		}, errorHandler, sdpConstraints);
 
@@ -171,7 +171,7 @@ function gyroConnect() {
 
 		// answerer needs to wait for an offer before generating the answer SDP
 		firebaseReceive(signalingId, "offer", function(offer) {
-			pc.setRemoteDescription(new SessionDescription(JSON.parse(offer)));
+			pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)));
 
 			// now we can generate our answer SDP
 			pc.createAnswer(function(answer) {
@@ -189,8 +189,8 @@ function gyroConnect() {
 		var childVal = childSnapshot.val();
 		var peerCandidate = JSON.parse(childVal);
 
-		var peerIceCandidate = new IceCandidate(peerCandidate);
-		pc.addIceCandidate(new IceCandidate(peerCandidate));
+		var peerIceCandidate = new RTCIceCandidate(peerCandidate);
+		pc.addIceCandidate(new RTCIceCandidate(peerCandidate));
 
 		var peerIp = extractIpFromString(peerIceCandidate.candidate);
 
@@ -297,7 +297,6 @@ function gyroSetColor(alpha, beta, gamma) {
 	$('#complementary').css('color','rgb('+(alpha > 128)?255:0+','+(beta > 128)?255:0+','+(gamma > 128)?255:0+')' );
 	$('#trCalc').html('<td>calc</td><td>'+alpha+'</td><td>'+beta+'</td><td>'+gamma+'</td>');
 }
-
 
 function msgHandleJson(message) {
 	var messageObject = JSON.parse(message);

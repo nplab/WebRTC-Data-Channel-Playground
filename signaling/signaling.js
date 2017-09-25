@@ -34,7 +34,7 @@ var sdpConstraints = {
     OfferToReceiveVideo : false
 };
 
-var pc = new PeerConnection(iceServer);
+var pc = new RTCPeerConnection(iceServer);
 var dcControl = {};
 var offerer;
 var signalingInProgress = false;
@@ -70,7 +70,7 @@ socket.on('signaling', function(msg) {
         case 'sdp':
             // only process message if it's an offer and we aren't offerer and signaling hasn't finished yet
             if(msg.payload.type === 'offer' && !offerer) {
-                pc.setRemoteDescription(new SessionDescription(msg.payload));
+                pc.setRemoteDescription(new RTCSessionDescription(msg.payload));
                 // generate our answer SDP and send it to peer
                 pc.createAnswer(function(answer) {
                     pc.setLocalDescription(answer);
@@ -79,7 +79,7 @@ socket.on('signaling', function(msg) {
                 console.log('signaling - handle sdp offer and send answer');
             // if we receive a sdp answer, we are the answerer and signaling isn't done yet, process answer
             } else if(msg.payload.type === 'answer' && offerer) {
-                pc.setRemoteDescription(new SessionDescription(msg.payload));
+                pc.setRemoteDescription(new RTCSessionDescription(msg.payload));
                 console.log('signaling - handle sdp answer');
             } else {
                 console.log('signaling - unexpected sdp message');
@@ -87,7 +87,7 @@ socket.on('signaling', function(msg) {
             break;
         // we receive an ice candidate
         case 'ice':
-            var peerIceCandidate = new IceCandidate(msg.payload);
+            var peerIceCandidate = new RTCIceCandidate(msg.payload);
             pc.addIceCandidate(peerIceCandidate);
             console.log('singaling - remote ice candiate: ' + extractIpFromString(msg.payload.candidate));
             break;

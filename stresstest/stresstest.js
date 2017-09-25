@@ -662,9 +662,9 @@ function startTest()
 
     for (var i=0; i < peerConnections; i++)
     {
-        local_pc[i] = new PeerConnection(pcConfiguration, pcOptions);
+        local_pc[i] = new RTCPeerConnection(pcConfiguration, pcOptions);
         peerConnectionsCreated++;
-        remote_pc[i] = new PeerConnection(pcConfiguration, pcOptions);
+        remote_pc[i] = new RTCPeerConnection(pcConfiguration, pcOptions);
         peerConnectionsCreated++;
         bindPCEvents(i);
     };
@@ -1056,7 +1056,7 @@ function createRemoteOnIceCandidate(i)
         }
         else
         {
-            local_pc[i].addIceCandidate(new IceCandidate(ev.candidate),
+            local_pc[i].addIceCandidate(new RTCIceCandidate(ev.candidate),
             function()
             {
             },
