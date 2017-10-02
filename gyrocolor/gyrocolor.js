@@ -299,17 +299,24 @@ function gyroSetColor(alpha, beta, gamma) {
 }
 
 function msgHandleJson(message) {
-	var messageObject = JSON.parse(message);
+
+	try {
+		var messageObject = JSON.parse(message);
+	} catch(e) {
+		console.log(message);
+		return;
+	}
+
 	switch(messageObject.type) {
 
-	// peer indicates finish
-	case 'gyro':
-		gyroColorFromRemote = true;
-		gyroSetColor(messageObject.alpha,messageObject.beta,messageObject.gamma);
-	break;
-
-	default:
-		alert('Unknown messagetype: ' + messageObject.type);
+		// peer indicates finish
+		case 'gyro':
+			gyroColorFromRemote = true;
+			gyroSetColor(messageObject.alpha,messageObject.beta,messageObject.gamma);
 		break;
+
+		default:
+			alert('Unknown messagetype: ' + messageObject.type);
+			break;
 	}
 }
