@@ -38,7 +38,7 @@ function generateSignalingId() {
 // check WebRTC capabilities of the browser
 function browsercheck() {
 	try {
-		var pc = new RTCPeerConnection(iceServer);
+		var pc = new RTCPeerConnection();
 		var dc = pc.createDataChannel('control');
 		return true;
 	} catch(err) {
