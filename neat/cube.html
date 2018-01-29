@@ -131,26 +131,21 @@
 
 				sensorChannel.onopen = function(event) {
 					console.log("SensorChannel open!!!!");
+					setInterval(function(){ sensorChannel.send("timer"); }, 100);
 				}
 
 				sensorChannel.onmessage = function(e) {
-					//console.log(e.data);
-
-					console.log("Message");
-					console.log(e.data);
-					return;
-
 					var enc = new TextDecoder("utf-8");
 					console.log(enc.decode(e.data));
-
 					var string = enc.decode(e.data);
 					var sensedata = JSON.parse(string);
 
-					mesh.rotation.x = sensedata.x;
-					//mesh.rotation.y = sensedata.z;
-					mesh.rotation.z = sensedata.y;
-
+					mesh.rotation.x = ((sensedata.x + 180) * Math.PI)/180;
+					mesh.rotation.y = ((sensedata.y + 180) * Math.PI)/180;
+					mesh.rotation.z = ((sensedata.z + 180) * Math.PI)/180;
 					renderer.render( scene, camera );
+
+					sensorChannel.send("ack");
 				};
 
 				// Create local parameters if we are the controlling peer.
