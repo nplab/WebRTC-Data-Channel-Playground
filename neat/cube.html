@@ -129,6 +129,8 @@
 					id: 0
 				}));
 
+				sensorChannel.binaryType = "arraybuffer";
+
 				sensorChannel.onopen = function(event) {
 					console.log("SensorChannel open!!!!");
 					setInterval(function(){ sensorChannel.send("timer"); }, 100);
@@ -136,9 +138,9 @@
 
 				sensorChannel.onmessage = function(e) {
 					var enc = new TextDecoder("utf-8");
-					console.log(enc.decode(e.data));
 					var string = enc.decode(e.data);
 					var sensedata = JSON.parse(string);
+					console.log(string);
 
 					mesh.rotation.x = ((sensedata.x + 180) * Math.PI)/180;
 					mesh.rotation.y = ((sensedata.y + 180) * Math.PI)/180;
