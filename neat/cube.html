@@ -10,6 +10,19 @@
 				background-color: #000000;
 				overflow: hidden;
 			}
+
+			div#info {
+				background-color: #333;
+				position:absolute;
+				bottom:0;
+				right:0;
+				font-family: Verdana, Geneva, sans-serif;
+				width: 25%;
+				border-top: 1px solid #ddd;
+				border-left: 1px solid #ddd;
+				text-align: center;
+				color: #ddd;
+			}
 		</style>
 	</head>
 	<body>
@@ -20,6 +33,10 @@
 		<script type='text/javascript' src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 		<script type='text/javascript' src="webrtc_rawrtc.js"></script>
 		<script type='text/javascript' src="../common/jquery.min.js"></script>
+
+		<div id='info'>
+			Waiting for connection ...
+		</div>
 
 		<script>
 			'use strict';
@@ -129,6 +146,8 @@
 					mesh.rotation.y = ((sensedata.z + 180) * Math.PI)/180;
 					mesh.rotation.z = ((sensedata.y + 180) * Math.PI)/180;
 					renderer.render( scene, camera );
+
+					$("#info").text("x: " + Math.round(sensedata.x) + "y: " + Math.round(sensedata.y) + "z: " + Math.round(sensedata.z));
 
 					sensorChannel.send("ack");
 				};
