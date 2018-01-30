@@ -116,7 +116,7 @@
 
 				sensorChannel.onopen = function(event) {
 					console.log("SensorChannel open");
-					setInterval(function(){ sensorChannel.send("timer"); }, 100);
+					setInterval(function(){ sensorChannel.send("timer"); }, 50);
 				}
 
 				sensorChannel.onmessage = function(e) {
@@ -126,8 +126,8 @@
 					console.log(string);
 
 					mesh.rotation.x = ((sensedata.x + 180) * Math.PI)/180;
-					mesh.rotation.y = ((sensedata.y + 180) * Math.PI)/180;
-					mesh.rotation.z = ((sensedata.z + 180) * Math.PI)/180;
+					mesh.rotation.y = ((sensedata.z + 180) * Math.PI)/180;
+					mesh.rotation.z = ((sensedata.y + 180) * Math.PI)/180;
 					renderer.render( scene, camera );
 
 					sensorChannel.send("ack");
