@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>NEAT Demo</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				margin: 0px;
+				background-color: #000000;
+				overflow: hidden;
+			}
+
+			div#info {
+				background-color: #333;
+				position:absolute;
+				bottom:0;
+				right:0;
+				font-family: Verdana, Geneva, sans-serif;
+				width: 25%;
+				border-top: 1px solid #ddd;
+				border-left: 1px solid #ddd;
+				text-align: center;
+				color: #ddd;
+			}
+		</style>
+	</head>
+	<body>
+		<script type='text/javascript' src="three.min.js"></script>
+		<script type='text/javascript' src="https://webrtc.nplab.de:3001/socket.io/socket.io.js"></script>
+		<script type='text/javascript' src="../common/webrtc.common.js"></script>
+		<script type='text/javascript' src="sdp.js"></script>
+		<script type='text/javascript' src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+		<script type='text/javascript' src="webrtc_rawrtc.js"></script>
+		<script type='text/javascript' src="../common/jquery.min.js"></script>
+
+		<div id='info'>
+			Waiting for connection ...
+		</div>
+
+		<script>
+			'use strict';
+
+			var camera;
+			var scene;
+			var renderer;
+			var mesh;
+			var localParameters     = "";
+			var remoteParameters    = "";
+			var socket              = io('https://webrtc.nplab.de:3001/');
+			var gotLocalParameters  = false;
+			var sensorChannel       = null;
+
+			function init() {
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera.position.z = 400;
+				scene = new THREE.Scene();
+				var texture = new THREE.TextureLoader().load( 'texture.jpg' );
+				var geometry = new THREE.BoxBufferGeometry( 300, 200, 200 );
+				var material = new THREE.MeshBasicMaterial( { map: texture } );
+				mesh = new THREE.Mesh( geometry, material );
+				scene.add( mesh );
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			// establish connection to remote peer via webrtc
+			function connectSignaling() {
+				socket.emit("roomJoin", 1207);
+			}
+
+			function setRemoteParameters(peer) {
+				// Parse and apply the remote parameters
+				let parameters = JSON.parse(remoteParameters);
+				console.log('Remote parameters:', parameters);
+				peer.setRemoteParameters(parameters)
+					.then((parameters) => {
+						// Generate local parameters if controlled
+						if (peer instanceof ControlledPeer) {
+							getLocalParameters(peer);
+						}
+					})
+					.catch((error) => {
+						console.error(error);
+					});
+			};
+
+			function getLocalParameters(peer) {
+				// Generate and show the local parameters
+				peer.getLocalParameters()
+					.then((parameters) => {
+						console.log('Local parameters:', parameters);
+						localParameters = JSON.stringify(parameters);
+						socket.emit("signaling", JSON.stringify(parameters));
+						gotLocalParameters = true;
+
+						if (remoteParameters.length) {
+							setRemoteParameters(peer);
+						}
+					});
+			}
+
+			function createPeer(controllingParameter) {
+				let controlling = controllingParameter == 'true' || controllingParameter == '1';
+				console.log('Role: ICE-Controll' + (controlling ? 'ing' : 'ed'));
+
+				controlling = true;
+
+				// Create peer depending on the role
+				let peer = controlling ? new ControllingPeer() : new ControlledPeer();
+				peer.createPeerConnection();
+
+				sensorChannel = peer.createDataChannel(
+					peer.pc.createDataChannel('sensorChannel', {
+						ordered: true,
+						negotiated: true,
+						id: 0
+					})
+				);
+
+				sensorChannel.binaryType = "arraybuffer";
+
+				sensorChannel.onopen = function(event) {
+					console.log("SensorChannel open");
+					//setInterval(function(){ sensorChannel.send("timer"); }, 50);
+				}
+
+				sensorChannel.onmessage = function(e) {
+					var enc = new TextDecoder("utf-8");
+					var string = enc.decode(e.data);
+					var sensedata = JSON.parse(string);
+					console.log(string);
+
+					mesh.rotation.x = ((sensedata.roll + 180) * Math.PI)/180;
+					mesh.rotation.y = ((sensedata.pitch + 180) * Math.PI)/180;
+					mesh.rotation.z = -((sensedata.yaw + 180) * Math.PI)/180;
+					renderer.render( scene, camera );
+
+					$("#info").text("roll: " + Math.round(sensedata.roll) + " - pitch: " + Math.round(sensedata.pitch) + " - yaw: " + Math.round(sensedata.yaw));
+
+					//sensorChannel.send("ack");
+				};
+
+				return peer;
+			}
+
+			jQuery(document).ready(function($) {
+				browsercheck();
+				init();
+				renderer.render( scene, camera );
+				setTimeout(function(){
+					renderer.render( scene, camera );
+				}, 100);
+
+				// Create peer
+				// Determine role from GET parameter (?controlling=true|false)
+				let peer = createPeer("0");
+
+				// handle incoming info messages from server
+				socket.on('info', function(msg) {
+					console.log('server info: ' + msg);
+				});
+
+				// handle incoming signaling messages
+				socket.on("signaling", function(msg) {
+
+					console.log("signaling message: " + msg);
+
+					if (msg.localeCompare("READY###") == 0) {
+						getLocalParameters(peer);
+					} else {
+						msg = msg.replace(/\0/g, '')
+						remoteParameters = msg;
+						if (gotLocalParameters) {
+							setRemoteParameters(peer);
+						}
+
+					}
+
+				});
+
+				connectSignaling();
+				console.log('ready! :)');
+			});
+		</script>
+	</body>
+</html>
