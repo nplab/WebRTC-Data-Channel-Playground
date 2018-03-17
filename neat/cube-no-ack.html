@@ -144,10 +144,10 @@
 
 					mesh.rotation.x = ((sensedata.roll + 180) * Math.PI)/180;
 					mesh.rotation.y = ((sensedata.pitch + 180) * Math.PI)/180;
-					mesh.rotation.z = -((sensedata.yaw + 180) * Math.PI)/180;
+					mesh.rotation.z = ((sensedata.yaw + 180) * Math.PI)/180;
 					renderer.render( scene, camera );
 
-					$("#info").text("roll: " + Math.round(sensedata.roll) + " - pitch: " + Math.round(sensedata.pitch) + " - yaw: " + Math.round(sensedata.yaw));
+					$("#info").text("roll: " + Math.round(sensedata.roll) + " pitch: " + Math.round(sensedata.pitch) + " yaw: " + Math.round(sensedata.yaw));
 
 					//sensorChannel.send("ack");
 				};
@@ -185,9 +185,7 @@
 						if (gotLocalParameters) {
 							setRemoteParameters(peer);
 						}
-
 					}
-
 				});
 
 				connectSignaling();
