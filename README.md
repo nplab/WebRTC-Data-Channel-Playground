@@ -24,6 +24,11 @@ Speedtest - runtime and message-size are configurable.
 ## Trace with Wireshark
 You can trace and analyze traffic with Wireshark on Firefox and Chrome (nightly) - [tutorial is here](https://github.com/nplab/WebRTC-Data-Channel-Playground/wiki/Analyze-Data-Channel-traffic-with-Wireshark).
 
+## Turnserver
+```
+turnserver -L <listening-ip-addr> -a -v -n -r realm -u user:password -p <port>
+```
+
 ## Contact & Feedback
 We like feedback! :)
 Feel free to report bugs or ideas to us!
