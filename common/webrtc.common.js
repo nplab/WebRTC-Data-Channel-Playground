@@ -4,11 +4,11 @@
 var iceServer = {
 	iceServers : [
 	{
-		urls : 'stun:stun.l.google.com:19302'
+		urls : "stun:stun.l.google.com:19302"
 	}, {
-		urls : 'stun:stun1.l.google.com:19302'
+		urls : "stun:stun1.l.google.com:19302"
 	}, {
-		urls		: "turn:bsd3.nplab.de",
+		urls		: "turn:bsd3.nplab.de:8443",
 		credential	: "nplab",
 		username	: "nplab"
 	}]
