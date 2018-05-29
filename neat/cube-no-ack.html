@@ -133,7 +133,7 @@
 
 				sensorChannel.onopen = function(event) {
 					console.log("SensorChannel open");
-					//setInterval(function(){ sensorChannel.send("timer"); }, 50);
+					setInterval(function(){ sensorChannel.send("timer"); }, 50);
 				}
 
 				sensorChannel.onmessage = function(e) {
@@ -148,8 +148,7 @@
 					renderer.render( scene, camera );
 
 					$("#info").text("roll: " + Math.round(sensedata.roll) + " pitch: " + Math.round(sensedata.pitch) + " yaw: " + Math.round(sensedata.yaw));
-
-					//sensorChannel.send("ack");
+						//sensorChannel.send("ack");
 				};
 
 				return peer;
