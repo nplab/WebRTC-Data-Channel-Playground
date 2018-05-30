@@ -1073,8 +1073,10 @@ $('#npmChannelParameters').on('click', 'button[name="toggleOrdered"]', function(
 	$(this).toggleClass('btn-default btn-success');
 	if ($(this).hasClass('btn-success')) {
 		$(this).data('active', true);
+		$(this).html("✓");
 	} else {
 		$(this).data('active', false);
+		$(this).html("✕");
 	}
 	event.preventDefault();
 });
