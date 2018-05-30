@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2015 Daniel Richters, Felix Weinrank
+ * Copyright (c) 2015-2018 Daniel Richters, Felix Weinrank
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,43 +30,43 @@
  */
 
 var npmSettings = {
-	iceOfferAll : false, // ask for each offered ICE-Candidate
-	statsCollectInterval : 500, // interval to collect statistics (ms)
-	statsGraphRefreshInterval : 1000, // interval to refresh graph (ms)
-	statsTableRefreshInterval : 1000, // interval to refresh statistics table (ms)
-	bufferedAmountLimit : 16000000    // firefox limit 16MB (16*1024*1024)
+	iceOfferAll: false, // ask for each offered ICE-Candidate
+	statsCollectInterval: 500, // interval to collect statistics (ms)
+	statsGraphRefreshInterval: 1000, // interval to refresh graph (ms)
+	statsTableRefreshInterval: 1000, // interval to refresh statistics table (ms)
+	bufferedAmountLimit: 16000000 // firefox limit 16MB (16*1024*1024)
 };
 
 // Google Chart
 var chartOptions = {
-	title : 'Datachannel-Performance',
-	hAxis : {
-		title : 'Runtime',
-		format : '#,# s',
+	title: 'Datachannel-Performance',
+	hAxis: {
+		title: 'Runtime',
+		format: '#,# s',
 	},
-	vAxis : {
-		title : 'Rate',
+	vAxis: {
+		title: 'Rate',
 	},
-	legend : {
-		position : 'bottom'
+	legend: {
+		position: 'bottom'
 	},
-	animation : {
-		duration : Math.round(npmSettings.statsGraphRefreshInterval / 2),
-		easing : 'out'
+	animation: {
+		duration: Math.round(npmSettings.statsGraphRefreshInterval / 2),
+		easing: 'out'
 	}
 };
 
 // constraints on the offer SDP.
 var sdpConstraints = {
-	'mandatory' : {
-		'offerToReceiveAudio' : false,
-		'offerToReceiveVideo' : false
+	'mandatory': {
+		'offerToReceiveAudio': false,
+		'offerToReceiveVideo': false
 	}
 };
 
 /*
-* SETTINGS END
-*/
+ * SETTINGS END
+ */
 
 // Reference to Firebase APP
 var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
@@ -201,7 +201,7 @@ function npmConnect() {
 
 		console.log("connect - role: offerer");
 
-	// answerer role
+		// answerer role
 	} else {
 		// answerer must wait for the data channel
 		pc.ondatachannel = function(event) {
@@ -258,7 +258,7 @@ function npmPrepareRole() {
 		$('#statusRole').html(role);
 		$('#npmChannelParametersContainer').hide();
 
-	// role answerer
+		// role answerer
 	} else {
 		role = 'offerer';
 		peerRole = 'answerer';
@@ -283,15 +283,15 @@ function npmSend(label) {
 	channels[label].statistics.t_end = new Date().getTime();
 	var runtime = (channels[label].statistics.t_end - channels[label].statistics.t_start);
 	var message = generateByteString(randomWrapper(parameters[label].pktSize));
-	var sendSleep    = randomWrapper(parameters[label].sendInterval);
+	var sendSleep = randomWrapper(parameters[label].sendInterval);
 
 	// check maximum runtime
 	if (runtime <= parameters[label].runtime || parameters[label].runtime == 0) {
 		if (channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit) {
-			if(sendSleep == 0) {
+			if (sendSleep == 0) {
 				var pktCounter = 0;
 
-				while(channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit && pktCounter < 10000 && (channels[label].statistics.tx_pkts + pktCounter) < parameters[label].pktCount) {
+				while (channels[label].channel.bufferedAmount < npmSettings.bufferedAmountLimit && pktCounter < 10000 && (channels[label].statistics.tx_pkts + pktCounter) < parameters[label].pktCount) {
 					channels[label].channel.send(message);
 					pktCounter++;
 				}
@@ -313,9 +313,9 @@ function npmSend(label) {
 
 		if (channels[label].statistics.tx_pkts < parameters[label].pktCount) {
 			var schedulerObject = {
-				type : 'npmSendTrigger',
-				sleep : sendSleep,
-				data : label
+				type: 'npmSendTrigger',
+				sleep: sendSleep,
+				data: label
 			};
 			scheduler.postMessage(schedulerObject);
 
@@ -354,8 +354,8 @@ function npmStart() {
 	}
 
 	var collectStatsMessage = {
-		type : 'collectStats',
-		data : npmChannelLabels
+		type: 'collectStats',
+		data: npmChannelLabels
 	};
 	console.log(npmChannelLabels);
 	channels['control'].channel.send(JSON.stringify(collectStatsMessage));
@@ -395,24 +395,30 @@ function npmReset() {
 //create new datachannel
 function channelCreate(label) {
 	// set options for datachannel
-	var dataChannelOptions;
-	if ( typeof parameters[label] != 'undefined') {
+	var dataChannelOptions = {};
+	if (typeof parameters[label] != 'undefined') {
+		var sendOrdered = parameters[label].ordered;
 		var sendModeArray = parameters[label].sendMode.split(':');
-		switch(sendModeArray[0]) {
-		case "":
-			dataChannelOptions = {
-			};
-			break;
-		case "rt":
-			dataChannelOptions = {
-				maxRetransmits : sendModeArray[1],
-			};
-			break;
-		case "timeout":
-			dataChannelOptions = {
-				maxPacketLifeTime : sendModeArray[1],
-			};
-			break;
+		switch (sendModeArray[0]) {
+			case "":
+				dataChannelOptions = {
+					ordered: sendOrdered
+				};
+				break;
+			case "ret":
+				var optionVal = parseInt(sendModeArray[1], 10);
+				dataChannelOptions = {
+					ordered: sendOrdered,
+					maxRetransmits: optionVal
+				};
+				break;
+			case "lft":
+				var optionVal = parseInt(sendModeArray[1], 10);
+				dataChannelOptions = {
+					ordered: sendOrdered,
+					maxPacketLifeTime: optionVal
+				};
+				break;
 		}
 	}
 
@@ -421,27 +427,28 @@ function channelCreate(label) {
 	bindEvents(newChannel);
 
 	channels[newChannel.label] = {
-		channel : newChannel,
-		statistics : {
-			t_start : 0,
-			t_end : 0,
-			t_last : 0,
-			tx_pkts : 0,
-			tx_bytes : 0,
-			tx_bytes_last : 0,
-			tx_rate_avg : 0,
-			tx_rate_cur : 0,
-			rx_pkts : 0,
-			rx_bytes : 0,
-			rx_bytes_last : 0,
-			rx_rate_avg : 0,
-			rx_rate_cur : 0
+		channel: newChannel,
+		statistics: {
+			t_start: 0,
+			t_end: 0,
+			t_last: 0,
+			tx_pkts: 0,
+			tx_bytes: 0,
+			tx_bytes_last: 0,
+			tx_rate_avg: 0,
+			tx_rate_cur: 0,
+			rx_pkts: 0,
+			rx_bytes: 0,
+			rx_bytes_last: 0,
+			rx_rate_avg: 0,
+			rx_rate_cur: 0
 		}
 
 	};
 
 	statsChannelStatusUpdate();
 	console.log("createDataChannel - label:" + newChannel.label + ', id:' + newChannel.id);
+	console.log(dataChannelOptions);
 }
 
 function channelClose(label) {
@@ -487,9 +494,9 @@ function parametersRowAddSamples() {
 
 	var second = parametersRowAdd();
 	second.find('[name=paramPktCount]').val('1000');
-	second.find('[name=paramPktSize]').val('uni:512:1536');
-	//second.find('[name=paramMode]').val('ret:2');
-	second.find('[name=paramInterval]').val('uni:5:15');
+	second.find('[name=paramPktSize]').val('512');
+	second.find('[name=paramMode]').val('ret:2');
+	second.find('[name=paramInterval]').val('0');
 	second.find('[name=paramDelay]').val('2');
 	second.find('[name=paramRuntime]').val('0');
 
@@ -509,40 +516,40 @@ function parametersValidate() {
 		$(this).removeClass('has-error');
 
 		switch ($(this).attr('name')) {
-		// gt 0
-		case 'paramPktCount':
-		case 'paramRuntime':
-		case 'paramDelay':
-			var pattern = /^(\d+)$/g;
-			var string = $(this).val();
-			if (!string.match(pattern)) {
-				$(this).addClass('has-error');
-				console.log('validation error');
-				inputValid = false;
-			}
-			break;
+			// gt 0
+			case 'paramPktCount':
+			case 'paramRuntime':
+			case 'paramDelay':
+				var pattern = /^(\d+)$/g;
+				var string = $(this).val();
+				if (!string.match(pattern)) {
+					$(this).addClass('has-error');
+					console.log('validation error');
+					inputValid = false;
+				}
+				break;
 
-		// pattern: number || const:number || exp:number || uniform:number:number
-		case 'paramInterval':
-		case 'paramPktSize':
-			var pattern = /^(\d+|con:\d+|exp:\d+|uni:\d+:\d+)$/g;
-			var string = $(this).val();
-			if (!string.match(pattern)) {
-				$(this).addClass('has-error');
-				console.log('validation error');
-				inputValid = false;
-			}
-			break;
+				// pattern: number || const:number || exp:number || uniform:number:number
+			case 'paramInterval':
+			case 'paramPktSize':
+				var pattern = /^(\d+|con:\d+|exp:\d+|uni:\d+:\d+)$/g;
+				var string = $(this).val();
+				if (!string.match(pattern)) {
+					$(this).addClass('has-error');
+					console.log('validation error');
+					inputValid = false;
+				}
+				break;
 
-		case 'paramMode':
-			var pattern = /^(ret:\d+|lft:\d+)$/g;
-			var string = $(this).val();
-			if (string.length > 0 && !string.match(pattern)) {
-				$(this).addClass('has-error');
-				console.log('validation error');
-				inputValid = false;
-			}
-			break;
+			case 'paramMode':
+				var pattern = /^(ret:\d+|lft:\d+)$/g;
+				var string = $(this).val();
+				if (string.length > 0 && !string.match(pattern)) {
+					$(this).addClass('has-error');
+					console.log('validation error');
+					inputValid = false;
+				}
+				break;
 		}
 	});
 
@@ -553,14 +560,15 @@ function parametersValidate() {
 function parametersParse() {
 	$('#npmChannelParameters > tbody > tr').each(function() {
 		parameters[$(this).find('button[name="toggleActive"]').val()] = {
-			active : $(this).find('button[name="toggleActive"]').hasClass("btn-success"),
-			label : $(this).find('button[name="toggleActive"]').val(),
-			pktSize : $(this).find('input[name="paramPktSize"]').val(),
-			pktCount : parseInt($(this).find('input[name="paramPktCount"]').val()),
-			sendInterval : $(this).find('input[name="paramInterval"]').val(),
-			sendMode : $(this).find('input[name="paramMode"]').val(),
-			runtime : parseInt(($(this).find('input[name="paramRuntime"]').val() * 1000)),
-			delay : parseInt(($(this).find('input[name="paramDelay"]').val() * 1000))
+			active: $(this).find('button[name="toggleActive"]').hasClass("btn-success"),
+			label: $(this).find('button[name="toggleActive"]').val(),
+			pktSize: $(this).find('input[name="paramPktSize"]').val(),
+			pktCount: parseInt($(this).find('input[name="paramPktCount"]').val(), 10),
+			sendInterval: $(this).find('input[name="paramInterval"]').val(),
+			sendMode: $(this).find('input[name="paramMode"]').val(),
+			ordered: $(this).find('button[name="toggleOrdered"]').hasClass("btn-success"),
+			runtime: parseInt(($(this).find('input[name="paramRuntime"]').val() * 1000), 10),
+			delay: parseInt(($(this).find('input[name="paramDelay"]').val() * 1000), 10)
 		};
 	});
 
@@ -579,7 +587,7 @@ function randomUniform(min, max) {
  */
 function randomUniformTest(min, max, runs) {
 	var sum = 0;
-	for ( i = 0; i < runs; i++) {
+	for (i = 0; i < runs; i++) {
 		sum += randomUniform(min, max);
 	}
 	return sum / runs;
@@ -597,7 +605,7 @@ function randomExponential(expectation) {
  */
 function randomExponentialTest(expectation, runs) {
 	var sum = 0;
-	for ( i = 0; i < runs; i++) {
+	for (i = 0; i < runs; i++) {
 		num = randomExponential(expectation);
 		sum += num;
 		console.log(num);
@@ -609,22 +617,22 @@ function randomWrapper(funcstring) {
 	var paramArray = funcstring.split(':');
 
 	if (paramArray.length == 1) {
-		return parseInt(funcstring);
+		return parseInt(funcstring, 10);
 	} else {
-		switch(paramArray[0]) {
-		case 'con':
-			return parseInt(paramArray[1]);
-			break;
+		switch (paramArray[0]) {
+			case 'con':
+				return parseInt(paramArray[1], 10);
+				break;
 
-		case 'exp':
-			return randomExponential(parseInt(paramArray[1]));
-			break;
+			case 'exp':
+				return randomExponential(parseInt(paramArray[1], 10));
+				break;
 
-		case 'uni':
-			return randomUniform(parseInt(paramArray[1]), parseInt(paramArray[2]));
-			break;
-		default:
-			throw "random function unknown!";
+			case 'uni':
+				return randomUniform(parseInt(paramArray[1], 10), parseInt(paramArray[2], 10));
+				break;
+			default:
+				throw "random function unknown!";
 		}
 	}
 }
@@ -649,21 +657,21 @@ function bindEvents(channel) {
 			// datachannel openend on answerer-side
 		} else {
 			channels[channel.label] = {
-				channel : channel,
-				statistics : {
-					t_start : 0,
-					t_end : 0,
-					t_last : 0,
-					tx_pkts : 0,
-					tx_bytes : 0,
-					tx_bytes_last : 0,
-					tx_rate_avg : 0,
-					tx_rate_cur : 0,
-					rx_pkts : 0,
-					rx_bytes : 0,
-					rx_bytes_last : 0,
-					rx_rate_avg : 0,
-					rx_rate_cur : 0
+				channel: channel,
+				statistics: {
+					t_start: 0,
+					t_end: 0,
+					t_last: 0,
+					tx_pkts: 0,
+					tx_bytes: 0,
+					tx_bytes_last: 0,
+					tx_rate_avg: 0,
+					tx_rate_cur: 0,
+					rx_pkts: 0,
+					rx_bytes: 0,
+					rx_bytes_last: 0,
+					rx_rate_avg: 0,
+					rx_rate_cur: 0
 				}
 			};
 		}
@@ -705,7 +713,7 @@ scheduler.onmessage = function(e) {
 	//var message = e.data;
 
 	//if (e.data.data != undefined && e.data.sleep != undefined && e.data.type != undefined) {
-		switch(e.data.type) {
+	switch (e.data.type) {
 		case 'npmSendTrigger':
 			npmSend(e.data.data);
 			break;
@@ -715,7 +723,7 @@ scheduler.onmessage = function(e) {
 		default:
 			alert('scheduler - unknown messagetype!');
 			break;
-		}
+	}
 
 	//}
 };
@@ -727,33 +735,33 @@ function msgHandleJson(message) {
 	var messageObject = JSON.parse(message);
 	var tempChannelLabel = messageObject.label;
 
-	switch(messageObject.type) {
+	switch (messageObject.type) {
 
-	// statistics
-	case 'statistics':
-		break;
+		// statistics
+		case 'statistics':
+			break;
 
-	// timestamp - echo timestamp to sender
-	case 'timestamp':
-		msgHandlePing(messageObject);
-		break;
+			// timestamp - echo timestamp to sender
+		case 'timestamp':
+			msgHandlePing(messageObject);
+			break;
 
-	// timestampEcho - measure RTT
-	case 'timestampEcho':
-		msgHandlePingEcho(messageObject);
-		break;
+			// timestampEcho - measure RTT
+		case 'timestampEcho':
+			msgHandlePingEcho(messageObject);
+			break;
 
-	case 'reset':
-		msgHandleReset();
-		break;
+		case 'reset':
+			msgHandleReset();
+			break;
 
-	// trigger to collect statistics
-	case 'collectStats':
-		statsCollectInit(messageObject);
-		break;
-	default:
-		alert('Unknown messagetype!!');
-		break;
+			// trigger to collect statistics
+		case 'collectStats':
+			statsCollectInit(messageObject);
+			break;
+		default:
+			alert('Unknown messagetype!!');
+			break;
 	}
 }
 
@@ -807,8 +815,8 @@ function msgHandlePingEcho(message) {
 function msgSendPing() {
 	var date = new Date();
 	timestampMessage = {
-		type : 'timestamp',
-		timestamp : date.getTime(),
+		type: 'timestamp',
+		timestamp: date.getTime(),
 	};
 	channels['control'].channel.send(JSON.stringify(timestampMessage));
 	console.log('ping - sending timestamp to peer: ' + timestampMessage.timestamp);
@@ -816,7 +824,7 @@ function msgSendPing() {
 
 function msgSendReset() {
 	resetMessage = {
-		type : 'reset'
+		type: 'reset'
 	};
 	channels['control'].channel.send(JSON.stringify(resetMessage));
 	console.log('sending reset message');
@@ -1051,6 +1059,17 @@ function bytesToSize(bytes) {
 
 // button toggle used to activate and deactivate channels
 $('#npmChannelParameters').on('click', 'button[name="toggleActive"]', function(event) {
+	$(this).toggleClass('btn-default btn-success');
+	if ($(this).hasClass('btn-success')) {
+		$(this).data('active', true);
+	} else {
+		$(this).data('active', false);
+	}
+	event.preventDefault();
+});
+
+// button toggle used to activate and deactivate channels
+$('#npmChannelParameters').on('click', 'button[name="toggleOrdered"]', function(event) {
 	$(this).toggleClass('btn-default btn-success');
 	if ($(this).hasClass('btn-success')) {
 		$(this).data('active', true);

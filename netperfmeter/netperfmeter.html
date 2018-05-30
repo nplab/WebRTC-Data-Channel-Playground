@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -8,8 +9,8 @@
 
 	<title>WebRTC Data Channel Playground - Netperfmeter</title>
 
-	<link rel="apple-touch-icon"  href="../common/favicon/apple-icon-180x180.png">
-	<link rel="icon" type="image/png"  href="../common/favicon/android-icon-192x192.png">
+	<link rel="apple-touch-icon" href="../common/favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" href="../common/favicon/android-icon-192x192.png">
 	<link rel="manifest" href="../common/favicon/manifest.json">
 	<meta name="msapplication-TileColor" content="#ffffff">
 	<meta name="msapplication-TileImage" content="../common/favicon/ms-icon-144x144.png">
@@ -44,7 +45,7 @@
 						<a href="../netperfmeter/netperfmeter.html">Netperfmeter</a>
 					</li>
 					<li>
-					   <a href="../stresstest/stresstest.html">Stresstest</a>
+						<a href="../stresstest/stresstest.html">Stresstest</a>
 					</li>
 					<li>
 						<a href="../conformance-tests/conformance-tests.html">Browsertest</a>
@@ -169,46 +170,51 @@
 					<thead>
 						<tr>
 							<th style="width: 7%;"><span aria-hidden="true" data-toggle="popover" data-content="Activate or deactivate the datachannel">active</span></th>
-							<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Amount of packets to sent">num packets</span></th>
-							<th style="width: 14%;"><span aria-hidden="true"  data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>con:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uni:0:10</kbd> - uniformed distribution">msg size</span></th>
-							<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Send-mode<br/><kbd>[blank]</kbd> - reliable<br/><kbd>ret:10</kbd> - try max. 10 retransmissions<br/><kbd>lft:10</kbd> - timeout after 10 seconds">send mode</span></th>
-							<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Interval between each sent packet in ms<br/>set to 0 to send as much as possible<br/><kbd>con:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uni:0:10</kbd> - uniformed distribution">send interval</span></th>
-							<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Start-delay in seconds">start delay</span></th>
-							<th style="width: 14%;"><span aria-hidden="true" data-toggle="popover" data-content="Channel-runtime in seconds<br/>0 for infinity">runtime</span></th>
+							<th style="width: 13%;"><span aria-hidden="true" data-toggle="popover" data-content="Amount of packets to sent">num packets</span></th>
+							<th style="width: 13%;"><span aria-hidden="true" data-toggle="popover" data-content="Size of each sent packet in byte<br/><kbd>con:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uni:0:10</kbd> - uniformed distribution">msg size</span></th>
+							<th style="width: 13%;"><span aria-hidden="true" data-toggle="popover" data-content="Send-mode<br/><kbd>[blank]</kbd> - reliable<br/><kbd>ret:10</kbd> - try max. 10 retransmissions<br/><kbd>lft:10</kbd> - timeout after 10 seconds">send mode</span></th>
+							<th style="width: 6%;"><span aria-hidden="true" data-toggle="popover" data-content="Send data ordered">ordered</span></th>
+							<th style="width: 13%;"><span aria-hidden="true" data-toggle="popover" data-content="Interval between each sent packet in ms<br/>set to 0 to send as much as possible<br/><kbd>con:10</kbd> - constant<br/><kbd>exp:10</kbd> - exponential distribution<br/><kbd>uni:0:10</kbd> - uniformed distribution">send interval</span></th>
+							<th style="width: 13%;"><span aria-hidden="true" data-toggle="popover" data-content="Start-delay in seconds">start delay</span></th>
+							<th style="width: 13%;"><span aria-hidden="true" data-toggle="popover" data-content="Channel-runtime in seconds<br/>0 for infinity">runtime</span></th>
 							<th style="width: 9%;"><span aria-hidden="true" data-toggle="popover" data-content="Remove or clone channel-settings">actions</span></th>
 						</tr>
 
 						<!-- NPM Channel Dummy -->
 						<tr class="npmChannelParametersBlank" style="display:none;">
 							<td>
-							<button type="button" name="toggleActive" class="btn btn-success btn-sm toggleActive" value="o2">
+								<button type="button" name="toggleActive" class="btn btn-success btn-sm toggleActive" value="o1">
 								1
-							</button></td>
-							<td>
-							<input type="text" class="form-control input-sm" name="paramPktCount" placeholder="num packets" size="5">
-							</td>
-
-							<td>
-							<input type="text" class="form-control input-sm" name="paramPktSize" size="4" placeholder="packet-size">
-							</td>
-
-							<td>
-							<input type="text" class="form-control input-sm" name="paramMode" placeholder="transfer-mode" size="4" aria-label="...">
+								</button>
 							</td>
 							<td>
-							<input type="text" class="form-control input-sm" name="paramInterval" size="4" placeholder="send-interval">
+								<input type="text" class="form-control input-sm" name="paramPktCount" placeholder="num packets" size="5">
 							</td>
 							<td>
-							<input type="text" class="form-control input-sm" name="paramDelay" size="4" placeholder="start-delay">
+								<input type="text" class="form-control input-sm" name="paramPktSize" size="4" placeholder="packet-size">
 							</td>
 							<td>
-							<input type="text" class="form-control input-sm" name="paramRuntime" size="4" placeholder="runtime">
+								<input type="text" class="form-control input-sm" name="paramMode" placeholder="transfer-mode" size="4" aria-label="...">
 							</td>
 							<td>
-							<button type="button" onclick="parametersRowCopy(this);" title="copy channel" class="btn btn-default btn-sm">
+								<button type="button" name="toggleOrdered" class="btn btn-success btn-sm toggleOrdered" value="ordered">
+									X
+								</button>
+							</td>
+							<td>
+								<input type="text" class="form-control input-sm" name="paramInterval" size="4" placeholder="send-interval">
+							</td>
+							<td>
+								<input type="text" class="form-control input-sm" name="paramDelay" size="4" placeholder="start-delay">
+							</td>
+							<td>
+								<input type="text" class="form-control input-sm" name="paramRuntime" size="4" placeholder="runtime">
+							</td>
+							<td>
+								<button type="button" onclick="parametersRowCopy(this);" title="copy channel" class="btn btn-default btn-sm">
 								<span style="color:#316EA2;" class="glyphicon glyphicon-copy" aria-hidden="true"></span>
 							</button>
-							<button type="button" onclick="parametersRowDelete(this);" title="remove channel" class="btn btn-default btn-sm">
+								<button type="button" onclick="parametersRowDelete(this);" title="remove channel" class="btn btn-default btn-sm">
 								<span style="color:#D2403E;" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 							</button></td>
 						</tr>
@@ -294,9 +300,9 @@
 			browsercheck();
 
 			$('[data-toggle="popover"]').popover({
-				placement : 'top',
-				html : 'true',
-				trigger : 'hover',
+				placement: 'top',
+				html: 'true',
+				trigger: 'hover',
 			});
 		});
 
@@ -306,4 +312,5 @@
 	</script>
 
 </body>
+
 </html>
