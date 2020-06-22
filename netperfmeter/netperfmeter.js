@@ -76,7 +76,6 @@ var refreshCounter = 0;
 var channels = {};
 var channelStats = [];
 var channelStatsCounter = 0;
-var chart = new google.visualization.LineChart(document.getElementById('channelChart'));
 var chartData;
 var dcCounter = 0;
 var labelButtonToggle = false;
@@ -95,13 +94,16 @@ var freshSignalingID = generateSignalingID();
 var signalingIDRef = dbRef.child("npmIDs");
 var t_startNewPackage = 0;
 
-// clean firebase ref
-signalingIDRef.child(freshSignalingID).remove();
-$('#signalingID').val(location.hash.substring(1));
 
-npmPrepareRole();
-// add example settings
-parametersRowAddSamples();
+$(document).ready(function(){
+	// clean firebase ref
+	signalingIDRef.child(freshSignalingID).remove();
+	$('#signalingID').val(location.hash.substring(1));
+
+	npmPrepareRole();
+	// add example settings
+	parametersRowAddSamples();
+});
 
 // wrapper to send data to FireBase
 function firebaseSend(signalingID, key, data) {
@@ -878,7 +880,7 @@ function statsDrawChart() {
 	if (channelStats.length < 2) {
 		return;
 	}
-
+	var chart = new google.visualization.LineChart(document.getElementById('channelChart'));
 	chartData = google.visualization.arrayToDataTable(channelStats);
 	chart.draw(chartData, chartOptions);
 }

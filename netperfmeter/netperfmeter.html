@@ -24,6 +24,25 @@
 	<!-- JAVSCRIPT Section -->
 	<script src="../common/jquery.min.js"></script>
 	<script src="../common/bootstrap/js/bootstrap.min.js"></script>
+	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type='text/javascript' src="../common/webrtc.common.js"></script>
+	<script type='text/javascript' src="netperfmeter.js"></script>
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			browsercheck();
+
+			$('[data-toggle="popover"]').popover({
+				placement: 'top',
+				html: 'true',
+				trigger: 'hover',
+			});
+		});
+
+		$(window).resize(function() {
+			statsDrawChart();
+		});
+	</script>
 </head>
 
 <body>
@@ -289,28 +308,6 @@
 			</div>
 		</div>
 	</div>
-
-	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
-	<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['corechart']}]}"></script>
-	<script type='text/javascript' src="../common/webrtc.common.js"></script>
-	<script type='text/javascript' src="netperfmeter.js"></script>
-	<script type="text/javascript">
-		jQuery(document).ready(function($) {
-
-			browsercheck();
-
-			$('[data-toggle="popover"]').popover({
-				placement: 'top',
-				html: 'true',
-				trigger: 'hover',
-			});
-		});
-
-		$(window).resize(function() {
-			statsDrawChart();
-		});
-	</script>
-
 </body>
 
 </html>
