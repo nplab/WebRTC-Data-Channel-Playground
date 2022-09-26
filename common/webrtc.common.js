@@ -8,7 +8,7 @@ var iceServer = {
 	}, {
 		urls : "stun:stun1.l.google.com:19302"
 	}, {
-		urls		: "turn:bsd3.nplab.de:8443",
+		urls		: "turn:dsl.nplab.de:3478",
 		credential	: "nplab",
 		username	: "nplab"
 	}]
