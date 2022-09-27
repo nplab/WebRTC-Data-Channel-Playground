@@ -283,6 +283,7 @@ function requestGyroPermission() {
 	DeviceOrientationEvent.requestPermission()
 	.then(response => {
 		if (response == 'granted') {
+			$("#buttonPermission").addClass('hidden');
 			window.addEventListener('deviceorientation', onDeviceOrientationEvent, false)
 		}
 	})
