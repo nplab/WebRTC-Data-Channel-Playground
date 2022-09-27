@@ -242,6 +242,13 @@ function gyroInit() {
 
 	if (window.DeviceOrientationEvent) {
 		$('#gyrostatus').removeClass('alert-info').addClass('alert-success');
+
+		if (window.DeviceOrientationEvent.requestPermission) {
+			$("#rowMessage").removeClass('hidden');
+			$("#colMessage").html('<div class="alert alert-danger text-center" role="alert"><strong>Error:</strong> Need to request permission!</div>');
+
+		}
+
 		// Listen for the deviceorientation event and handle the raw data
 		window.addEventListener('deviceorientation', function(eventData) {
 			// gamma is the left-to-right tilt in degrees, where right is positive
