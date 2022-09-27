@@ -232,6 +232,63 @@ function gyroConnectionLost() {
 
 }
 
+function onDeviceOrientationEvent(eventData) {
+	// gamma is the left-to-right tilt in degrees, where right is positive
+	var gammaRaw = Math.round(event.gamma);
+				var gamma = Math.round(((((Math.abs(gammaRaw)*4) % 360)/360)*510)%512);
+				if(gamma > 255){
+					gamma = 510 - gamma;
+				}
+	// beta is the front-to-back tilt in degrees, where front is positive
+	var betaRaw = Math.round(event.beta);
+	var beta = Math.round((((Math.abs(betaRaw)*4) % 360)/360)*510);
+				if(beta > 255){
+					beta = 510 - beta;
+				}
+
+	// alpha is the compass direction the device is facing in degrees
+	var alphaRaw = Math.round(event.alpha);
+				if(alpha < 0){
+					console.log("Alpha should never be negative: "+alphaRaw);
+				}
+	var alpha = Math.round(((Math.abs(eventData.alpha*4) / 360) * 510) % 510);
+	if(alpha > 255){
+					alpha = 510 - alpha;
+				}
+	if(gammaRaw != 0 && betaRaw != 0 && alphaRaw != 0) {
+		$('#trRaw').html('<td>raw</td><td>'+alphaRaw+'</td><td>'+betaRaw+'</td><td>'+gammaRaw+'</td>');
+
+		if(!gyroColorFromRemote) {
+			gyroSetColor(alpha,beta,gamma);
+		}
+
+		if(typeof(dcControl.readyState) !== 'undefined' && dcControl.readyState === "open") {
+			//alert('sending');
+
+			var gyroData = {
+				type : 'gyro',
+				alpha : alpha,
+				beta : beta,
+				gamma : gamma
+			};
+
+			dcControl.send(JSON.stringify(gyroData));
+		}
+	}
+
+	// call our orientation event handler
+}
+
+function requestGyroPermission() {
+	DeviceOrientationEvent.requestPermission()
+	.then(response => {
+		if (response == 'granted') {
+			window.addEventListener('deviceorientation', onDeviceOrientationEvent, false)
+		}
+	})
+	.catch(console.error)
+}
+
 function gyroInit() {
 	//if (window.DeviceOrientationEvent  && 'ontouchstart' in window) {
 
@@ -244,58 +301,11 @@ function gyroInit() {
 		$('#gyrostatus').removeClass('alert-info').addClass('alert-success');
 
 		if (window.DeviceOrientationEvent.requestPermission) {
-			$("#rowMessage").removeClass('hidden');
-			$("#colMessage").html('<div class="alert alert-danger text-center" role="alert"><strong>Error:</strong> Need to request permission!</div>');
-
+			$("#buttonPermission").removeClass('hidden');
+		} else {
+			// Listen for the deviceorientation event and handle the raw data
+			window.addEventListener('deviceorientation', onDeviceOrientationEvent, false);
 		}
-
-		// Listen for the deviceorientation event and handle the raw data
-		window.addEventListener('deviceorientation', function(eventData) {
-			// gamma is the left-to-right tilt in degrees, where right is positive
-			var gammaRaw = Math.round(event.gamma);
-						var gamma = Math.round(((((Math.abs(gammaRaw)*4) % 360)/360)*510)%512);
-						if(gamma > 255){
-							gamma = 510 - gamma;
-						}
-			// beta is the front-to-back tilt in degrees, where front is positive
-			var betaRaw = Math.round(event.beta);
-			var beta = Math.round((((Math.abs(betaRaw)*4) % 360)/360)*510);
-						if(beta > 255){
-							beta = 510 - beta;
-						}
-
-			// alpha is the compass direction the device is facing in degrees
-			var alphaRaw = Math.round(event.alpha);
-						if(alpha < 0){
-							console.log("Alpha should never be negative: "+alphaRaw);
-						}
-			var alpha = Math.round(((Math.abs(eventData.alpha*4) / 360) * 510) % 510);
-			if(alpha > 255){
-							alpha = 510 - alpha;
-						}
-			if(gammaRaw != 0 && betaRaw != 0 && alphaRaw != 0) {
-				$('#trRaw').html('<td>raw</td><td>'+alphaRaw+'</td><td>'+betaRaw+'</td><td>'+gammaRaw+'</td>');
-
-				if(!gyroColorFromRemote) {
-					gyroSetColor(alpha,beta,gamma);
-				}
-
-				if(typeof(dcControl.readyState) !== 'undefined' && dcControl.readyState === "open") {
-					//alert('sending');
-
-					var gyroData = {
-						type : 'gyro',
-						alpha : alpha,
-						beta : beta,
-						gamma : gamma
-					};
-
-					dcControl.send(JSON.stringify(gyroData));
-				}
-			}
-
-			// call our orientation event handler
-		}, false);
 	}
 }
 
