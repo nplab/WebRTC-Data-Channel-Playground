@@ -1,18 +1,16 @@
 
 
 // STUN, TURN Servers
-var iceServer = {
-	iceServers : [
+var iceServer = [
 	{
 		urls : "stun:stun.l.google.com:19302"
 	}, {
-		urls : "stun:stun1.l.google.com:19302"
-	}, {
-		urls		: "turn:dsl.nplab.de:3478",
-		credential	: "nplab",
-		username	: "nplab"
-	}]
-};
+		urls			: "turn:dsl.nplab.de:3478",
+		username		: "nplab",
+		credential		: "nplab",
+		credentialType	: "password"
+	}
+];
 
 // find and return an IPv4 Address from a given string
 // taken from: https://gist.github.com/syzdek/6086792
