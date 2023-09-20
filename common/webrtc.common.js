@@ -9,7 +9,7 @@ var iceServer = {
 		urls			: "turn:dsl.nplab.de:3478",
 		username		: "nplab",
 		credential		: "nplab",
-		credentialType	: "password"
+//		credentialType	: "password"
 	}]
 };
 
