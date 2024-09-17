@@ -63,7 +63,7 @@ var sdpConstraints = {
 
 // Reference to Firebase APP
 //var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
-var dbRef = new Firebase("https://gyrocolor-default-rtdb.europe-west1.firebasedatabase.app/");
+var dbRef = new Firebase("https://msvoelker-webrtc-default-rtdb.firebaseio.com/");
 
 
 var bufferedAmountLimit = 1 * 1024 * 1024;
