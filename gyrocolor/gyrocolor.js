@@ -30,27 +30,27 @@ BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
 */
 
 // Import the functions you need from the SDKs you need
-import firebase from "firebase/app";
-import "firebase/compat/database";
+//import firebase from "firebase/app";
+//import "firebase/compat/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBmKIK0HWPPMiEHYcLAWiflplFp3nmTuFQ",
-  authDomain: "gyrocolor.firebaseapp.com",
-  projectId: "gyrocolor",
-  storageBucket: "gyrocolor.appspot.com",
-  messagingSenderId: "992786846800",
-  appId: "1:992786846800:web:cfa1b0b869faea5b3cad55",
-  databaseURL: "https://gyrocolor-default-rtdb.europe-west1.firebasedatabase.app/"
-};
+//const firebaseConfig = {
+//  apiKey: "AIzaSyBmKIK0HWPPMiEHYcLAWiflplFp3nmTuFQ",
+//  authDomain: "gyrocolor.firebaseapp.com",
+//  projectId: "gyrocolor",
+//  storageBucket: "gyrocolor.appspot.com",
+//  messagingSenderId: "992786846800",
+//  appId: "1:992786846800:web:cfa1b0b869faea5b3cad55",
+//  databaseURL: "https://gyrocolor-default-rtdb.europe-west1.firebasedatabase.app/"
+//};
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+//firebase.initializeApp(firebaseConfig);
 
 // Initialize Cloud Firestore and get a reference to the service
-const db = firebase.database();
+//const db = firebase.database();
 
 
 // constraints on the offer SDP.
@@ -63,7 +63,7 @@ var sdpConstraints = {
 
 // Reference to Firebase APP
 //var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
-
+var dbRef = new Firebase("https://gyrocolor-default-rtdb.europe-west1.firebasedatabase.app/");
 
 
 var bufferedAmountLimit = 1 * 1024 * 1024;
@@ -73,8 +73,8 @@ var peerRole = "offerer";
 var role = "answerer";
 var signalingId;
 var freshsignalingId = generateSignalingId();
-//var signalingIdRef = dbRef.child("gyroIDs");
-var signalingIdRef = db.ref("gyroIDs")
+var signalingIdRef = dbRef.child("gyroIDs");
+//var signalingIdRef = db.ref("gyroIDs")
 var dcControl = {};
 var gyroColorFromRemote = false;
 
