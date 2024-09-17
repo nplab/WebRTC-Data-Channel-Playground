@@ -29,30 +29,6 @@
 BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
 */
 
-// Import the functions you need from the SDKs you need
-//import firebase from "firebase/app";
-//import "firebase/compat/database";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-//const firebaseConfig = {
-//  apiKey: "AIzaSyBmKIK0HWPPMiEHYcLAWiflplFp3nmTuFQ",
-//  authDomain: "gyrocolor.firebaseapp.com",
-//  projectId: "gyrocolor",
-//  storageBucket: "gyrocolor.appspot.com",
-//  messagingSenderId: "992786846800",
-//  appId: "1:992786846800:web:cfa1b0b869faea5b3cad55",
-//  databaseURL: "https://gyrocolor-default-rtdb.europe-west1.firebasedatabase.app/"
-//};
-
-// Initialize Firebase
-//firebase.initializeApp(firebaseConfig);
-
-// Initialize Cloud Firestore and get a reference to the service
-//const db = firebase.database();
-
-
 // constraints on the offer SDP.
 var sdpConstraints = {
 	'mandatory' : {
@@ -65,7 +41,6 @@ var sdpConstraints = {
 //var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
 var dbRef = new Firebase("https://msvoelker-webrtc-default-rtdb.firebaseio.com/");
 
-
 var bufferedAmountLimit = 1 * 1024 * 1024;
 
 var pc = new RTCPeerConnection(iceServer);
@@ -74,21 +49,15 @@ var role = "answerer";
 var signalingId;
 var freshsignalingId = generateSignalingId();
 var signalingIdRef = dbRef.child("gyroIDs");
-//var signalingIdRef = db.ref("gyroIDs")
 var dcControl = {};
 var gyroColorFromRemote = false;
 
 // clean firebase ref
 signalingIdRef.child(freshsignalingId).remove();
-//signalingIdRef.doc(freshsignalingId).delete();
 
 // wrapper to send data to FireBase
 function firebaseSend(signalingId, key, data) {
 	signalingIdRef.child(signalingId).child(key).set(data);
-	//signalingIdRef.doc(signalingId).set({
-	//	key: key,
-	//	data: data
-	//});
 	console.log('firebaseSend - ' + key + ' - ' + data);
 }
 
@@ -101,22 +70,6 @@ function firebaseReceive(signalingId, type, cb) {
 			console.log('firebaseReceive - ' + type + ' - ' + data);
 		}
 	});
-	//signalingIdRef.doc(signalingId).get().then((doc) => {
-	//	if (doc.exists) {
-	//		var data = doc.data();
-	//		if (data) {
-	//			cb(data);
-	//			console.log('firebaseReceive - ' + type + ' - ' + data);
-	//		} else {
-	//			console.log("No data in document!");
-	//		}
-	//	} else {
-	//		// doc.data() will be undefined in this case
-	//		console.log("No such document!");
-	//	}
-	//}).catch((error) => {
-	//	console.log("Error getting document:", error);
-	//});
 }
 
 // generic error handler
@@ -135,8 +88,6 @@ pc.onicecandidate = function(event) {
 
 	// add local ice candidate to firebase
 	signalingIdRef.child(signalingId).child(role + '-iceCandidates').push(JSON.stringify(event.candidate));
-	//signalingIdRef.doc(signalingId).collection(role + '-iceCandidates').add(JSON.stringify(event.candidate));
-
 	console.log('onicecandidate - ip:' + ip);
 };
 
