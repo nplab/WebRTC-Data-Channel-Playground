@@ -50,11 +50,11 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
 
 // Initialize Realtime Database and get a reference to the service
-const dbRef = firebaseApp.firestore();
+const dbRef = firebase.database();
 
 
 var bufferedAmountLimit = 1 * 1024 * 1024;
