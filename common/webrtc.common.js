@@ -6,7 +6,7 @@ var iceServer = {
 	{
 		urls : "stun:stun.l.google.com:19302"
 	}, {
-		urls			: "turn:dsl.nplab.de:3478",
+		urls			: "turn:wiki.nplab.de:3478",
 		username		: "nplab",
 		credential		: "nplab",
 //		credentialType	: "password"
