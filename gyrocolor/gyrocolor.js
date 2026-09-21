@@ -25,9 +25,6 @@
 *
 */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { getDatabase } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
-
 /*
 BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
 */
@@ -53,11 +50,11 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 
 // Initialize Realtime Database and get a reference to the service
-const dbRef = getDatabase(app);
+const dbRef = firebaseApp.firestore();
 
 
 var bufferedAmountLimit = 1 * 1024 * 1024;
