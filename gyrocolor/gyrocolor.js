@@ -25,6 +25,9 @@
 *
 */
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
 /*
 BASED ON: http://louisstow.github.io/WebRTC/datachannels.html
 */
@@ -40,8 +43,6 @@ var sdpConstraints = {
 // Reference to Firebase APP
 //var dbRef = new Firebase("https://webrtc-data-channel.firebaseio.com/");
 //var dbRef = new Firebase("https://msvoelker-webrtc-default-rtdb.firebaseio.com/");
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { getDatabase } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://firebase.google.com/docs/web/learn-more#config-object
